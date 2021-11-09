@@ -96,12 +96,18 @@ if __name__ == "__main__":
 
     parse_command_line()
 
+    test_config = {}
     # ==========================
     # nacos 接入
     nacosServer = Nacos(ip=ConfigNacos.nacosIp, port=ConfigNacos.nacosPort)
     # 将本地配置注入到nacos对象中即可获取远程配置，并监听配置变化实时变更
+    # 获取配置1：
     nacosServer.config(dataId="demo-python.json", group="dev", tenant=ConfigNacos.namespaceId,
                        myConfig=cfg)
+
+    # 获取配置2：
+    nacosServer.config(dataId="python_common", group="account", tenant=ConfigNacos.namespaceId,
+                       myConfig=test_config)
     # 配置服务注册的参数
     nacosServer.registerService(serviceIp=ConfigNacos.ip, servicePort=ConfigNacos.port, serviceName="ebike-assets",
                                 namespaceId=ConfigNacos.namespaceId, groupName="dev", metadata={"test": 1024})

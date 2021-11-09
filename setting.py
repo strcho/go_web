@@ -3,7 +3,7 @@ from utils.ip_tools import get_host_ip
 
 class ConfigNacos:
     ip = get_host_ip()
-    port = 8080
+    port = 80
     nacosIp = "120.24.81.243"
     nacosPort = 8848
     serverName = 'ebike_account_server'
