@@ -7,6 +7,7 @@ from service.car import CarService
 from mbutils import mb_async
 from mbutils.constant import ValidType
 from mbutils.mb_handler import MBHandler
+from setting import ConfigNacos
 
 
 class K8sHandler(MBHandler):
