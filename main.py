@@ -1,6 +1,8 @@
 # coding:utf-8
 import concurrent.futures
+import os.path
 import signal
+import sys
 import time
 
 import swagger_ui
@@ -93,6 +95,8 @@ if __name__ == "__main__":
 
     # signal.signal(signal.SIGTERM, sig_handler)
     # signal.signal(signal.SIGINT, sig_handler)
+
+    sys.path.append(os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(__file__))), "ebike-mb-tools"))
 
     parse_command_line()
 
