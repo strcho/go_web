@@ -94,7 +94,7 @@ class FavorableCard(CommonField):
 
 # 用户折扣
 class DiscountsUser(CommonField):
-    __tablename__ = 'account_discountsUser'
+    __tablename__ = 'account_discounts_user'
     __table_args__ = (
         {'mysql_charset': 'utf8mb4'}
     )
