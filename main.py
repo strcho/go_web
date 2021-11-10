@@ -1,21 +1,19 @@
 # coding:utf-8
 import concurrent.futures
 import os.path
-import signal
 import sys
-import time
+
+# 将ebike-mb-tools目录加入环境变量
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../ebike-mb-tools/")))
 
 import swagger_ui
 import tornado.ioloop
 import tornado.web
 
-# 将ebike-mb-tools目录加入环境变量
 from mbutils.autodoc import (
     generate_swagger_file,
     SWAGGER_API_OUTPUT_FILE,
 )
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../ebike-mb-tools/")))
 
 from mbutils.nacos import Nacos
 from setting import ConfigNacos
