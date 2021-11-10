@@ -13,6 +13,9 @@ import tornado.web
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../ebike-mb-tools/")))
 print(sys.path)
 
+for files in os.listdir('../'):  # 不仅仅是文件，当前目录下的文件夹也会被认为遍历到
+    print("files", files)
+
 from mbutils.nacos import Nacos
 from setting import ConfigNacos
 from utils.arguments import (
