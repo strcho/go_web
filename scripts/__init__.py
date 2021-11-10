@@ -1,7 +1,6 @@
 from datetime import datetime as dt, timedelta
 from mbutils import AGENT_NAME, dao_session
 from utils.schedule import TimeTask, JOBS_KEY, RUN_TIMES_KEY
-from .payment_query import Payment
 
 """
     由于pickle的原因,不能用中间匿名的函数,或者参数里面有函数等无法序列化的场景
@@ -9,10 +8,6 @@ from .payment_query import Payment
 RANDOM_MINUTE = hash(AGENT_NAME) % 60
 
 AGENT_NAME_LIST_SCRIPT = []
-
-
-def query_payment_order():
-    Payment().query_payment_order()
 
 
 def kafka_sub_worker_job():
@@ -37,9 +32,5 @@ def register_scheduler(loop):
     # 只运行一次的长脚本
     tt.scheduler.add_job(kafka_sub_worker_job, 'date', replace_existing=True,
                          next_run_time=dt.now() + timedelta(seconds=10), max_instances=1, misfire_grace_time=15)
-
-    # -------------------------------- 支付主动查询 ------------------------------------------------
-    tt.scheduler.add_job(query_payment_order, 'interval', replace_existing=True, minutes=10,
-                         start_date=add_time('2021-01-01 00:00:00'))  # 支付订单主动查询
 
     tt.start_tasks()

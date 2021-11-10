@@ -5,8 +5,8 @@ from mbutils import cfg
 def add_handler(prefix):
     return url_wrapper([
         (r'{}'.format(prefix), include('routes.k8s_server')),
-        (r'{}/pay'.format(prefix), include('routes.payment')),
         (r'{}/data_fix'.format(prefix), include('routes.data_fix')),
+        (r'{}/user'.format(prefix), include('routes.wallet')),
     ])
 
 

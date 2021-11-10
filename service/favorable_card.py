@@ -13,18 +13,24 @@ from sqlalchemy import func
 class FavorableCardService(MBService):
 
     def query_one(self, valid_data):
-        service_id, _ = valid_data
-        params = {"service_id": service_id, "enable": 1}
-        card = 0
-        try:
-            card = dao_session.session().query(XcMieba2FavorableCard).filter_by(**params).first()
-        except Exception as e:
-            dao_session.session().rollback()
-            logger.error("show favorable card is error: {}".format(e))
-            logger.exception(e)
-        return 1 if card else 0
+        """
+        获取用户的优惠卡
+        """
+        # pin_id, _ = valid_data
+        # params = {"pin_id": pin_id}
+        # try:
+        #     card = dao_session.session().query(FavorableCard).filter_by(**params).first()
+        # except Exception as e:
+        #     dao_session.session().rollback()
+        #     logger.error("query user favorable_card is error: {}".format(e))
+        #     logger.exception(e)
+        # print(card)
+        return 'card'
 
     def insert_one(self, valid_data):
+        """
+        插入一条优惠卡信息
+        """
         service_id, card_name, original_price, present_price, card_time, card_img, config_id = valid_data
         params = {
             "service_id": service_id,
@@ -40,7 +46,7 @@ class FavorableCardService(MBService):
             "updated_at": datetime.now()
         }
         params = self.remove_empty_param(params)
-        card = XcMieba2FavorableCard(**params)
+        card = FavorableCard(**params)
         dao_session.session().add(card)
         try:
             dao_session.session().commit()

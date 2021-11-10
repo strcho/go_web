@@ -2,8 +2,7 @@ import re
 
 from tornado.gen import coroutine
 
-from service.external.data_fix import batch_auto_pay_func, GetLogService
-from service.car import CarService
+from service.external.data_fix import GetLogService
 from mbutils import mb_async
 from mbutils.constant import ValidType
 from mbutils.mb_handler import MBHandler
