@@ -11,6 +11,7 @@ import tornado.web
 
 # 将ebike-mb-tools目录加入环境变量
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../ebike-mb-tools")))
+print(sys.path)
 
 from mbutils.nacos import Nacos
 from setting import ConfigNacos
