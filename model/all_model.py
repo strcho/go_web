@@ -121,7 +121,7 @@ def create_table():
         'account_riding_card',
         'account_deposit_card',
         'account_favorable_card',
-        'account_discountsUser',
+        'account_discounts_user',
         'account_free_order_user',
     ]
 
