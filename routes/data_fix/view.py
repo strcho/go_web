@@ -95,7 +95,7 @@ class PlatformCarnoManageHandler(MBHandler):
 
 class GetLogHandler(MBHandler):
     """
-        api:/anfu/v2/data_fix/platform/get_log
+        api:/account/platform/get_log
     """
     @coroutine
     def get(self):

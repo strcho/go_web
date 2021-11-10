@@ -3,7 +3,7 @@
 """
 from .view import *
 
-# /anfu/v2/data_fix
+# /account/data_fix
 urls = [
     (r'/platform/get_log', GetLogHandler)
 ]
