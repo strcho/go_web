@@ -10,17 +10,6 @@ from mbutils.mb_handler import MBHandler
 from setting import ConfigNacos
 
 
-class K8sHandler(MBHandler):
-    """
-    api:/anfu/v2/data_fix/k8s
-    k8s探测
-    """
-
-    @coroutine
-    def get(self):
-        self.success("OK")
-
-
 class BatchAutoPayHandler(MBHandler):
     """
     api:/anfu/v2/data_fix/platform/batch_auto_pay
