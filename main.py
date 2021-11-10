@@ -9,6 +9,9 @@ import swagger_ui
 import tornado.ioloop
 import tornado.web
 
+# 将ebike-mb-tools目录加入环境变量
+sys.path.append(os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(__file__))), "ebike-mb-tools"))
+
 from mbutils.nacos import Nacos
 from setting import ConfigNacos
 from utils.arguments import (
@@ -95,9 +98,6 @@ if __name__ == "__main__":
 
     # signal.signal(signal.SIGTERM, sig_handler)
     # signal.signal(signal.SIGINT, sig_handler)
-
-    # 将ebike-mb-tools目录加入环境变量
-    sys.path.append(os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(__file__))), "ebike-mb-tools"))
 
     parse_command_line()
 
