@@ -1,9 +1,12 @@
 # coding:utf-8
 import concurrent.futures
 import os.path
+import signal
 import sys
 
 # 将ebike-mb-tools目录加入环境变量
+import time
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../ebike-mb-tools/")))
 
 import swagger_ui
@@ -63,41 +66,41 @@ def parse_command_line():
     cfg["is_test_env"] = 1 if options.env == "test" else 0
     cfg["name"] = options.name
 
-#
-# def sig_handler(sig, frame):
-#     """信号处理函数
-#     """
-#     print("\nReceived interrupt signal: %s" % sig)
-#     tornado.ioloop.IOLoop.instance().add_callback(shutdown)
-#
-#
-# def shutdown():
-#     """进程关闭处理
-#     """
-#     print("Stopping http server, please wait...")
-#
-#     # nacos 注销此实例
-#     nacosServer.deletedInstance()
-#
-#     # 停止接受Client连接
-#     io_loop = tornado.ioloop.IOLoop.instance()
-#     # 设置最长等待强制结束时间
-#     deadline = time.time() + 3
-#
-#     def stop_loop():
-#         now = time.time()
-#         if now < deadline:
-#             io_loop.add_timeout(now + 1, stop_loop)
-#         else:
-#             io_loop.stop()
-#
-#     stop_loop()
+
+def sig_handler(sig, frame):
+    """信号处理函数
+    """
+    print("\nReceived interrupt signal: %s" % sig)
+    tornado.ioloop.IOLoop.instance().add_callback(shutdown)
+
+
+def shutdown():
+    """进程关闭处理
+    """
+    print("Stopping http server, please wait...")
+
+    # nacos 注销此实例
+    nacosServer.deletedInstance()
+
+    # 停止接受Client连接
+    io_loop = tornado.ioloop.IOLoop.instance()
+    # 设置最长等待强制结束时间
+    deadline = time.time() + 3
+
+    def stop_loop():
+        now = time.time()
+        if now < deadline:
+            io_loop.add_timeout(now + 1, stop_loop)
+        else:
+            io_loop.stop()
+
+    stop_loop()
 
 
 if __name__ == "__main__":
 
-    # signal.signal(signal.SIGTERM, sig_handler)
-    # signal.signal(signal.SIGINT, sig_handler)
+    signal.signal(signal.SIGTERM, sig_handler)
+    signal.signal(signal.SIGINT, sig_handler)
 
     parse_command_line()
 
