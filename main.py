@@ -105,17 +105,17 @@ if __name__ == "__main__":
     # ==========================
     # nacos 接入
     nacosServer = Nacos(ip=ConfigNacos.nacosIp, port=ConfigNacos.nacosPort)
-    # 将本地配置注入到nacos对象中即可获取远程配置，并监听配置变化实时变更
-    # 获取配置1：
-    nacosServer.config(dataId="demo-python.json", group="dev", tenant=ConfigNacos.namespaceId,
-                       myConfig=cfg)
 
-    # 获取配置2：
-    nacosServer.config(dataId="python_common", group="account", tenant=ConfigNacos.namespaceId,
-                       myConfig=test_config)
+    # 将本地配置注入到nacos对象中即可获取远程配置，并监听配置变化实时变更
+    # 获取数据库相关配置：
+    nacosServer.config(dataId="db_config", group="account", tenant=ConfigNacos.namespaceId,
+                       myConfig=cfg)
+    # 获取通用配置：
+    nacosServer.config(dataId="common", group="DEFAULT_GROUP", tenant=ConfigNacos.namespaceId,
+                       myConfig=cfg)
     # 配置服务注册的参数
     nacosServer.registerService(serviceIp=ConfigNacos.ip, servicePort=ConfigNacos.port, serviceName="ebike-assets",
-                                namespaceId=ConfigNacos.namespaceId, groupName="dev", metadata={"test": 1024})
+                                namespaceId=ConfigNacos.namespaceId, groupName="dev", metadata={})
     # 开启监听配置的线程和服务注册心跳进程的健康检查进程
     nacosServer.healthyCheck()
     # ========================
@@ -124,6 +124,7 @@ if __name__ == "__main__":
     app = Application()
     dao_session.initialize(app)
     create_table()
+
     app.listen(cfg['port'])
     logger.debug('listen to {} port,env: {}'.format(cfg['port'], cfg['is_test_env']))
     cfg['app'] = app
