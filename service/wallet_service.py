@@ -12,8 +12,7 @@ class WalletService(MBService):
     钱包
     """
 
-    def query_one(self, valid_data):
-        pin_id, _ = valid_data
+    def query_one(self, pin_id: str):
         try:
             user_wallet = dao_session.session().query(UserWallet).filter_by(pin_id=pin_id).first()
         except Exception as e:

@@ -1,19 +1,12 @@
 # coding: utf-8
-from datetime import datetime
 from sqlalchemy import CHAR, Column, DateTime, Float, Index, String, Text, text, ForeignKey, \
     UniqueConstraint, PrimaryKeyConstraint, DECIMAL
 from sqlalchemy.dialects.mysql import INTEGER, TINYINT
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.sql import func
 
 from mbshort.orm import (
     CommonField,
     init_db_data,
 )
-from mbutils.db_manager import DBManager
-from utils.constant.activity import *
-from utils.constant.opman import *
-from utils.constant.dispatch import *
 
 
 class UserWallet(CommonField):

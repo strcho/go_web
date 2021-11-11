@@ -8,6 +8,7 @@ def errorFun(*args):
     return "自定义错误"
 
 
+# 用户模块
 nacosClient = nacos.nacosBalanceClient(ip=ConfigNacos.nacosIp, port=ConfigNacos.nacosPort,
                                        serviceName="ebike-user",
                                        group="DEFAULT_GROUP", namespaceId="63ecef80-34dc-44e0-8c93-5e935b61f106",

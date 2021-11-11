@@ -1,6 +1,6 @@
 from tornado.gen import coroutine
 
-from internal.internal_apis import (
+from internal.user_internal_apis import (
     apiTest3,
     apiTest4,
 )
