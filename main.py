@@ -117,7 +117,7 @@ if __name__ == "__main__":
     nacosServer.config(dataId="common", group="DEFAULT_GROUP", tenant=ConfigNacos.namespaceId,
                        myConfig=cfg)
     # 配置服务注册的参数
-    nacosServer.registerService(serviceIp=ConfigNacos.ip, servicePort=ConfigNacos.port, serviceName="ebike-assets",
+    nacosServer.registerService(serviceIp=ConfigNacos.ip, servicePort=ConfigNacos.port, serviceName=ConfigNacos.serverName,
                                 namespaceId=ConfigNacos.namespaceId, groupName="dev", metadata={})
     # 开启监听配置的线程和服务注册心跳进程的健康检查进程
     nacosServer.healthyCheck()
