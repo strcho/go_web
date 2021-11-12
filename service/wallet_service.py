@@ -15,6 +15,10 @@ class WalletService(MBService):
     def query_one(self, pin_id: str):
         try:
             user_wallet = dao_session.session().query(UserWallet).filter_by(pin_id=pin_id).first()
+            if not user_wallet:
+                user_wallet = UserWallet()
+                dao_session.session().add(user_wallet)
+                dao_session.session().commit()
         except Exception as e:
             dao_session.session().rollback()
             logger.error("query user wallet is error: {}".format(e))

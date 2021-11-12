@@ -11,7 +11,7 @@ from mbshort.orm import (
 
 class UserWallet(CommonField):
 
-    __tablename__ = 'account_user_wallet'
+    __tablename__ = 't_account_user_wallet'
     __table_args__ = (
         {'mysql_charset': 'utf8mb4'}
     )
@@ -27,7 +27,7 @@ class UserWallet(CommonField):
 
 class RidingCard(CommonField):
 
-    __tablename__ = 'account_riding_card'
+    __tablename__ = 't_account_riding_card'
     __table_args__ = (
         Index('idx_pin_id_state', 'pin_id', 'state'), {'mysql_charset': 'utf8mb4'}
     )
@@ -51,7 +51,7 @@ class RidingCard(CommonField):
 
 
 class DepositCard(CommonField):
-    __tablename__ = 'account_deposit_card'
+    __tablename__ = 't_account_deposit_card'
     __table_args__ = (
         {'mysql_charset': 'utf8mb4'}
     )
@@ -70,7 +70,7 @@ class DepositCard(CommonField):
 
 # 用户的优惠卡
 class FavorableCard(CommonField):
-    __tablename__ = 'account_favorable_card'
+    __tablename__ = 't_account_favorable_card'
     __table_args__ = (
         {'mysql_charset': 'utf8mb4'}
     )
@@ -87,7 +87,7 @@ class FavorableCard(CommonField):
 
 # 用户折扣
 class DiscountsUser(CommonField):
-    __tablename__ = 'account_discounts_user'
+    __tablename__ = 't_account_discounts_user'
     __table_args__ = (
         {'mysql_charset': 'utf8mb4'}
     )
@@ -98,7 +98,7 @@ class DiscountsUser(CommonField):
 
 # 用户免单
 class FreeOrderUser(CommonField):
-    __tablename__ = 'account_free_order_user'
+    __tablename__ = 't_account_free_order_user'
     __table_args__ = (
         {'mysql_charset': 'utf8mb4'}
     )
