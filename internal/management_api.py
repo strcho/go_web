@@ -2,10 +2,6 @@ from mbutils import (
     nacos,
     cfg,
 )
-from mbutils.app_start_init import get_nacos_config
-
-
-
 
 
 # 配置，生产信息模块

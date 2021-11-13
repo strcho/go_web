@@ -5,12 +5,11 @@ import signal
 import sys
 
 # 将ebike-mb-tools目录加入环境变量
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../ebike-mb-tools/")))
+
 import time
 
 from mbutils.app_start_init import AppInit
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../ebike-mb-tools/")))
-
 import swagger_ui
 import tornado.ioloop
 import tornado.web
@@ -19,9 +18,6 @@ from mbutils.autodoc import (
     generate_swagger_file,
     SWAGGER_API_OUTPUT_FILE,
 )
-
-from mbutils.nacos import Nacos
-from setting import ConfigNacos
 
 from utils.constant.config import THREAD_NUM, REDIS_MAX_COLLECITONS
 from utils.url_mapping import handlers
