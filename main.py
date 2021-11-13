@@ -7,6 +7,8 @@ import sys
 # 将ebike-mb-tools目录加入环境变量
 import time
 
+from mbutils.app_start_init import AppInit
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../ebike-mb-tools/")))
 
 import swagger_ui
@@ -23,7 +25,6 @@ from setting import ConfigNacos
 
 from utils.constant.config import THREAD_NUM, REDIS_MAX_COLLECITONS
 from utils.url_mapping import handlers
-from tornado.options import options
 
 from mbutils import logger, cfg, settings, dao_session
 from mbutils.db_manager import DBManager, SubDBManager
@@ -49,24 +50,6 @@ class Application(tornado.web.Application):
         self.middle_ware_list = middle_ware_list
 
 
-def parse_command_line():
-    # 顺序:命令行 > config.py > 默认配置
-    options.logging = None
-    options.define("port", help="run server on a specific port", type=int)
-    options.define("debug", help="level of logging", type=bool)
-    options.define("env", help="env", type=str, default='dev')
-    options.define("name", help="server name", type=str, default='mbServer')
-    # 命令行上添加的参数项
-    options.parse_command_line()
-    if options.debug:
-        settings.update({'debug': True, 'autoreload': True})
-    else:
-        settings.update({'debug': False, 'autoreload': False})
-    cfg.update({k: v for k, v in options.as_dict().items() if v})
-    cfg["is_test_env"] = 1 if options.env == "test" else 0
-    cfg["name"] = options.name
-
-
 def sig_handler(sig, frame):
     """信号处理函数
     """
@@ -80,9 +63,11 @@ def shutdown():
     print("Stopping http server, please wait...")
 
     # nacos 注销此实例
-    nacosServer.deletedInstance()
+    app_init.nacosServer.deletedInstance()
 
     # 停止接受Client连接
+    application.stop()
+
     io_loop = tornado.ioloop.IOLoop.instance()
     # 设置最长等待强制结束时间
     deadline = time.time() + 3
@@ -99,32 +84,14 @@ def shutdown():
 
 if __name__ == "__main__":
 
+    app_init = AppInit(service_name='account', dataId=['ebike_account.json'])
+
     signal.signal(signal.SIGTERM, sig_handler)
     signal.signal(signal.SIGINT, sig_handler)
 
-    parse_command_line()
-
-    test_config = {}
-    # ==========================
-    # nacos 接入
-    nacosServer = Nacos(ip=ConfigNacos.nacosIp, port=ConfigNacos.nacosPort)
-
-    # 将本地配置注入到nacos对象中即可获取远程配置，并监听配置变化实时变更
-    # 获取数据库相关配置：
-    nacosServer.config(dataId="db_config", group="account", tenant=ConfigNacos.namespaceId,
-                       myConfig=cfg)
-    # 获取通用配置：
-    nacosServer.config(dataId="common", group="DEFAULT_GROUP", tenant=ConfigNacos.namespaceId,
-                       myConfig=cfg)
-    # 配置服务注册的参数
-    nacosServer.registerService(serviceIp=ConfigNacos.ip, servicePort=ConfigNacos.port, serviceName=ConfigNacos.serverName,
-                                namespaceId=ConfigNacos.namespaceId, groupName="dev", metadata={})
-    # 开启监听配置的线程和服务注册心跳进程的健康检查进程
-    nacosServer.healthyCheck()
-    # ========================
-
     logger.initialize(server_name=cfg["name"], debug=cfg['debug'])
     app = Application()
+    application = tornado.httpserver.HTTPServer(app, xheaders=True)
     dao_session.initialize(app)
     create_table()
 

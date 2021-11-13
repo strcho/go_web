@@ -1,19 +1,18 @@
-from mbutils import nacos
-from setting import ConfigNacos
+from mbutils import (
+    nacos,
+    cfg,
+)
+from mbutils.app_start_init import get_nacos_config
 
 
-def errorFun(*args):
-    for item in args:
-        print(item)
-    return "自定义错误"
+
 
 
 # 配置，生产信息模块
-nacosClient = nacos.nacosBalanceClient(ip=ConfigNacos.nacosIp, port=ConfigNacos.nacosPort,
-                                       serviceName="ebike-user",
-                                       group="DEFAULT_GROUP", namespaceId="63ecef80-34dc-44e0-8c93-5e935b61f106",
-                                       timeout=3,
-                                       timeOutFun=errorFun, fallbackFun=errorFun)
+nacosClient = nacos.nacosBalanceClient(
+    serviceName="ebike-user",
+    timeout=3,
+)
 
 
 @nacosClient.customRequestClient(method="GET", url="/api/test1")
@@ -35,6 +34,7 @@ def apiTest3(formData):
 def apiTest4(jsonData):
     pass
 
+
 @nacosClient.customRequestClient(method="GET", url="/api/test5")
-def apiTest5(*args,**kwargs):
+def apiTest5(*args, **kwargs):
     pass

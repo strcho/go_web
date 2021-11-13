@@ -30,7 +30,7 @@ class WalletHandle(MBHandler):
         data = yield mb_async(WalletService().query_one)(valid_data)
 
         # 测试内部调用
-        yield mb_async(print)("response: ", apiTest4({"name": "zhangsan", "timeout": 1000}))
+        yield mb_async(apiTest4)({"name": "zhangsan", "timeout": 1000})
 
         self.success(data)
 
