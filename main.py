@@ -23,25 +23,28 @@ from utils.constant.config import THREAD_NUM, REDIS_MAX_COLLECITONS
 from utils.url_mapping import handlers
 
 from mbutils import logger, cfg, settings, dao_session
-from mbutils.db_manager import DBManager, SubDBManager
+from mbutils.db_manager import (
+    FuzzyDBManager,
+)
 from mbutils.middle_ware import middle_ware_list
 from mbutils.redis_manager import RedisManager
-from model.all_model import create_table
 from scripts import register_scheduler
 
 
 class Application(tornado.web.Application):
     def __init__(self):
         super(Application, self).__init__(handlers=handlers, **settings)
-        redis_cfg: dict = cfg['redis_cli']
-        redis_cfg.update({"redis_max_num": REDIS_MAX_COLLECITONS, "is_test_env": cfg["is_test_env"]})
+        redis_cfg: dict = cfg["redis_cli"]
+        redis_cfg.update(
+            {"redis_max_num": REDIS_MAX_COLLECITONS, "is_test_env": cfg["is_test_env"]}
+        )
         self.redis_session = RedisManager(redis_cfg)
-        self.db_session = DBManager(cfg['mysql']).get_db()
+        self.sub_tenant_db_session = self.tenant_db_session = FuzzyDBManager(cfg["mysql"])
         if cfg.get("sub_mysql", None):
-            self.sub_db_session = SubDBManager(cfg['sub_mysql']).get_db()
-        else:
-            self.sub_db_session = self.db_session
-        self.thread_executor = concurrent.futures.ThreadPoolExecutor(THREAD_NUM, 'xcmbServer')
+            self.sub_tenant_db_session = FuzzyDBManager(cfg["sub_mysql"])
+        self.thread_executor = concurrent.futures.ThreadPoolExecutor(
+            THREAD_NUM, "xcmbServer"
+        )
         self.async_do = self.thread_executor.submit
         self.middle_ware_list = middle_ware_list
 
