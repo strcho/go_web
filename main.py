@@ -49,44 +49,10 @@ class Application(tornado.web.Application):
         self.middle_ware_list = middle_ware_list
 
 
-def sig_handler(sig, frame):
-    """信号处理函数
-    """
-    print("\nReceived interrupt signal: %s" % sig)
-    tornado.ioloop.IOLoop.instance().add_callback(shutdown)
-
-
-def shutdown():
-    """进程关闭处理
-    """
-    print("Stopping http server, please wait...")
-
-    # nacos 注销此实例
-    app_init.nacosServer.deletedInstance()
-
-    # 停止接受Client连接
-    application.stop()
-
-    io_loop = tornado.ioloop.IOLoop.instance()
-    # 设置最长等待强制结束时间
-    deadline = time.time() + 3
-
-    def stop_loop():
-        now = time.time()
-        if now < deadline:
-            io_loop.add_timeout(now + 1, stop_loop)
-        else:
-            io_loop.stop()
-
-    stop_loop()
-
-
 if __name__ == "__main__":
     loop = tornado.ioloop.IOLoop.current()
     app = Application()
     AppInit(app, loop, service_name='account', dataId=['ebike_account.json'])
-    signal.signal(signal.SIGTERM, sig_handler)
-    signal.signal(signal.SIGINT, sig_handler)
 
     logger.initialize(server_name=cfg["name"], debug=cfg['debug'])
     app = Application()
