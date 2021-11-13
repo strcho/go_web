@@ -82,9 +82,9 @@ def shutdown():
 
 
 if __name__ == "__main__":
-
-    app_init = AppInit(service_name='account', dataId=['ebike_account.json'])
-
+    loop = tornado.ioloop.IOLoop.current()
+    app = Application()
+    AppInit(app, loop, service_name='account', dataId=['ebike_account.json'])
     signal.signal(signal.SIGTERM, sig_handler)
     signal.signal(signal.SIGINT, sig_handler)
 
