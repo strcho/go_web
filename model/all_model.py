@@ -1,17 +1,15 @@
 # coding: utf-8
-from sqlalchemy import CHAR, Column, DateTime, Float, Index, String, Text, text, ForeignKey, \
-    UniqueConstraint, PrimaryKeyConstraint, DECIMAL
+from sqlalchemy import Column, DateTime, Index, String, text
 from sqlalchemy.dialects.mysql import INTEGER, TINYINT
 
 from mbshort.orm import (
     CommonField,
-    init_db_data,
 )
 
 
-class UserWallet(CommonField):
+class TUserWallet(CommonField):
 
-    __tablename__ = 't_account_user_wallet'
+    __tablename__ = 't_account_user_wallet' + '_suffix'
     __table_args__ = (
         {'mysql_charset': 'utf8mb4'}
     )
@@ -25,9 +23,9 @@ class UserWallet(CommonField):
     deposited_stats = Column(INTEGER(11), nullable=False, server_default=text("'0'"), comment='押金状态')
 
 
-class RidingCard(CommonField):
+class TRidingCard(CommonField):
 
-    __tablename__ = 't_account_riding_card'
+    __tablename__ = 't_account_riding_card' + '_suffix'
     __table_args__ = (
         Index('idx_pin_id_state', 'pin_id', 'state'), {'mysql_charset': 'utf8mb4'}
     )
@@ -50,8 +48,8 @@ class RidingCard(CommonField):
     state = Column(INTEGER(11), nullable=False, default=1, server_default=text("'1'"), comment="1使用中, 2过期, 3删除")
 
 
-class DepositCard(CommonField):
-    __tablename__ = 't_account_deposit_card'
+class TDepositCard(CommonField):
+    __tablename__ = 't_account_deposit_card' + '_suffix'
     __table_args__ = (
         {'mysql_charset': 'utf8mb4'}
     )
@@ -69,8 +67,8 @@ class DepositCard(CommonField):
 
 
 # 用户的优惠卡
-class FavorableCard(CommonField):
-    __tablename__ = 't_account_favorable_card'
+class TFavorableCard(CommonField):
+    __tablename__ = 't_account_favorable_card' + '_suffix'
     __table_args__ = (
         {'mysql_charset': 'utf8mb4'}
     )
@@ -86,8 +84,8 @@ class FavorableCard(CommonField):
 
 
 # 用户折扣
-class DiscountsUser(CommonField):
-    __tablename__ = 't_account_discounts_user'
+class TDiscountsUser(CommonField):
+    __tablename__ = 't_account_discounts_user' + '_suffix'
     __table_args__ = (
         {'mysql_charset': 'utf8mb4'}
     )
@@ -97,8 +95,8 @@ class DiscountsUser(CommonField):
 
 
 # 用户免单
-class FreeOrderUser(CommonField):
-    __tablename__ = 't_account_free_order_user'
+class TFreeOrderUser(CommonField):
+    __tablename__ = 't_account_free_order_user' + '_suffix'
     __table_args__ = (
         {'mysql_charset': 'utf8mb4'}
     )
@@ -106,16 +104,3 @@ class FreeOrderUser(CommonField):
     pin_id = Column(String(64), nullable=False, index=True,  comment='用户的主键id')  # 主键id
     free_hour = Column(INTEGER(5), nullable=False, server_default=text("'0'"), comment='每单的免费时长')
     free_num = Column(INTEGER(5), nullable=False, server_default=text("'0'"), comment='折扣次数')
-
-
-def create_table():
-    tables = [
-        't_account_user_wallet',
-        't_account_riding_card',
-        't_account_deposit_card',
-        't_account_favorable_card',
-        't_account_discounts_user',
-        't_account_free_order_user',
-    ]
-
-    init_db_data(tables)

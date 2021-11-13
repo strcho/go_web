@@ -19,7 +19,7 @@ class FavorableCardService(MBService):
         # pin_id, _ = valid_data
         # params = {"pin_id": pin_id}
         # try:
-        #     card = dao_session.session().query(FavorableCard).filter_by(**params).first()
+        #     card = dao_session.session().query(TFavorableCard).filter_by(**params).first()
         # except Exception as e:
         #     dao_session.session().rollback()
         #     logger.error("query user favorable_card is error: {}".format(e))
@@ -46,7 +46,7 @@ class FavorableCardService(MBService):
             "updated_at": datetime.now()
         }
         params = self.remove_empty_param(params)
-        card = FavorableCard(**params)
+        card = TFavorableCard(**params)
         dao_session.session().add(card)
         try:
             dao_session.session().commit()

@@ -3,7 +3,7 @@ from mbutils import (
     logger,
 )
 from mbutils.snowflake import ID_Worker
-from model.all_model import UserWallet
+from model.all_model import TUserWallet
 from service import MBService
 
 
@@ -14,9 +14,9 @@ class WalletService(MBService):
 
     def query_one(self, pin_id: str):
         try:
-            user_wallet = dao_session.session().query(UserWallet).filter_by(pin_id=pin_id).first()
+            user_wallet = dao_session.session().query(TUserWallet).filter_by(pin_id=pin_id).first()
             if not user_wallet:
-                user_wallet = UserWallet()
+                user_wallet = TUserWallet()
                 dao_session.session().add(user_wallet)
                 dao_session.session().commit()
         except Exception as e:
@@ -33,7 +33,7 @@ class WalletService(MBService):
             created_pin=None,
             updated_pin=None
         )
-        user_wallet = UserWallet(**data)
+        user_wallet = TUserWallet(**data)
         dao_session.session().add(user_wallet)
         try:
             dao_session.commit()
@@ -50,8 +50,8 @@ class WalletService(MBService):
         pin_id, _ = vaild_data
         data = dict()
         params = dict()
-        # 更新余额考虑使用 update({"balance": UserWallet.balance - change})
-        dao_session.session().query(UserWallet)\
+        # 更新余额考虑使用 update({"balance": TUserWallet.balance - change})
+        dao_session.session().query(TUserWallet)\
             .filter_by(pin_id=pin_id).update(params)\
             .with_for_update(read=True, nowait=False, of=None)
         try:
@@ -67,7 +67,7 @@ class WalletService(MBService):
 
         pin_ids, _ = valid_data
 
-        user_wallets = dao_session.session().query(UserWallet).filter(UserWallet.pin_id.in_(pin_ids)).all()
+        user_wallets = dao_session.session().query(TUserWallet).filter(TUserWallet.pin_id.in_(pin_ids)).all()
         data_list = []
         count = len(data_list)
         try:

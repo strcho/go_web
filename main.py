@@ -88,8 +88,20 @@ if __name__ == "__main__":
     logger.initialize(server_name=cfg["name"], debug=cfg['debug'])
     app = Application()
     application = tornado.httpserver.HTTPServer(app, xheaders=True)
-    dao_session.initialize(app)
-    create_table()
+
+    YearType = ["2020", "2021", "2022"]
+    MonthType = ["2021_11", "2021_12", "2022_01"]
+    TenantType = ["dianlv", "qiyue", "qiyiqi", "chudu"]
+    from model.all_model import *
+    split_info = {
+        "tenant_models": [TRidingCard, TDepositCard, TFavorableCard, TDiscountsUser, TFreeOrderUser, TUserWallet],
+        "year_models": [],
+        "month_models": [],
+        "month_type": MonthType,
+        "year_type": YearType,
+        "tenant_type": TenantType
+    }
+    dao_session.initialize(app, split_info)
 
     app.listen(cfg['port'])
     logger.debug('listen to {} port,env: {}'.format(cfg['port'], cfg['is_test_env']))
