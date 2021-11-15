@@ -19,49 +19,38 @@ from mbutils.autodoc import (
     SWAGGER_API_OUTPUT_FILE,
 )
 
-from utils.constant.config import THREAD_NUM, REDIS_MAX_COLLECITONS
 from utils.url_mapping import handlers
 
-from mbutils import logger, cfg, settings, dao_session
-from mbutils.db_manager import (
-    FuzzyDBManager,
+from mbutils import (
+    logger,
+    cfg,
+    settings,
+    dao_session,
 )
+
 from mbutils.middle_ware import middle_ware_list
-from mbutils.redis_manager import RedisManager
 from scripts import register_scheduler
 
 
 class Application(tornado.web.Application):
     def __init__(self):
         super(Application, self).__init__(handlers=handlers, **settings)
-        redis_cfg: dict = cfg["redis_cli"]
-        redis_cfg.update(
-            {"redis_max_num": REDIS_MAX_COLLECITONS, "is_test_env": cfg["is_test_env"]}
-        )
-        self.redis_session = RedisManager(redis_cfg)
-        self.sub_tenant_db_session = self.tenant_db_session = FuzzyDBManager(cfg["mysql"])
-        if cfg.get("sub_mysql", None):
-            self.sub_tenant_db_session = FuzzyDBManager(cfg["sub_mysql"])
-        self.thread_executor = concurrent.futures.ThreadPoolExecutor(
-            THREAD_NUM, "xcmbServer"
-        )
-        self.async_do = self.thread_executor.submit
         self.middle_ware_list = middle_ware_list
 
 
 if __name__ == "__main__":
     loop = tornado.ioloop.IOLoop.current()
     app = Application()
-    AppInit(app, loop, service_name='ebike_account', dataId=['ebike_account.json'])
+    AppInit(loop, service_name='ebike_account', dataId=['ebike_account.json'])
 
     logger.initialize(server_name=cfg["name"], debug=cfg['debug'])
-    app = Application()
     application = tornado.httpserver.HTTPServer(app, xheaders=True)
 
     YearType = ["2020", "2021", "2022"]
     MonthType = ["2021_11", "2021_12", "2022_01"]
     TenantType = ["dianlv", "qiyue", "qiyiqi", "chudu"]
     from model.all_model import *
+
     split_info = {
         "tenant_models": [TRidingCard, TDepositCard, TFavorableCard, TDiscountsUser, TFreeOrderUser, TUserWallet],
         "year_models": [],
