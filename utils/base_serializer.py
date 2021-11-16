@@ -5,7 +5,7 @@ from marshmallow import (
 
 
 class CommandContext(Schema):
-    tenantId = fields.String(required=False, description="租户ID")
+    tenant_id = fields.String(required=False, description="租户ID", data_key='tenantId')
     traceId = fields.String(required=False, description="链路追踪ID")
     pin = fields.String(required=False, description="用户PIN")
     ip = fields.String(required=False, description="ip地址")

@@ -2,9 +2,9 @@ from mbutils import (
     nacos,
 )
 
-# 支付模块
+# 支付服务
 nacosClient = nacos.nacosBalanceClient(
-    serviceName="ebike-user",
+    serviceName="ebike-pay",
     timeout=3,
 )
 

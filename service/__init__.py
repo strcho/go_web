@@ -5,6 +5,7 @@ import string
 
 from mbutils import DefaultMaker
 from mbutils import dao_session, MbException, ARG_DEFAULT
+from mbutils.snowflake import ID_Worker
 
 
 class MBService:
@@ -135,3 +136,21 @@ class MBService:
         """时间戳转成datetime"""
         return datetime.datetime.fromtimestamp(int(num) / 1000)
 
+    @staticmethod
+    def get_model_common_field(commandContext: dict = None):
+
+        fields_dict = dict(
+            id=ID_Worker(),
+            tenant_id=None,
+            # created_at=
+            created_pin=None,
+            # updated_at=
+            updated_pin=None,
+            # version=
+            # iz_del=
+        )
+
+        if commandContext:
+            fields_dict.update(commandContext)
+
+        return fields_dict

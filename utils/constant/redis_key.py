@@ -248,3 +248,7 @@ REFUND_DEPOSITCARD_LOCK = "xc_ebike_REFUND_DEPOSITCARD_{object_id}_lock"
 
 WXLITE_PAYMENT = "xc_mieba_payment_wxlite_{pay_type}"
 
+
+# 新key
+
+USER_WALLET_CACHE = "user_account_wallet_{tenant_id}_{pin_id}"

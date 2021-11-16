@@ -41,7 +41,7 @@ class Application(tornado.web.Application):
 if __name__ == "__main__":
     loop = tornado.ioloop.IOLoop.current()
     app = Application()
-    AppInit(loop, service_name='ebike_account', dataId=['ebike_account.json'])
+    AppInit(loop, service_name='ebike-account', dataId=['ebike_account.json'])
 
     logger.initialize(server_name=cfg["name"], debug=cfg['debug'])
     application = tornado.httpserver.HTTPServer(app, xheaders=True)

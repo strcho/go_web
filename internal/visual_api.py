@@ -2,9 +2,9 @@ from mbutils import (
     nacos,
 )
 
-# 大屏模块
+# 大屏服务
 nacosClient = nacos.nacosBalanceClient(
-    serviceName="ebike-user",
+    serviceName="ebike-visual",
     timeout=3,
 )
 

@@ -22,6 +22,9 @@ class TUserWallet(CommonField):
     deposited_mount = Column(INTEGER(11), server_default=text("'0'"), comment='押金金额')
     deposited_stats = Column(INTEGER(11), nullable=False, server_default=text("'0'"), comment='押金状态')
 
+    def keys(self):
+        return self.base_keys.add('pin_id', 'balance', 'recharge', 'present', 'deposited_mount', 'deposited_stats')
+
 
 class TRidingCard(CommonField):
 

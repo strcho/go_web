@@ -2,7 +2,7 @@ from mbutils import (
     nacos,
 )
 
-# 用户模块
+# 用户服务
 nacosClient = nacos.nacosBalanceClient(
     serviceName="ebike-user",
     timeout=3,

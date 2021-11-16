@@ -1,4 +1,7 @@
-from marshmallow import fields
+from marshmallow import (
+    fields,
+    Schema,
+)
 
 from mbutils import DefaultMaker
 from utils.base_serializer import ReqBaseSerializer
@@ -10,6 +13,16 @@ class GetWalletDeserializer(ReqBaseSerializer):
     """
 
     pin_id = fields.String(required=True, description="用户标识")
+
+
+class UserWalletSerializer(Schema):
+
+    pin_id = fields.String(description="用户id")
+    balance = fields.String(description="余额")
+    recharge = fields.String(description="充值余额")
+    present = fields.String(description="增送余额")
+    deposited_mount = fields.String(description="押金金额")
+    deposited_stats = fields.String(description="押金状态")
 
 
 class UpdateWalletDeserializer(ReqBaseSerializer):

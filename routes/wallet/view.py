@@ -13,6 +13,7 @@ from mbutils.mb_handler import MBHandler
 from routes.wallet.serializers import (
     GetWalletDeserializer,
     UpdateWalletDeserializer,
+    UserWalletSerializer,
 )
 from service.wallet_service import WalletService
 
@@ -26,11 +27,11 @@ class WalletHandle(MBHandler):
     @use_args_query(GetWalletDeserializer)
     def get(self, args: dict):
         pin_id = args.get('pin_id')
-        valid_data = (pin_id, "")
-        data = yield mb_async(WalletService().query_one)(valid_data)
-
-        # 测试内部调用
-        yield mb_async(apiTest4)({"name": "zhangsan", "timeout": 1000})
+        commandContext = args.get('commandContext')
+        print(commandContext.get('tenantId'))
+        valid_data = (pin_id, commandContext)
+        data = yield mb_async(WalletService().get_user_wallet)(*valid_data)
+        data = UserWalletSerializer().dump(data)
 
         self.success(data)
 
