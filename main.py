@@ -10,14 +10,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../ebik
 import time
 
 from mbutils.app_start_init import AppInit
-import swagger_ui
 import tornado.ioloop
 import tornado.web
-
-from mbutils.autodoc import (
-    generate_swagger_file,
-    SWAGGER_API_OUTPUT_FILE,
-)
 
 from utils.url_mapping import handlers
 
@@ -66,17 +60,11 @@ if __name__ == "__main__":
     logger.debug('listen to {} port,env: {}'.format(cfg['port'], cfg['is_test_env']))
     cfg['app'] = app
 
-    if cfg['debug']:
-        generate_swagger_file(handlers=handlers, file_location=SWAGGER_API_OUTPUT_FILE)
-        print(handlers)
-        # Start the Swagger UI. Automatically generated swagger.json can also
-        # be served using a separate Swagger-service.
-        swagger_ui.tornado_api_doc(
-            app,
-            config_path=SWAGGER_API_OUTPUT_FILE,
-            url_prefix="/swagger/spec.html",
-            title="EbikePay API",
-        )
+    if cfg["doc"]:
+        from mbutils.autodoc import generate_swagger_file, swagger_api_doc
+
+        generate_swagger_file(handlers=handlers, serviceName='ebike-account')
+        swagger_api_doc(app)
 
     loop = tornado.ioloop.IOLoop.current()
     register_scheduler(loop)

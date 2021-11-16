@@ -26,10 +26,40 @@ class WalletHandle(MBHandler):
     @coroutine
     @use_args_query(GetWalletDeserializer)
     def get(self, args: dict):
+        """
+        获取用户钱包信息
+        ---
+        tags: [钱包]
+        summary: 获取用户钱包信息
+        description: 获取用户钱包信息
+
+        parameters:
+          - in: query
+            schema:
+                GetWalletDeserializer
+        responses:
+            200:
+                schema:
+                    type: object
+                    required:
+                      - success
+                      - code
+                      - msg
+                      - data
+                    properties:
+                        success:
+                            type: boolean
+                        code:
+                            type: str
+                        msg:
+                            type: str
+                        data:
+                            UserWalletSerializer
+        """
+
         pin_id = args.get('pin_id')
         valid_data = (pin_id, args)
         data = yield mb_async(WalletService().get_user_wallet)(*valid_data)
-        print(data)
         data = UserWalletSerializer().dump(data)
 
         self.success(data)
@@ -37,6 +67,36 @@ class WalletHandle(MBHandler):
     @coroutine
     @use_args_query(UpdateWalletDeserializer)
     def post(self, args: dict):
+        """
+        更新用户钱包信息
+        ---
+        tags: [钱包]
+        summary: 更新用户钱包信息
+        description: 更新用户钱包信息
+
+        parameters:
+          - in: body
+            schema:
+                UpdateWalletDeserializer
+        responses:
+            200:
+                schema:
+                    type: object
+                    required:
+                      - success
+                      - code
+                      - msg
+                      - data
+                    properties:
+                        success:
+                            type: boolean
+                        code:
+                            type: str
+                        msg:
+                            type: str
+                        data:
+                            type: boolean
+      """
         pin_id = args.get('pin_id')
         valid_data = (pin_id, args)
         data = yield mb_async(WalletService().set_user_wallet)(*valid_data)

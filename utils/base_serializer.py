@@ -15,4 +15,4 @@ class CommandContext(Schema):
 
 class ReqBaseSerializer(Schema):
 
-    commandContext = fields.Nested(CommandContext, required=True, description="公共请求头部")
+    commandContext = fields.Nested(CommandContext, required=True, description="公共请求信息")
