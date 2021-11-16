@@ -55,6 +55,7 @@ if __name__ == "__main__":
         "tenant_models": [TRidingCard, TDepositCard, TFavorableCard, TDiscountsUser, TFreeOrderUser, TUserWallet],
         "year_models": [],
         "month_models": [],
+        "unsplit_models": [],
         "month_type": MonthType,
         "year_type": YearType,
         "tenant_type": TenantType

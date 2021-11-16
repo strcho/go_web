@@ -27,10 +27,9 @@ class WalletHandle(MBHandler):
     @use_args_query(GetWalletDeserializer)
     def get(self, args: dict):
         pin_id = args.get('pin_id')
-        commandContext = args.get('commandContext')
-        print(commandContext.get('tenantId'))
-        valid_data = (pin_id, commandContext)
+        valid_data = (pin_id, args)
         data = yield mb_async(WalletService().get_user_wallet)(*valid_data)
+        print(data)
         data = UserWalletSerializer().dump(data)
 
         self.success(data)
@@ -39,8 +38,8 @@ class WalletHandle(MBHandler):
     @use_args_query(UpdateWalletDeserializer)
     def post(self, args: dict):
         pin_id = args.get('pin_id')
-        valid_data = (pin_id, "")
-        data = yield mb_async(WalletService().query_one)(valid_data)
+        valid_data = (pin_id, args)
+        data = yield mb_async(WalletService().set_user_wallet)(valid_data)
 
         # 测试内部调用
         yield mb_async(print)("response: ", apiTest4({"name": "zhangsan", "timeout": 1000}))
