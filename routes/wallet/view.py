@@ -39,9 +39,9 @@ class WalletHandle(MBHandler):
     def post(self, args: dict):
         pin_id = args.get('pin_id')
         valid_data = (pin_id, args)
-        data = yield mb_async(WalletService().set_user_wallet)(valid_data)
+        data = yield mb_async(WalletService().set_user_wallet)(*valid_data)
 
         # 测试内部调用
-        yield mb_async(print)("response: ", apiTest4({"name": "zhangsan", "timeout": 1000}))
+        # yield mb_async(print)("response: ", apiTest4({"name": "zhangsan", "timeout": 1000}))
 
         self.success(data)

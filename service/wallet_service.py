@@ -61,7 +61,7 @@ class WalletService(MBService):
             logger.exception(e)
             return False
 
-    def update_one(self, args: dict):
+    def update_one(self, pin_id: str, args: dict):
 
         params = dict(
             balance=args['balance'],
@@ -70,16 +70,16 @@ class WalletService(MBService):
             deposited_mount=args['deposited_mount'],
             deposited_stats=args['deposited_stats'],
         )
-        # 更新余额考虑使用 update({"balance": TUserWallet.balance - change})
-        dao_session.session.tenant_db().query(TUserWallet)\
-            .filter(TUserWallet.pin_id == args["pin_id"], TUserWallet.tenant_id == args["tenant_id"])\
-            .update(params)\
-            .with_for_update(read=True, nowait=False, of=None)
+
         try:
-            dao_session.session().commit()
+            # 更新余额考虑使用 update({"balance": TUserWallet.balance - change})
+            dao_session.session.tenant_db().query(TUserWallet) \
+                .filter(TUserWallet.pin_id == args["pin_id"], TUserWallet.tenant_id == args["tenant_id"]) \
+                .update(params)
+            dao_session.session.tenant_db().commit()
             return True
         except Exception as e:
-            dao_session.session().rollback()
+            dao_session.session.tenant_db().rollback()
             logger.error("update user wallet is error: {}".format(e))
             logger.exception(e)
             return False
@@ -146,24 +146,29 @@ class WalletService(MBService):
 
     def set_user_wallet(self, pin_id: str, args: dict, ):
 
-        user_wallet_dict = self.get_user_wallet(pin_id=pin_id, args=args)
+        try:
+            user_wallet_dict = self.get_user_wallet(pin_id=pin_id, args=args)
 
-        if not isinstance(args.get('change_recharge'), DefaultMaker):
-            user_wallet_dict['balance'] += args['change_recharge']
-            user_wallet_dict['recharge'] += args['change_recharge']
+            if not isinstance(args.get('change_recharge'), DefaultMaker):
+                user_wallet_dict['balance'] += args['change_recharge']
+                user_wallet_dict['recharge'] += args['change_recharge']
 
-        if not isinstance(args.get('change_present'), DefaultMaker):
-            user_wallet_dict['present'] += args['change_present']
-            user_wallet_dict['recharge'] += args['change_present']
+            if not isinstance(args.get('change_present'), DefaultMaker):
+                user_wallet_dict['present'] += args['change_present']
+                user_wallet_dict['recharge'] += args['change_present']
 
-        if not isinstance(args.get('change_deposited_mount'), DefaultMaker):
-            user_wallet_dict['balance'] += args['change_recharge']
+            if not isinstance(args.get('change_deposited_mount'), DefaultMaker):
+                user_wallet_dict['balance'] += args['change_recharge']
 
-        if not isinstance(args.get('deposited_stats'), DefaultMaker):
-            user_wallet_dict['deposited_stats'] = args['deposited_stats']
+            if not isinstance(args.get('deposited_stats'), DefaultMaker):
+                user_wallet_dict['deposited_stats'] = args['deposited_stats']
 
-        dao_session.redis_session.r.hset(USER_WALLET_CACHE.format(args[''], pin_id),
-                                         mapping={"content": json.dumps(user_wallet_dict),
-                                                  "version": datetime.now().timestamp()})
+            dao_session.redis_session.r.hset(USER_WALLET_CACHE.format(tenant_id=user_wallet_dict['tenant_id'], pin_id=pin_id),
+                                             mapping={"content": json.dumps(user_wallet_dict),
+                                                      "version": datetime.now().timestamp()})
 
-        self.update_one(pin_id=pin_id, args=user_wallet_dict)
+            self.update_one(pin_id=pin_id, args=user_wallet_dict)
+            return True
+
+        except Exception as e:
+            return False
