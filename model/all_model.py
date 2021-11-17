@@ -1,5 +1,12 @@
 # coding: utf-8
-from sqlalchemy import Column, DateTime, Index, String, text
+from sqlalchemy import (
+    Column,
+    DateTime,
+    Index,
+    String,
+    text,
+    Text,
+)
 from sqlalchemy.dialects.mysql import INTEGER, TINYINT
 
 from mbshort.orm import (
@@ -7,9 +14,16 @@ from mbshort.orm import (
 )
 
 
+# class TConfig(CommonField):
+#     __tablename__ = 't_ebike_account_config'
+#     rootRouter = Column(String(255), nullable=True)
+#     content = Column(Text, nullable=True)
+#     serviceId = Column(INTEGER(8))
+
+
 class TUserWallet(CommonField):
 
-    __tablename__ = 't_account_user_wallet' + '_suffix'
+    __tablename__ = 't_ebike_account_user_wallet' + '_suffix'
     __table_args__ = (
         {'mysql_charset': 'utf8mb4'}
     )
@@ -28,7 +42,7 @@ class TUserWallet(CommonField):
 
 class TRidingCard(CommonField):
 
-    __tablename__ = 't_account_riding_card' + '_suffix'
+    __tablename__ = 't_ebike_account_riding_card' + '_suffix'
     __table_args__ = (
         Index('idx_pin_id_state', 'pin_id', 'state'), {'mysql_charset': 'utf8mb4'}
     )
@@ -52,7 +66,7 @@ class TRidingCard(CommonField):
 
 
 class TDepositCard(CommonField):
-    __tablename__ = 't_account_deposit_card' + '_suffix'
+    __tablename__ = 't_ebike_account_deposit_card' + '_suffix'
     __table_args__ = (
         {'mysql_charset': 'utf8mb4'}
     )
@@ -71,7 +85,7 @@ class TDepositCard(CommonField):
 
 # 用户的优惠卡
 class TFavorableCard(CommonField):
-    __tablename__ = 't_account_favorable_card' + '_suffix'
+    __tablename__ = 't_ebike_account_favorable_card' + '_suffix'
     __table_args__ = (
         {'mysql_charset': 'utf8mb4'}
     )
@@ -88,7 +102,7 @@ class TFavorableCard(CommonField):
 
 # 用户折扣
 class TDiscountsUser(CommonField):
-    __tablename__ = 't_account_discounts_user' + '_suffix'
+    __tablename__ = 't_ebike_account_discounts_user' + '_suffix'
     __table_args__ = (
         {'mysql_charset': 'utf8mb4'}
     )
@@ -99,7 +113,7 @@ class TDiscountsUser(CommonField):
 
 # 用户免单
 class TFreeOrderUser(CommonField):
-    __tablename__ = 't_account_free_order_user' + '_suffix'
+    __tablename__ = 't_ebike_account_free_order_user' + '_suffix'
     __table_args__ = (
         {'mysql_charset': 'utf8mb4'}
     )
