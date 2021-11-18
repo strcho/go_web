@@ -13,10 +13,10 @@ from utils.constant.redis_key import ALL_USER_LAST_SERVICE_ID
 
 class PlatformService(MBService):
     def create_one(self, valid_data, phone) -> None:
-        service_id, name, valid_day, available_times, is_total_times, current_cost, origin_cost, deduction_type, free_time_second, \
+        service_id, name, valid_day, available_times, iz_total_times, current_cost, origin_cost, deduction_type, free_time_second, \
         free_money_cent, free_distance_meter, effective_service_ids, auto_open, open_start_time, open_end_time, \
         image_url, description_tag, promotion_tag, detail_info = valid_data
-        one = dao_session.session().query(XcEbike2RidingConfig.id).filter(XcEbike2RidingConfig.ridingCardName == name,
+        one = dao_session.session.tenant_db().query(XcEbike2RidingConfig.id).filter(XcEbike2RidingConfig.ridingCardName == name,
                                                                           XcEbike2RidingConfig.state <= RidingCardConfigState.ENABLE.value).first()
         if one:
             raise MbException("骑行卡名称重复")
@@ -28,7 +28,7 @@ class PlatformService(MBService):
             "originCost": origin_cost,
             "curCost": current_cost,
             "receTimes": available_times,
-            "isTotalTimes": is_total_times,
+            "isTotalTimes": iz_total_times,
             "freeTime": str(round(free_time_second / 3600, 2)),
             "pictureState": 0,
             "backOfCardUrl": image_url,
@@ -60,8 +60,8 @@ class PlatformService(MBService):
             "updatedAt": datetime.datetime.now()
         }
         card = XcEbike2RidingConfig(**params)
-        dao_session.session().add(card)
-        dao_session.session().commit()
+        dao_session.session.tenant_db().add(card)
+        dao_session.session.tenant_db().commit()
 
     def detail(self, valid_data) -> dict:
         """
@@ -73,7 +73,7 @@ class PlatformService(MBService):
             "name":"7天酷骑卡",
             "valid_day":7,
             "available_times":2,
-            "is_total_times":True
+            "iz_total_times":True
             "current_cost":500,
             "origin_cost":2000,
             "deduction_type":1,
@@ -95,13 +95,13 @@ class PlatformService(MBService):
         }
         """
         card_id, = valid_data
-        one = dao_session.session().query(XcEbike2RidingConfig).filter_by(id=card_id).one()
+        one = dao_session.session.tenant_db().query(XcEbike2RidingConfig).filter_by(id=card_id).one()
         car_info = {"card_id": one.id, "service_id": one.serviceId, "name": one.ridingCardName, "state": one.state,
                     "createdAt": int(one.createdAt.timestamp())}
         content = json.loads(one.content)
         car_info["deduction_type"] = content["deductionType"]
         car_info["available_times"] = content["receTimes"]
-        car_info["is_total_times"] = content["isTotalTimes"]
+        car_info["iz_total_times"] = content["isTotalTimes"]
         car_info["current_cost"] = content["curCost"]
         car_info["origin_cost"] = content["originCost"]
         car_info["valid_day"] = content["expiryDate"]
@@ -117,7 +117,7 @@ class PlatformService(MBService):
         car_info["description_tag"] = content["descriptionTag"]
         car_info["promotion_tag"] = content["promotionTag"]
         car_info["detail_info"] = content["detailInfo"]
-        one = dao_session.session().query(XcOpman.name).filter_by(opManId=content["createdPhone"]).first()
+        one = dao_session.session.tenant_db().query(XcOpman.name).filter_by(opManId=content["createdPhone"]).first()
         car_info["createdMan"] = one.name if one else ""
         car_info["createdPhone"] = content["createdPhone"]
         return car_info
@@ -137,7 +137,7 @@ class PlatformService(MBService):
             }]
         """
         service_id, = valid_data
-        result = dao_session.session().query(XcEbike2RidingConfig).filter(XcEbike2RidingConfig.serviceId == service_id,
+        result = dao_session.session.tenant_db().query(XcEbike2RidingConfig).filter(XcEbike2RidingConfig.serviceId == service_id,
                                                                           XcEbike2RidingConfig.state <= RidingCardConfigState.ENABLE.value).order_by(
             XcEbike2RidingConfig.sort_num.desc()).all()
         card_list = []
@@ -169,36 +169,36 @@ class PlatformService(MBService):
     def delete_one(self, valid_data) -> None:
         card_id, = valid_data
         try:
-            dao_session.session().query(XcEbike2RidingConfig).filter_by(id=card_id).update(
+            dao_session.session.tenant_db().query(XcEbike2RidingConfig).filter_by(id=card_id).update(
                 {"state": RidingCardConfigState.DELETE.value})
-            dao_session.session().commit()
+            dao_session.session.tenant_db().commit()
         except Exception:
             raise MbException("无效的骑行卡id")
 
     def enable_one(self, valid_data) -> None:
         card_id, enable = valid_data
         try:
-            one = dao_session.session().query(XcEbike2RidingConfig).filter_by(id=card_id).one()
+            one = dao_session.session.tenant_db().query(XcEbike2RidingConfig).filter_by(id=card_id).one()
             one.state = RidingCardConfigState.ENABLE.value if enable else RidingCardConfigState.DISABLE.value
             old_content = json.loads(one.content)
             old_content["autoOpen"] = False
             old_content["openStartTime"] = 0
             old_content["openEndTime"] = 0
             one.content = json.dumps(old_content)
-            dao_session.session().commit()
+            dao_session.session.tenant_db().commit()
         except Exception:
             raise MbException("无效的骑行卡id")
 
     def edit_one(self, valid_data):
         card_id, auto_open, open_start_time, open_end_time = valid_data
         try:
-            one = dao_session.session().query(XcEbike2RidingConfig).filter_by(id=card_id).one()
+            one = dao_session.session.tenant_db().query(XcEbike2RidingConfig).filter_by(id=card_id).one()
             old_content = json.loads(one.content)
             old_content["autoOpen"] = auto_open
             old_content["openStartTime"] = open_start_time
             old_content["openEndTime"] = open_end_time
             one.content = json.dumps(old_content)
-            dao_session.session().commit()
+            dao_session.session.tenant_db().commit()
         except Exception:
             raise MbException("无效的骑行卡id")
 
@@ -210,8 +210,8 @@ class PlatformService(MBService):
         """
         update_list, = valid_data
         try:
-            dao_session.session().bulk_update_mappings(XcEbike2RidingConfig, update_list)
-            dao_session.session().commit()
+            dao_session.session.tenant_db().bulk_update_mappings(XcEbike2RidingConfig, update_list)
+            dao_session.session.tenant_db().commit()
             return 'OK'
         except Exception:
             raise MbException("参数错误")
@@ -223,12 +223,12 @@ class PlatformService(MBService):
         """
         object_id, = valid_data
         try:
-            dao_session.session().query(XcEbike2SuperRidingCard).filter(
+            dao_session.session.tenant_db().query(XcEbike2SuperRidingCard).filter(
                 XcEbike2SuperRidingCard.state == UserRidingCardState.USING.value,
                 XcEbike2SuperRidingCard.objectId == object_id,
                 XcEbike2SuperRidingCard.cardExpiredDate <= datetime.datetime.now()).update(
                 {"state": UserRidingCardState.EXPIRED.value})
-            dao_session.session().commit()
+            dao_session.session.tenant_db().commit()
         except Exception:
             pass
         service_id = dao_session.redis_session.r.hget(ALL_USER_LAST_SERVICE_ID, object_id) or 0
@@ -236,7 +236,7 @@ class PlatformService(MBService):
 
     def modify_time(self, valid_data):
         card_id, remain_times, duration = valid_data
-        one = dao_session.session().query(XcEbike2SuperRidingCard).filter_by(id=card_id).first()
+        one = dao_session.session.tenant_db().query(XcEbike2SuperRidingCard).filter_by(id=card_id).first()
         if not one:
             raise MbException("无效的骑行卡id")
         try:
@@ -245,6 +245,6 @@ class PlatformService(MBService):
             if self.exists_param(remain_times):
                 one.remainTimes = remain_times
             one.updatedAt = datetime.datetime.now()
-            dao_session.session().commit()
+            dao_session.session.tenant_db().commit()
         except Exception:
             raise MbException("修改骑行卡时长失败")

@@ -1,12 +1,7 @@
 from tornado.gen import coroutine
 
-from internal.user_apis import (
-    apiTest3,
-    apiTest4,
-)
 from mbutils import mb_async
 from mbutils.autodoc import (
-    use_args,
     use_args_query,
 )
 from mbutils.mb_handler import MBHandler

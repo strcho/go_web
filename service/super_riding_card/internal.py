@@ -23,7 +23,7 @@ class InternalService(MBService):
     #     """
     #     card_id, object_id = valid_data
     #     try:
-    #         one = dao_session.session().query(XcEbike2RidingConfig).filter_by(id=card_id).one()
+    #         one = dao_session.session.tenant_db().query(XcEbike2RidingConfig).filter_by(id=card_id).one()
     #     except Exception:
     #         raise MbException("无该骑行卡配置")
     #     content = json.loads(one.content)
@@ -32,7 +32,7 @@ class InternalService(MBService):
     #     reverting = dao_session.redis_session.r.hget(REVERT_USER_SUPER_CARD, object_id)
     #     if user_use_new:
     #         # todo 最多买20张卡
-    #         is_total_times = content.get("serialType", "10") == SERIAL_TYPE.RIDING_COUNT_CARD.value  # bool形可以隐式转化0,1
+    #         iz_total_times = content.get("serialType", "10") == SERIAL_TYPE.RIDING_COUNT_CARD.value  # bool形可以隐式转化0,1
     #         params = {
     #             "objectId": object_id,
     #             "deductionType": content["deductionType"],
@@ -40,7 +40,7 @@ class InternalService(MBService):
     #             "freeTime": content["freeTimeseconds"],
     #             "freeDistance": content["freeDistance"],
     #             "freeMoney": content["freeMoney"],
-    #             "isTotalTimes": content.get("isTotalTimes", is_total_times),
+    #             "isTotalTimes": content.get("isTotalTimes", iz_total_times),
     #             "receTimes": content["receTimes"],
     #             "effectiveServiceIds": content.get("effectiveServiceIds", ""),
     #             "remainTimes": content["receTimes"],
@@ -54,8 +54,8 @@ class InternalService(MBService):
     #         }
     #         try:
     #             user_card = XcEbike2SuperRidingCard(**params)
-    #             dao_session.session().add(user_card)
-    #             dao_session.session().commit()
+    #             dao_session.session.tenant_db().add(user_card)
+    #             dao_session.session.tenant_db().commit()
     #         except Exception:
     #             raise MbException("添加超级骑行卡失败")
     #     # 如果是走老卡
@@ -77,14 +77,14 @@ class InternalService(MBService):
     #             }
     #             try:
     #                 user_card = XcEbike2RidingCountCard(**params)
-    #                 dao_session.session().add(user_card)
-    #                 dao_session.session().commit()
+    #                 dao_session.session.tenant_db().add(user_card)
+    #                 dao_session.session.tenant_db().commit()
     #             except Exception as e:
     #                 logger.error("添加原骑行次卡失败 error: {}".format(e))
     #                 raise MbException("添加原骑行次卡失败")
     #         else:
     #             try:
-    #                 my_card = dao_session.session().query(XcEbike2RidingCard).filter_by(objectId=object_id).one()
+    #                 my_card = dao_session.session.tenant_db().query(XcEbike2RidingCard).filter_by(objectId=object_id).one()
     #             except Exception:
     #                 # 如果不存在个人骑行卡
     #                 params = {
@@ -99,8 +99,8 @@ class InternalService(MBService):
     #                 }
     #                 try:
     #                     user_card = XcEbike2RidingCard(**params)
-    #                     dao_session.session().add(user_card)
-    #                     dao_session.session().commit()
+    #                     dao_session.session.tenant_db().add(user_card)
+    #                     dao_session.session.tenant_db().commit()
     #                 except Exception:
     #                     raise MbException("添加原骑行卡失败")
     #                 return {"suc": True, "message": "添加骑行卡成功"}
@@ -115,7 +115,7 @@ class InternalService(MBService):
     #             my_card.ridingCardType = one.type
     #             my_card.content = one.content
     #             my_card.updatedAt = datetime.datetime.now()
-    #             dao_session.session().commit()
+    #             dao_session.session.tenant_db().commit()
     #     return {"suc": True, "message": "添加骑行卡成功"}
     #
     # def compute_cost(self, valid_data: tuple):
@@ -156,7 +156,7 @@ class InternalService(MBService):
     #                    not dao_session.redis_session.r.hget(REVERT_USER_SUPER_CARD, object_id)
     #     if not user_use_new:
     #         # 老的骑行卡方式
-    #         my_card = dao_session.session().query(XcEbike2RidingCard).filter(
+    #         my_card = dao_session.session.tenant_db().query(XcEbike2RidingCard).filter(
     #             XcEbike2RidingCard.objectId == object_id,
     #             XcEbike2RidingCard.cardExpiredDate >= datetime.datetime.now()).first()
     #         if my_card:
@@ -172,7 +172,7 @@ class InternalService(MBService):
     #                 logger.info("delete_later:compute_cost:XcEbike2RidingCard", response)
     #         else:
     #             # 老的次卡方式
-    #             my_count_card = dao_session.session().query(XcEbike2RidingCountCard).filter(
+    #             my_count_card = dao_session.session.tenant_db().query(XcEbike2RidingCountCard).filter(
     #                 XcEbike2RidingCountCard.objectId == object_id,
     #                 XcEbike2RidingCountCard.state == UserRidingCardState.USING.value,
     #                 XcEbike2RidingCountCard.cardExpiredDate >= datetime.datetime.now(),
@@ -201,7 +201,7 @@ class InternalService(MBService):
     #         first_card_id = response.get("card_id", None)
     #         if not first_card_id:
     #             first_card_id = UserAppService.get_current_card_id(service_id, object_id)
-    #         first_card = dao_session.session().query(XcEbike2SuperRidingCard).filter_by(id=first_card_id).first()
+    #         first_card = dao_session.session.tenant_db().query(XcEbike2SuperRidingCard).filter_by(id=first_card_id).first()
     #         if first_card:
     #             response["hasRidingCard"] = True
     #             response["isUseRidingCard"] = True
@@ -234,7 +234,7 @@ class InternalService(MBService):
     #                    not dao_session.redis_session.r.hget(REVERT_USER_SUPER_CARD, object_id)
     #     if not user_use_new:
     #         # 老的骑行卡方式
-    #         my_card = dao_session.session().query(XcEbike2RidingCard).filter(
+    #         my_card = dao_session.session.tenant_db().query(XcEbike2RidingCard).filter(
     #             XcEbike2RidingCard.objectId == object_id,
     #             XcEbike2RidingCard.cardExpiredDate >= datetime.datetime.now()).first()
     #         if my_card:
@@ -250,7 +250,7 @@ class InternalService(MBService):
     #                 logger.info("delete_later:compute_cost:XcEbike2RidingCard", response)
     #         else:
     #             # 老的次卡方式
-    #             my_count_card = dao_session.session().query(XcEbike2RidingCountCard).filter(
+    #             my_count_card = dao_session.session.tenant_db().query(XcEbike2RidingCountCard).filter(
     #                 XcEbike2RidingCountCard.objectId == object_id,
     #                 XcEbike2RidingCountCard.state == UserRidingCardState.USING.value,
     #                 XcEbike2RidingCountCard.cardExpiredDate >= datetime.datetime.now(),
@@ -279,7 +279,7 @@ class InternalService(MBService):
     #         first_card_id = response.get("card_id", None)
     #         if not first_card_id:
     #             first_card_id = UserAppService.get_current_card_id(service_id, object_id)
-    #         first_card = dao_session.session().query(XcEbike2SuperRidingCard).filter_by(id=first_card_id).first()
+    #         first_card = dao_session.session.tenant_db().query(XcEbike2SuperRidingCard).filter_by(id=first_card_id).first()
     #         if first_card:
     #             response["hasRidingCard"] = True
     #             response["isUseRidingCard"] = True
@@ -399,11 +399,11 @@ class InternalService(MBService):
     #             if ret:
     #                 begin_time = ret["startTime"]
     #             else:
-    #                 one = dao_session.session().query(XcEbikeDeviceItinerary.startTime).filter_by(
+    #                 one = dao_session.session.tenant_db().query(XcEbikeDeviceItinerary.startTime).filter_by(
     #                     userId=object_id).order_by(XcEbikeDeviceItinerary.startTime.desc()).first()
     #                 if one:
     #                     begin_time = one.startTime
-    #         favorableCard = dao_session.session().query(XcMieba2FavorableCardUser.end_time).filter_by(
+    #         favorableCard = dao_session.session.tenant_db().query(XcMieba2FavorableCardUser.end_time).filter_by(
     #             service_id=service_id, object_id=object_id).first()
     #         if begin_time and favorableCard and float(begin_time) < favorableCard.end_time.timestamp():
     #             router = ConfigName.FAVORABLECARDCOST.value
@@ -412,17 +412,17 @@ class InternalService(MBService):
     #
     # def add_count(self, valid_data: tuple):
     #     card_id, = valid_data
-    #     one = dao_session.session().query(XcEbike2SuperRidingCard).filter_by(id=card_id).first()
+    #     one = dao_session.session.tenant_db().query(XcEbike2SuperRidingCard).filter_by(id=card_id).first()
     #     if not one:
     #         raise MbException("无效的骑行卡")
     #     try:
     #         one.remainTimes = one.remainTimes - 1  # 可以减到负数,用于追踪异常的情况
     #         one.lastUseTime = datetime.datetime.now()
     #         one.updatedAt = datetime.datetime.now()
-    #         dao_session.session().commit()
+    #         dao_session.session.tenant_db().commit()
     #         return ''
     #     except Exception:
-    #         dao_session.session().rollback()
+    #         dao_session.session.tenant_db().rollback()
     #         logger.error("骑行卡次数扣除失败,card_id:", card_id)
     #         raise MbException("骑行卡次数扣除失败")
     #
@@ -440,7 +440,7 @@ class InternalService(MBService):
     #         elif user_order_info.get("isUseRidingCountCard") \
     #                 and user_order_info.get("deduction"):
     #             # 老次卡核销
-    #             count_card = dao_session.session().query(XcEbike2RidingCountCard) \
+    #             count_card = dao_session.session.tenant_db().query(XcEbike2RidingCountCard) \
     #                 .filter(XcEbike2RidingCountCard.objectId == object_id,
     #                         XcEbike2RidingCountCard.state == 1,
     #                         XcEbike2RidingCountCard.cardExpiredDate >= datetime.datetime.now(),
@@ -448,7 +448,7 @@ class InternalService(MBService):
     #                         ).first()
     #             if count_card:
     #                 count_card.usedreceTimes += 1
-    #                 dao_session.session().commit()
+    #                 dao_session.session.tenant_db().commit()
     #         elif user_order_info.get("superRidingCard") \
     #                 and user_order_info.get("deduction"):
     #             self.add_count((user_order_info.get("superRidingCard"),))
@@ -472,7 +472,7 @@ class InternalService(MBService):
     #     if user_use_new:
     #         first_card_id = UserAppService.get_current_card_id(service_id, object_id)
     #         if first_card_id:
-    #             first_card = dao_session.session().query(XcEbike2SuperRidingCard).filter_by(id=first_card_id).first()
+    #             first_card = dao_session.session.tenant_db().query(XcEbike2SuperRidingCard).filter_by(id=first_card_id).first()
     #             if first_card:
     #                 return {"freeTime": first_card.freeTime,
     #                         "freeDistance": first_card.freeDistance,
@@ -485,7 +485,7 @@ class InternalService(MBService):
     #                     }
     #     # 如果是走老卡
     #     elif not user_use_new or reverting:
-    #         my_card = dao_session.session().query(XcEbike2RidingCard).filter(
+    #         my_card = dao_session.session.tenant_db().query(XcEbike2RidingCard).filter(
     #             XcEbike2RidingCard.objectId == object_id,
     #             XcEbike2RidingCard.cardExpiredDate >= datetime.datetime.now()).first()
     #         if my_card:
@@ -500,7 +500,7 @@ class InternalService(MBService):
     #                         }
     #
     #         # 老的次卡方式
-    #         my_count_card = dao_session.session().query(XcEbike2RidingCountCard).filter(
+    #         my_count_card = dao_session.session.tenant_db().query(XcEbike2RidingCountCard).filter(
     #             XcEbike2RidingCountCard.objectId == object_id,
     #             XcEbike2RidingCountCard.state == UserRidingCardState.USING.value,
     #             XcEbike2RidingCountCard.cardExpiredDate >= datetime.datetime.now(),

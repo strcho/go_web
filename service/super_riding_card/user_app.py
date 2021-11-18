@@ -37,7 +37,7 @@ class UserAppService(MBService):
     # }
     #     """
     #     service_id, = valid_data
-    #     result = dao_session.session().query(XcEbike2RidingConfig).filter(XcEbike2RidingConfig.serviceId == service_id,
+    #     result = dao_session.session.tenant_db().query(XcEbike2RidingConfig).filter(XcEbike2RidingConfig.serviceId == service_id,
     #                                                                       XcEbike2RidingConfig.state <= RidingCardConfigState.ENABLE.value).order_by(
     #         XcEbike2RidingConfig.sort_num.desc()).all()
     #     card_list = []
@@ -50,14 +50,14 @@ class UserAppService(MBService):
     #                                             or datetime.datetime.now().timestamp() > content["openEndTime"]):
     #                     # 开启后,到预设结束时间关闭
     #                     one.state = RidingCardConfigState.DISABLE.value
-    #                     dao_session.session().commit()
+    #                     dao_session.session.tenant_db().commit()
     #                     continue
     #             else:
     #                 if content["autoOpen"] and (
     #                         content["openStartTime"] <= datetime.datetime.now().timestamp() <= content["openEndTime"]):
     #                     # 关闭时候, 到预设时间后开启
     #                     one.state = RidingCardConfigState.ENABLE.value
-    #                     dao_session.session().commit()
+    #                     dao_session.session.tenant_db().commit()
     #                 else:
     #                     continue
     #             car_info["image_url"] = content["backOfCardUrl"]
@@ -69,7 +69,7 @@ class UserAppService(MBService):
     #             car_info["current_cost"] = content["curCost"]
     #             car_info["origin_cost"] = content["originCost"]
     #             car_info["serial_type"] = one.type
-    #             car_info["is_total_times"] = content["isTotalTimes"]
+    #             car_info["iz_total_times"] = content["isTotalTimes"]
     #             car_info["rece_times"] = content["receTimes"]
     #             card_list.append(car_info)
     #         except Exception:
@@ -115,7 +115,7 @@ class UserAppService(MBService):
     #
     #     first_id = self.get_current_card_id(service_id, user_id)
     #     res_dict = {"used": [], "expired": [], "rule_info": rule_info, "cost_use": first_id}
-    #     result = dao_session.session().query(XcEbike2SuperRidingCard).filter(
+    #     result = dao_session.session.tenant_db().query(XcEbike2SuperRidingCard).filter(
     #         XcEbike2SuperRidingCard.objectId == user_id,
     #         XcEbike2SuperRidingCard.state <= UserRidingCardState.EXPIRED.value,
     #         XcEbike2SuperRidingCard.cardExpiredDate >= datetime.datetime.now() - datetime.timedelta(weeks=13)).order_by(
@@ -137,7 +137,7 @@ class UserAppService(MBService):
     #             res_dict["expired"].append(car_info)
     #         else:
     #             car_info["remain_times"] = one.remainTimes
-    #             car_info["is_total_times"] = one.isTotalTimes
+    #             car_info["iz_total_times"] = one.isTotalTimes
     #             car_info["rece_times"] = one.receTimes
     #             car_info["promotion_tag"] = content.get("promotionTag", "人气优选")
     #             car_info["deductionType"] = one.deductionType
@@ -170,7 +170,7 @@ class UserAppService(MBService):
     #
     #     first_id = self.get_current_card_id(service_id, user_id)
     #     res_dict = {"used": [], "expired": [], "rule_info": rule_info, "cost_use": first_id}
-    #     result = dao_session.session().query(XcEbike2SuperRidingCard).filter(
+    #     result = dao_session.session.tenant_db().query(XcEbike2SuperRidingCard).filter(
     #         XcEbike2SuperRidingCard.objectId == user_id,
     #         XcEbike2SuperRidingCard.state <= UserRidingCardState.EXPIRED.value,
     #         XcEbike2SuperRidingCard.cardExpiredDate >= datetime.datetime.now() - datetime.timedelta(weeks=13)).order_by(
@@ -190,7 +190,7 @@ class UserAppService(MBService):
     #                     "utf-8")
     #             car_info["cardExpiredDate"] = self.datetime2num(one.cardExpiredDate)
     #             car_info["remain_times"] = one.remainTimes
-    #             car_info["is_total_times"] = one.isTotalTimes
+    #             car_info["iz_total_times"] = one.isTotalTimes
     #             car_info["rece_times"] = one.receTimes
     #             car_info["free_time_second"] = one.freeTime
     #             car_info["free_distance_meter"] = one.freeDistance
@@ -212,19 +212,19 @@ class UserAppService(MBService):
     #     """
     #
     #     # 1.骑行卡过期判定
-    #     dao_session.session().query(XcEbike2SuperRidingCard).filter(XcEbike2SuperRidingCard.objectId == user_id,
+    #     dao_session.session.tenant_db().query(XcEbike2SuperRidingCard).filter(XcEbike2SuperRidingCard.objectId == user_id,
     #                                                                 XcEbike2SuperRidingCard.state == UserRidingCardState.USING.value,
     #                                                                 XcEbike2SuperRidingCard.cardExpiredDate < datetime.datetime.now()).update(
     #         {"state": UserRidingCardState.EXPIRED.value})
     #     # 2.骑行卡次数重置, 如果上次使用时间不是今天的, 则把非次卡的, 时间和剩余次数重置到最多再计算
-    #     dao_session.session().execute("""
+    #     dao_session.session.tenant_db().execute("""
     #     update xc_ebike_2_super_riding_card
     #     set remainTimes=receTimes,lastUseTime=now()
     #     where objectId=:user_id and state=:state and isTotalTimes=0 and ( lastUseTime<CURDATE() or lastUseTime IS NULL )
     #     """, {"user_id": user_id, "state": UserRidingCardState.USING.value})
-    #     dao_session.session().commit()
+    #     dao_session.session.tenant_db().commit()
     #     # 3.选出最佳骑行卡id
-    #     many = dao_session.session().query(XcEbike2SuperRidingCard.id,
+    #     many = dao_session.session.tenant_db().query(XcEbike2SuperRidingCard.id,
     #                                        XcEbike2SuperRidingCard.effectiveServiceIds).filter(
     #         XcEbike2SuperRidingCard.objectId == user_id,
     #         XcEbike2SuperRidingCard.state == UserRidingCardState.USING.value,
@@ -245,8 +245,8 @@ class UserAppService(MBService):
     #     service_id, = valid_data
     #     content = ConfigService().get_router_content(ConfigName.SUPERRIDINGCARD.value, service_id)
     #     max_num = content.get("max_num", 20)
-    #     dao_session.session().query()
-    #     current_num = dao_session.session().query(func.count(XcEbike2SuperRidingCard.id)).filter(
+    #     dao_session.session.tenant_db().query()
+    #     current_num = dao_session.session.tenant_db().query(func.count(XcEbike2SuperRidingCard.id)).filter(
     #         XcEbike2SuperRidingCard.objectId == user_id,
     #         XcEbike2SuperRidingCard.state <= UserRidingCardState.USING.value).scalar() or 0
     #     return True if current_num < max_num else False
@@ -255,7 +255,7 @@ class UserAppService(MBService):
     # def current_expired_date(service_id: int, user_id: str) -> int:
     #     card_id = UserAppService().get_current_card_id(service_id, user_id)
     #     if card_id:
-    #         one = dao_session.session().query(XcEbike2SuperRidingCard.cardExpiredDate).filter_by(id=card_id).first()
+    #         one = dao_session.session.tenant_db().query(XcEbike2SuperRidingCard.cardExpiredDate).filter_by(id=card_id).first()
     #         return int(one[0].timestamp())
     #     return 0
     pass

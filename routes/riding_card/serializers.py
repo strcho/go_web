@@ -4,15 +4,35 @@ from marshmallow import (
 )
 
 from mbutils import DefaultMaker
-from utils.base_serializer import ReqBaseSerializer
+from utils.base_serializer import ReqBaseDeserializer
 
 
-class GetRidingCardDeserializer(ReqBaseSerializer):
+class GetRidingCardDeserializer(ReqBaseDeserializer):
     """
     获取用户骑行卡
     """
 
-    pin_id = fields.String(required=True, description="用户标识")
+    pin_id = fields.Integer(required=True, description="用户标识")
+
+
+class EditRidingCardDeserializer(ReqBaseDeserializer):
+    """
+    编辑用户骑行卡
+    """
+
+    card_id = fields.Integer(required=True, description="骑行卡id")
+    duration = fields.Integer(required=False, description='剩余天数')
+    remain_times = fields.Integer(required=False, description='今日剩余免费次数')
+
+
+class SendRidingCardDeserializer(ReqBaseDeserializer):
+    """
+    发放骑行卡给用户
+    """
+
+    pin_id = fields.Integer(required=True, description="用户标识")
+    config_id = fields.Integer(required=True, description="骑行卡配置ID（card_id）")
+    content = fields.String(required=True, description="购卡时候配置信息")
 
 
 class RidingCardInfoSerializer(Schema):
@@ -28,7 +48,7 @@ class RidingCardInfoSerializer(Schema):
     free_money_cent = fields.Integer(description="免金额, 单位分")
     free_time_second = fields.Integer(description='免时长, 单位秒')
     image_url = fields.String(description='卡图片')
-    is_total_times = fields.Integer(description='是否次卡类')
+    iz_total_times = fields.Integer(description='是否次卡类')
     name = fields.String(description='卡名')
     promotion_tag = fields.String(description='促销标签')
     rece_times = fields.Integer(description='次卡类, 表示总累计次数; 非次卡类, 表示每日最大次数')
@@ -46,13 +66,24 @@ class RidingCardSerializer(Schema):
     rule_info = fields.String()  # todo
 
 
-class UpdateWalletDeserializer(ReqBaseSerializer):
+class CurrentDuringTimeDeserializer(ReqBaseDeserializer):
+    """查询当前骑行卡的持续时间参数反序列化"""
+
+    pin_id = fields.Integer(required=True, description='用户ID')
+    service_id = fields.Integer(required=True, description='服务区ID')
+
+
+class CurrentDuringTimeSerializer(Schema):
     """
-    更新用户钱包信息
+    当前骑行卡的持续时间响应序列化
+    """
+    pass
+
+
+class AddCountHandlerDeserializer(ReqBaseDeserializer):
+    """
+    骑行卡使用次数加一
     """
 
-    pin_id = fields.String(required=True, description="用户标识")
-    change_recharge = fields.Integer(required=False, load_default=DefaultMaker, description="变动的充值金额*100")
-    change_present = fields.Integer(required=False, load_default=DefaultMaker, description="变动的赠送金额*100")
-    change_deposited_mount = fields.Integer(required=False, load_default=DefaultMaker, description="变动的押金金额*100")
-    deposited_stats = fields.Integer(required=False, load_default=DefaultMaker, description="押金状态")
+    card_id = fields.Integer(required=True, description='骑行卡ID')
+

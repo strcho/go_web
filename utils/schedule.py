@@ -46,12 +46,12 @@ def prevent_concurrency(index_name: str, timeout=3 * 60):
                 MBService.nx_lock(SCHEDULE_JOB, index_name, timeout=timeout)
                 res = 'enter'
                 res = f(*args, **kwargs)
-                dao_session.session().commit()  # 有事物忘记提交,先兜底
+                dao_session.session.tenant_db().commit()  # 有事物忘记提交,先兜底
                 logger.info("exit:{}".format(index_name))
                 return res
             except Exception as ex:
-                dao_session.session().rollback()
-                dao_session.session().close()
+                dao_session.session.tenant_db().rollback()
+                dao_session.session.tenant_db().close()
                 dao_session.sub_session().close()
                 if not isinstance(ex, MbException):
                     logger.info("index_name:", index_name, ex)

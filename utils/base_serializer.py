@@ -13,6 +13,6 @@ class CommandContext(Schema):
     stressTesting = fields.String(required=False, description="false  压测标识)true 压测请求 false 正常请求")
 
 
-class ReqBaseSerializer(Schema):
+class ReqBaseDeserializer(Schema):
 
     commandContext = fields.Nested(CommandContext, required=True, description="公共请求信息")

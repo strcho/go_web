@@ -17,7 +17,7 @@ class OldConvertNewService(MBService):
         # 或者该状态, 弃用老骑行卡, 老次卡, 添加super骑行卡
         value = dao_session.redis_session.r.hget(USER_SUPER_CARD, user_id)
         if not value:
-            my_card = dao_session.session().query(XcEbike2RidingCard).filter(XcEbike2RidingCard.objectId == user_id,
+            my_card = dao_session.session.tenant_db().query(XcEbike2RidingCard).filter(XcEbike2RidingCard.objectId == user_id,
                                                                              XcEbike2RidingCard.cardExpiredDate > datetime.datetime.now()).first()
             if my_card:
                 content = json.loads(my_card.content)
@@ -44,13 +44,13 @@ class OldConvertNewService(MBService):
                 try:
                     my_card.cardExpiredDate = datetime.datetime.now()
                     user_card = XcEbike2SuperRidingCard(**params)
-                    dao_session.session().add(user_card)
-                    dao_session.session().commit()
+                    dao_session.session.tenant_db().add(user_card)
+                    dao_session.session.tenant_db().commit()
                 except Exception:
-                    dao_session.session().rollback()
+                    dao_session.session.tenant_db().rollback()
                     raise MbException("转换超级骑行卡失败")
 
-            my_count_cards = dao_session.session().query(XcEbike2RidingCountCard).filter(
+            my_count_cards = dao_session.session.tenant_db().query(XcEbike2RidingCountCard).filter(
                 XcEbike2RidingCountCard.objectId == user_id,
                 XcEbike2RidingCountCard.cardExpiredDate > datetime.datetime.now()).all()
             for my_count_card in my_count_cards:
@@ -78,10 +78,10 @@ class OldConvertNewService(MBService):
                     my_count_card.cardExpiredDate = datetime.datetime.now()
                     my_count_card.state = UserRidingCardState.EXPIRED.value
                     user_card = XcEbike2SuperRidingCard(**params)
-                    dao_session.session().add(user_card)
-                    dao_session.session().commit()
+                    dao_session.session.tenant_db().add(user_card)
+                    dao_session.session.tenant_db().commit()
                 except Exception:
-                    dao_session.session().rollback()
+                    dao_session.session.tenant_db().rollback()
                     raise MbException("转换超级骑行次卡失败")
             dao_session.redis_session.r.hset(USER_SUPER_CARD, user_id, "Y")
 
@@ -90,7 +90,7 @@ class OldConvertNewService(MBService):
         if datetime.datetime.now().strftime('%Y-%m-%d') > "2021-08-13":
             return "非法调用"
         if self.exists_param(phone):
-            one = dao_session.session().query(XcEbikeUsrs2.id).filter_by(phone=phone).first()
+            one = dao_session.session.tenant_db().query(XcEbikeUsrs2.id).filter_by(phone=phone).first()
             if not one:
                 return "找不到用户"
             dao_session.redis_session.r.hset(REVERT_USER_SUPER_CARD, one.id, "Y")
@@ -104,7 +104,7 @@ class OldConvertNewService(MBService):
         if datetime.datetime.now().strftime('%Y-%m-%d') > "2021-08-13":
             return "非法调用"
         if self.exists_param(phone):
-            one = dao_session.session().query(XcEbikeUsrs2.id).filter_by(phone=phone).first()
+            one = dao_session.session.tenant_db().query(XcEbikeUsrs2.id).filter_by(phone=phone).first()
             if not one:
                 return "找不到用户"
             dao_session.redis_session.r.hdel(REVERT_USER_SUPER_CARD, one.id)
@@ -114,23 +114,23 @@ class OldConvertNewService(MBService):
 
     def conf_old_2_new(self):
         # 如果数据没有这两个字段, 则增加表字段, content更新
-        # dao_session.session().execute("""ALTER TABLE xc_ebike_2_riding_config DROP COLUMN ridingCardName;ALTER TABLE xc_ebike_2_riding_config DROP COLUMN sort_num;""")
-        result = dao_session.session().execute("""
+        # dao_session.session.tenant_db().execute("""ALTER TABLE xc_ebike_2_riding_config DROP COLUMN ridingCardName;ALTER TABLE xc_ebike_2_riding_config DROP COLUMN sort_num;""")
+        result = dao_session.session.tenant_db().execute("""
         SELECT column_name
         FROM information_schema.columns
         WHERE table_name = 'xc_ebike_2_riding_config' and column_name = 'ridingCardName'
         """)
         if not result.rowcount:
             # 如果没有字段,先改表加字段.
-            dao_session.session().execute("""
+            dao_session.session.tenant_db().execute("""
             ALTER TABLE xc_ebike_2_riding_config MODIFY COLUMN content varchar(4096);
             """)
-            dao_session.session().execute("""
+            dao_session.session.tenant_db().execute("""
             alter table `xc_ebike_2_riding_config`
             add column `ridingCardName` varchar(64) null comment '骑行卡名称' after `serviceId`,
             add column `sort_num` integer (10) default 0 not null comment '排序值' after `ridingCardName`
             """)
-        all = dao_session.session().query(XcEbike2RidingConfig).filter(
+        all = dao_session.session.tenant_db().query(XcEbike2RidingConfig).filter(
             XcEbike2RidingConfig.type <= SERIAL_TYPE.RIDING_COUNT_CARD.value).all()
         for one in all:  # _id, _type, content, state, serviceId, ridingCardName, sort_num
             try:
@@ -168,7 +168,7 @@ class OldConvertNewService(MBService):
                     one.ridingCardName = ridingCardName
                     one.sort_num = sort_num
                     one.updatedAt = datetime.datetime.now()
-                    dao_session.session().commit()
+                    dao_session.session.tenant_db().commit()
             except Exception as e:
                 logger.debug("OldConvertNewService.conf_old_2_new error {}".format(e))
-                dao_session.session().rollback()
+                dao_session.session.tenant_db().rollback()

@@ -1,9 +1,9 @@
 from marshmallow import fields
 
-from utils.base_serializer import ReqBaseSerializer
+from utils.base_serializer import ReqBaseDeserializer
 
 
-class UserAccountDeserializer(ReqBaseSerializer):
+class UserAccountDeserializer(ReqBaseDeserializer):
     """
     获取用户资产信息
     """

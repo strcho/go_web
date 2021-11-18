@@ -69,10 +69,10 @@ _get_arguments(
 }
 8.未完成的功能，有坑的地方todo注释 
 9.通用的常量放在utils.constant文件，临时的常量可以放在自己模块
-10.不用存基础的封装：user = dao_session.session().query(XcEbikeUsrs2).filter_by(id=user_id).first()
+10.不用存基础的封装：user = dao_session.session.tenant_db().query(XcEbikeUsrs2).filter_by(id=user_id).first()
 11.专门的异常打印方法logger.exception
         try:
-            first = dao_session.session().query(XcMieba2CustomActivity).filter_by(id=activity_id).one()
+            first = dao_session.session.tenant_db().query(XcMieba2CustomActivity).filter_by(id=activity_id).one()
         except Exception:
             raise MbException(promt="活动不存在")
         return first.state, first.reward_type

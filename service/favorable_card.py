@@ -19,9 +19,9 @@ class FavorableCardService(MBService):
         # pin_id, _ = valid_data
         # params = {"pin_id": pin_id}
         # try:
-        #     card = dao_session.session().query(TFavorableCard).filter_by(**params).first()
+        #     card = dao_session.session.tenant_db().query(TFavorableCard).filter_by(**params).first()
         # except Exception as e:
-        #     dao_session.session().rollback()
+        #     dao_session.session.tenant_db().rollback()
         #     logger.error("query user favorable_card is error: {}".format(e))
         #     logger.exception(e)
         # print(card)
@@ -47,34 +47,34 @@ class FavorableCardService(MBService):
         }
         params = self.remove_empty_param(params)
         card = TFavorableCard(**params)
-        dao_session.session().add(card)
+        dao_session.session.tenant_db().add(card)
         try:
-            dao_session.session().commit()
+            dao_session.session.tenant_db().commit()
             return True
         except Exception as e:
             logger.error("add favorable card is error:", service_id, card_name)
             logger.exception(e)
-            dao_session.session().rollback()
+            dao_session.session.tenant_db().rollback()
             return False
 
     def update_one_disable(self, valid_data):
         card_id, disable = valid_data
-        dao_session.session().query(XcMieba2FavorableCard). \
+        dao_session.session.tenant_db().query(XcMieba2FavorableCard). \
             filter(XcMieba2FavorableCard.id == card_id).update({XcMieba2FavorableCard.enable: disable,
                                                                 XcMieba2FavorableCard.updated_at: datetime.now()})
         try:
-            dao_session.session().commit()
+            dao_session.session.tenant_db().commit()
             return True
         except Exception as e:
             logger.error("update favorable card enable is error:", card_id)
             logger.exception(e)
-            dao_session.session().rollback()
+            dao_session.session.tenant_db().rollback()
             return False
 
     def query_list(self, valid_data, enable=2):
         service_id, page, size = valid_data
-        card = dao_session.session().query(XcMieba2FavorableCard).filter(XcMieba2FavorableCard.service_id == service_id)
-        card_count = dao_session.session().query(func.count(XcMieba2FavorableCard.id)). \
+        card = dao_session.session.tenant_db().query(XcMieba2FavorableCard).filter(XcMieba2FavorableCard.service_id == service_id)
+        card_count = dao_session.session.tenant_db().query(func.count(XcMieba2FavorableCard.id)). \
             filter(XcMieba2FavorableCard.service_id == service_id)
         if enable == 2:
             card = card.filter(XcMieba2FavorableCard.enable != 2)
@@ -106,7 +106,7 @@ class FavorableCardAccountService(MBService):
 
     def query_one(self, valid_data):
         service_id, object_id = valid_data
-        card_info = dao_session.session().query(XcMieba2FavorableCard). \
+        card_info = dao_session.session.tenant_db().query(XcMieba2FavorableCard). \
             join(XcMieba2FavorableCardAccount, XcMieba2FavorableCard.id == XcMieba2FavorableCardAccount.card_id). \
             filter(XcMieba2FavorableCardAccount.object_id == object_id,
                    XcMieba2FavorableCardAccount.service_id == service_id).first()
@@ -118,11 +118,11 @@ class FavorableCardAccountService(MBService):
         优惠卡的流水统计
         """
         zero_today, _ = self.get_today_date()
-        account = dao_session.session().query(func.count(XcMieba2FavorableCardAccount.price).label("count"),
+        account = dao_session.session.tenant_db().query(func.count(XcMieba2FavorableCardAccount.price).label("count"),
                                               XcMieba2FavorableCard.present_price, XcMieba2FavorableCard.card_time). \
             join(XcMieba2FavorableCard, XcMieba2FavorableCard.id == XcMieba2FavorableCardAccount.card_id). \
             filter(XcMieba2FavorableCardAccount.price > 0).group_by(XcMieba2FavorableCardAccount.card_id)
-        card_price = dao_session.session().query(func.distinct(XcMieba2FavorableCard.present_price))
+        card_price = dao_session.session.tenant_db().query(func.distinct(XcMieba2FavorableCard.present_price))
         if service_id:
             account = account.filter(XcMieba2FavorableCardAccount.service_id.in_(service_id))
             card_price = card_price.filter(XcMieba2FavorableCard.service_id.in_(service_id))
@@ -148,7 +148,7 @@ class FavorableCardAccountService(MBService):
         优惠卡的流水统计
         """
         zero_today, _ = self.get_today_date()
-        account = dao_session.session().query(
+        account = dao_session.session.tenant_db().query(
             func.ifnull(func.sum(XcMieba2FavorableCardAccount.price), 0).label("price"))
         if service_id:
             account = account.filter(XcMieba2FavorableCardAccount.service_id.in_(service_id))
@@ -166,7 +166,7 @@ class FavorableCardAccountService(MBService):
         根据创建时间倒叙查询，只提供基础查询
         """
         service_id, object_id, page, size = valid_data
-        account_info = dao_session.session().query(XcMieba2FavorableCardAccount, XcMieba2FavorableCard). \
+        account_info = dao_session.session.tenant_db().query(XcMieba2FavorableCardAccount, XcMieba2FavorableCard). \
             outerjoin(XcMieba2FavorableCard, XcMieba2FavorableCard.id == XcMieba2FavorableCardAccount.card_id). \
             filter(XcMieba2FavorableCardAccount.object_id == object_id,
                    XcMieba2FavorableCardAccount.service_id == service_id).order_by(
@@ -200,7 +200,7 @@ class FavorableCardAccountService(MBService):
                 "card_time": card.card_time,
                 "channel": account.channel,
                 "trade_no": account.trade_no,
-                "is_found": account.is_found,
+                "iz_found": account.iz_found,
                 "serial_type": "用户购买"
             }
             if account.serial_type == SERIAL_TYPE.FAVORABLE_CARD_ADD_PAY.value:
@@ -213,14 +213,14 @@ class FavorableCardAccountService(MBService):
     def query_list_platform_screen(self, valid_data, service_ids):
         start_time, end_time = valid_data
         s_time, e_time = self.millisecond2datetime(start_time), self.millisecond2datetime(end_time)
-        count_list = dao_session.session().query(
+        count_list = dao_session.session.tenant_db().query(
             func.ifnull(func.count(XcMieba2FavorableCardAccount.id).label("times"), 0),
             func.ifnull(func.date_format(XcMieba2FavorableCardAccount.created_at, "%Y-%m-%d"), '').label("day"),
             func.ifnull(XcMieba2FavorableCardAccount.price, 0).label("price")
         ).filter(XcMieba2FavorableCardAccount.created_at >= s_time,
                  XcMieba2FavorableCardAccount.created_at <= e_time,
                  XcMieba2FavorableCardAccount.price > 0)
-        price_days = dao_session.session().query(XcMieba2FavorableCard)
+        price_days = dao_session.session.tenant_db().query(XcMieba2FavorableCard)
         if service_ids:
             count_list = count_list.filter(XcMieba2FavorableCardAccount.service_id.in_(service_ids))
             price_days = price_days.filter(XcMieba2FavorableCard.service_id.in_(service_ids))
@@ -246,11 +246,11 @@ class FavorableCardUserService(MBService):
         service_id, object_id = valid_data
         card_info = None
         try:
-            card_info = dao_session.session().query(XcMieba2FavorableCardUser). \
+            card_info = dao_session.session.tenant_db().query(XcMieba2FavorableCardUser). \
                 filter(XcMieba2FavorableCardUser.object_id == object_id,
                        XcMieba2FavorableCardUser.service_id == service_id).first()
         except Exception as e:
-            dao_session.session().rollback()
+            dao_session.session.tenant_db().rollback()
             logger.error("show favorable card days is error: {}".format(e))
             logger.exception(e)
         return card_info
@@ -269,16 +269,16 @@ class FavorableCardUserService(MBService):
     def insert_into_user_days(self, valid_data):
         service_id, = valid_data
         # 查询该服务区下是否有优惠卡，如果没有优惠卡则返回
-        card_id = dao_session.session().query(XcMieba2FavorableCardConfig.id).filter(
+        card_id = dao_session.session.tenant_db().query(XcMieba2FavorableCardConfig.id).filter(
             XcMieba2FavorableCardConfig.service_id == service_id).first()
         if not card_id:
             return False, "该服务区下未查询到优惠卡的相关信息，不能进行押金卡数据的迁移"
-        # user_id = dao_session.session().query(XcMieba2FavorableCardUser.id).filter(
+        # user_id = dao_session.session.tenant_db().query(XcMieba2FavorableCardUser.id).filter(
         #     XcMieba2FavorableCardUser.service_id == service_id).first()
         # if user_id:
         #     return False, "该服务区下已有用户购买优惠卡，不能进行押金卡数据的迁移"
         try:
-            rows = dao_session.session().execute(
+            rows = dao_session.session.tenant_db().execute(
                 """INSERT IGNORE INTO `xc_mieba_2_favorable_card_user`(`service_id` , `config_id` , `object_id` , 
                    `begin_time` , `end_time`, `created_at`,`updated_at` ) 
                    SELECT xs.`serviceId` , {}, xs.`id` , date_format(now(),'%Y-%m-%d %H:%i:%s') as n_date , 
@@ -287,10 +287,10 @@ class FavorableCardUserService(MBService):
                    FROM `xc_ebike_usrs_2` as xs 
                    WHERE xs.`serviceId` = {} and xs.`haveDepositCard` = 1 
                    and xs.`depositCardExpiredDate`  >= now();""".format(card_id[0], service_id))
-            dao_session.session().commit()
+            dao_session.session.tenant_db().commit()
             return True, rows.rowcount
         except Exception as ex:
-            dao_session.session().rollback()
+            dao_session.session.tenant_db().rollback()
             logger.exception(ex)
             return False, "执行有误，联系开发人员"
 
@@ -324,7 +324,7 @@ class FavorableCardConfigService(MBService):
 
     def query_one(self, valid_data, router):
         service_id, config_id = valid_data
-        config_info = dao_session.session().query(XcEbike2Config).filter(XcEbike2Config.serviceId == service_id,
+        config_info = dao_session.session.tenant_db().query(XcEbike2Config).filter(XcEbike2Config.serviceId == service_id,
                                                                          XcEbike2Config.rootRouter == router).first()
         return config_info
 
@@ -344,7 +344,7 @@ class FavorableCardConfigService(MBService):
 
     def query_one_config(self, valid_data):
         service_id, config_id = valid_data
-        config_info = dao_session.session().query(XcMieba2FavorableCardConfig). \
+        config_info = dao_session.session.tenant_db().query(XcMieba2FavorableCardConfig). \
             filter(XcMieba2FavorableCardConfig.service_id == service_id).first()
         if config_info:
             return config_info.id
@@ -441,15 +441,15 @@ class FavorableCardConfigService(MBService):
         favorable_card_config["updated_at"] = datetime.now()
         params = self.remove_empty_param(favorable_card_config)
         card = XcMieba2FavorableCardConfig(**params)
-        dao_session.session().add(card)
+        dao_session.session.tenant_db().add(card)
         try:
-            dao_session.session().commit()
+            dao_session.session.tenant_db().commit()
             dao_session.redis_session.r.delete(COST_CHANGE_NOTIFY.format(**{"service_id":service_id}))
             return card.id
         except Exception as e:
             logger.error("add favorable card config is error:", service_id)
             logger.exception(e)
-            dao_session.session().rollback()
+            dao_session.session.tenant_db().rollback()
             return False
 
     def insert_one_config(self, valid_data, favorable_card_config=None):
@@ -468,7 +468,7 @@ class FavorableCardConfigService(MBService):
         }
         params = self.remove_empty_param(params)
         config = XcEbike2Config(**params)
-        dao_session.session().add(config)
+        dao_session.session.tenant_db().add(config)
         redis_dict = {"content": json.dumps(favorable_card_config), "version": str(version)}
         if service_id:
             dao_session.redis_session.r.hmset(CONFIG_ROUTER_SERVICE_KEY.format(
@@ -478,12 +478,12 @@ class FavorableCardConfigService(MBService):
         else:
             dao_session.redis_session.r.hmset(CONFIG_ROUTER_KEY.format(router=router), redis_dict)
         try:
-            dao_session.session().commit()
+            dao_session.session.tenant_db().commit()
             return True
         except Exception as e:
             logger.error("add favorable card config is error:", service_id)
             logger.exception(e)
-            dao_session.session().rollback()
+            dao_session.session.tenant_db().rollback()
             return False
 
     def update_one(self, config_id, valid_data):
@@ -491,17 +491,17 @@ class FavorableCardConfigService(MBService):
         favorable_card_config, _ = self._valid_data_dict(config_data)
         favorable_card_config["updated_at"] = datetime.now()
         params = self.remove_empty_param(favorable_card_config)
-        dao_session.session().query(XcMieba2FavorableCardConfig). \
+        dao_session.session.tenant_db().query(XcMieba2FavorableCardConfig). \
             filter(XcMieba2FavorableCardConfig.id == config_id).update(params)
         try:
-            dao_session.session().commit()
+            dao_session.session.tenant_db().commit()
             dao_session.redis_session.r.delete(COST_CHANGE_NOTIFY.format(**{"service_id":service_id}))
 
             return True
         except Exception as e:
             logger.error("update favorable card config is error:", service_id)
             logger.exception(e)
-            dao_session.session().rollback()
+            dao_session.session.tenant_db().rollback()
             return False
 
     def update_one_config(self, valid_data):
@@ -515,10 +515,10 @@ class FavorableCardConfigService(MBService):
             "updatedAt": datetime.now()
         }
         params = self.remove_empty_param(params)
-        dao_session.session().query(XcEbike2Config).filter(XcEbike2Config.serviceId == service_id,
+        dao_session.session.tenant_db().query(XcEbike2Config).filter(XcEbike2Config.serviceId == service_id,
                                                            XcEbike2Config.rootRouter == router).update(params)
         try:
-            dao_session.session().commit()
+            dao_session.session.tenant_db().commit()
             redis_dict = {"content": json.dumps(favorable_card_config), "version": version}
             if service_id:
                 dao_session.redis_session.r.hmset(CONFIG_ROUTER_SERVICE_KEY.format(
@@ -531,7 +531,7 @@ class FavorableCardConfigService(MBService):
         except Exception as e:
             logger.error("update favorable card config is error:", service_id)
             logger.exception(e)
-            dao_session.session().rollback()
+            dao_session.session.tenant_db().rollback()
             return False
 
     # 计费配置添加（第一次查询）

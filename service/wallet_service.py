@@ -19,7 +19,7 @@ class WalletService(MBService):
     钱包
     """
 
-    def query_one(self, pin_id: str, args: dict):
+    def query_one(self, pin_id: int, args: dict):
         try:
             tenant_id = args['commandContext']['tenant_id']
             user_wallet = dao_session.session.tenant_db().query(TUserWallet)\
@@ -40,7 +40,7 @@ class WalletService(MBService):
             logger.exception(e)
         return user_wallet
 
-    def insert_one(self, pin_id: str, args: dict):
+    def insert_one(self, pin_id: int, args: dict):
 
         commandContext = args['commandContext']
         data = self.get_model_common_field(commandContext)
@@ -61,7 +61,7 @@ class WalletService(MBService):
             logger.exception(e)
             return False
 
-    def update_one(self, pin_id: str, args: dict):
+    def update_one(self, pin_id: int, args: dict):
 
         params = dict(
             balance=args['balance'],
@@ -116,14 +116,14 @@ class WalletService(MBService):
                     )
                 )
         except Exception as e:
-            dao_session.session().rollback()
+            dao_session.session.tenant_db().rollback()
             logger.error("")
             logger.exception(e)
             return False
 
         return data_list, count
 
-    def get_user_wallet(self, pin_id: str, args: dict):
+    def get_user_wallet(self, pin_id: int, args: dict):
         """从redis或mysql获取用户钱包信息"""
         tenant_id = args['commandContext']['tenant_id']
         find_user_wallet = dao_session.redis_session.r.hgetall(USER_WALLET_CACHE.format(tenant_id=tenant_id, pin_id=pin_id))
@@ -144,7 +144,7 @@ class WalletService(MBService):
 
         return user_wallet_dict
 
-    def set_user_wallet(self, pin_id: str, args: dict, ):
+    def set_user_wallet(self, pin_id: int, args: dict,):
 
         try:
             user_wallet_dict = self.get_user_wallet(pin_id=pin_id, args=args)
