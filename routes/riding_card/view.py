@@ -15,14 +15,14 @@ from routes.riding_card.serializers import (
 from service.riding_card_service import RidingCardService
 
 
-class PlatformRidingCardHandle(MBHandler):
+class GetRidingCardHandle(MBHandler):
     """
     骑行卡
     """
 
     @coroutine
     @use_args_query(GetRidingCardDeserializer)
-    def get(self, args: dict):
+    def post(self, args: dict):
         """
         获取用户骑行卡
         ---
@@ -31,7 +31,7 @@ class PlatformRidingCardHandle(MBHandler):
         description: 获取用户骑行卡
 
         parameters:
-          - in: query
+          - in: body
             schema:
                 UpdateWalletDeserializer
         responses:
@@ -60,6 +60,12 @@ class PlatformRidingCardHandle(MBHandler):
         data = RidingCardSerializer().dump(data)
 
         self.success(data)
+
+
+class EditRidingCardHandle(MBHandler):
+    """
+    编辑用户骑行卡
+    """
 
     @coroutine
     @use_args_query(EditRidingCardDeserializer)

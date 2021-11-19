@@ -14,7 +14,7 @@ class UserAccount(MBHandler):
 
     @coroutine
     @use_args_query(UserAccountDeserializer)
-    def get(self, args):
+    def post(self, args):
         pin = args.get('pin')
 
         user_wallet = yield mb_async(WalletService().query_one)(pin)

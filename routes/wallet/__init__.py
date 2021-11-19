@@ -1,11 +1,11 @@
 from routes.wallet.view import (
-        WalletHandle,
+        EditWalletHandle,
         GetWalletHandle,
 )
 
 # /account/user
 urls = [
-        (r'/wallet', WalletHandle),  # 用户钱包
+        (r'/edit_wallet', EditWalletHandle),  # 用户钱包
         (r'/get_wallet_info', GetWalletHandle),  # 用户钱包
 
 ]
