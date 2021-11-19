@@ -10,6 +10,7 @@ from routes.riding_card.serializers import (
     SendRidingCardDeserializer,
     CurrentDuringTimeDeserializer,
     AddCountHandlerDeserializer,
+    CurrentDuringTimeSerializer,
 )
 from service.riding_card_service import RidingCardService
 
@@ -53,8 +54,8 @@ class PlatformRidingCardHandle(MBHandler):
                             RidingCardSerializer
         """
 
-        pin_id = args['pin_id']
-        valid_data = (pin_id, args)
+        pin = args['pin']
+        valid_data = (pin, args)
         data = yield mb_async(RidingCardService().user_card_info)(valid_data)
         data = RidingCardSerializer().dump(data)
 
@@ -178,9 +179,10 @@ class CurrentDuringTimeHandler(MBHandler):
                         msg:
                             type: str
                         data:
-                            type: boolean
+                            CurrentDuringTimeSerializer
         """
         data = yield mb_async(RidingCardService.current_during_time)(args)
+        data = CurrentDuringTimeSerializer().dump(data)
 
         self.success(data)
 

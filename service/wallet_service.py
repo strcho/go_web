@@ -7,8 +7,6 @@ from mbutils import (
     logger,
     DefaultMaker,
 )
-from mbutils.constant import SplitType
-from mbutils.snowflake import ID_Worker
 from model.all_model import TUserWallet
 from service import MBService
 from utils.constant.redis_key import USER_WALLET_CACHE
@@ -19,20 +17,20 @@ class WalletService(MBService):
     钱包
     """
 
-    def query_one(self, pin_id: int, args: dict):
+    def query_one(self, pin: str, args: dict):
         try:
             tenant_id = args['commandContext']['tenant_id']
             user_wallet = dao_session.session.tenant_db().query(TUserWallet)\
-                .filter(TUserWallet.pin_id == pin_id,
+                .filter(TUserWallet.pin == pin,
                         TUserWallet.tenant_id == tenant_id).first()
             print('insert_one', '0000000', user_wallet)
             if not user_wallet:
                 print('insert_one', '11111111')
-                is_suc = self.insert_one(pin_id, args)
+                is_suc = self.insert_one(pin, args)
                 if is_suc:
                     print('insert_one', '222222')
                     user_wallet = dao_session.session.tenant_db().query(TUserWallet)\
-                        .filter(TUserWallet.pin_id == pin_id,
+                        .filter(TUserWallet.pin == pin,
                                 TUserWallet.tenant_id == tenant_id).first()
         except Exception as e:
             dao_session.session.tenant_db().rollback()
@@ -40,12 +38,12 @@ class WalletService(MBService):
             logger.exception(e)
         return user_wallet
 
-    def insert_one(self, pin_id: int, args: dict):
+    def insert_one(self, pin: str, args: dict):
 
         commandContext = args['commandContext']
         data = self.get_model_common_field(commandContext)
 
-        data['pin_id'] = pin_id
+        data['pin'] = pin
         print(data)
         user_wallet = TUserWallet(**data)
         dao_session.session.tenant_db().add(user_wallet)
@@ -61,7 +59,7 @@ class WalletService(MBService):
             logger.exception(e)
             return False
 
-    def update_one(self, pin_id: int, args: dict):
+    def update_one(self, pin: str, args: dict):
 
         params = dict(
             balance=args['balance'],
@@ -74,7 +72,7 @@ class WalletService(MBService):
         try:
             # 更新余额考虑使用 update({"balance": TUserWallet.balance - change})
             dao_session.session.tenant_db().query(TUserWallet) \
-                .filter(TUserWallet.pin_id == args["pin_id"], TUserWallet.tenant_id == args["tenant_id"]) \
+                .filter(TUserWallet.pin == args["pin"], TUserWallet.tenant_id == args["tenant_id"]) \
                 .update(params)
             dao_session.session.tenant_db().commit()
             return True
@@ -86,11 +84,11 @@ class WalletService(MBService):
 
     def query_list(self, valid_data, enable=2):
 
-        pin_ids, commandContext = valid_data
+        pins, commandContext = valid_data
 
         user_wallets = dao_session.session.tenant_db()\
             .query(TUserWallet)\
-            .filter(TUserWallet.pin_id.in_(pin_ids), TUserWallet.tenant_id == commandContext['tenant_id'])\
+            .filter(TUserWallet.pin.in_(pins), TUserWallet.tenant_id == commandContext['tenant_id'])\
             .all()
         data_list = []
         count = len(data_list)
@@ -107,7 +105,7 @@ class WalletService(MBService):
                         updated_pin=user_wallet.updated_pin,
                         version=user_wallet.version,
                         iz_del=user_wallet.iz_del,
-                        pin_id=TUserWallet.pin_id,
+                        pin=TUserWallet.pin,
                         balance=TUserWallet.balance,
                         recharge=TUserWallet.recharge,
                         present=TUserWallet.present,
@@ -123,10 +121,10 @@ class WalletService(MBService):
 
         return data_list, count
 
-    def get_user_wallet(self, pin_id: int, args: dict):
+    def get_user_wallet(self, pin: str, args: dict):
         """从redis或mysql获取用户钱包信息"""
         tenant_id = args['commandContext']['tenant_id']
-        find_user_wallet = dao_session.redis_session.r.hgetall(USER_WALLET_CACHE.format(tenant_id=tenant_id, pin_id=pin_id))
+        find_user_wallet = dao_session.redis_session.r.hgetall(USER_WALLET_CACHE.format(tenant_id=tenant_id, pin=pin))
         if find_user_wallet:
             try:
                 user_wallet_dict = json.loads(find_user_wallet['content'])
@@ -134,20 +132,20 @@ class WalletService(MBService):
                 print('user_wallet_dict = find_user_wallet["content"]')
                 user_wallet_dict = find_user_wallet["content"]
         else:
-            user_wallet: TUserWallet = self.query_one(pin_id=pin_id, args=args)
+            user_wallet: TUserWallet = self.query_one(pin=pin, args=args)
             user_wallet_dict = orm_to_dict(user_wallet, TUserWallet)
 
             if user_wallet:
-                dao_session.redis_session.r.hset(USER_WALLET_CACHE.format(tenant_id=tenant_id, pin_id=pin_id),
+                dao_session.redis_session.r.hset(USER_WALLET_CACHE.format(tenant_id=tenant_id, pin=pin),
                                                  mapping={"content": json.dumps(user_wallet_dict),
                                                           "version": datetime.now().timestamp()})
 
         return user_wallet_dict
 
-    def set_user_wallet(self, pin_id: int, args: dict,):
+    def set_user_wallet(self, pin: str, args: dict,):
 
         try:
-            user_wallet_dict = self.get_user_wallet(pin_id=pin_id, args=args)
+            user_wallet_dict = self.get_user_wallet(pin=pin, args=args)
 
             if not isinstance(args.get('change_recharge'), DefaultMaker):
                 user_wallet_dict['balance'] += args['change_recharge']
@@ -163,11 +161,11 @@ class WalletService(MBService):
             if not isinstance(args.get('deposited_stats'), DefaultMaker):
                 user_wallet_dict['deposited_stats'] = args['deposited_stats']
 
-            dao_session.redis_session.r.hset(USER_WALLET_CACHE.format(tenant_id=user_wallet_dict['tenant_id'], pin_id=pin_id),
+            dao_session.redis_session.r.hset(USER_WALLET_CACHE.format(tenant_id=user_wallet_dict['tenant_id'], pin=pin),
                                              mapping={"content": json.dumps(user_wallet_dict),
                                                       "version": datetime.now().timestamp()})
 
-            self.update_one(pin_id=pin_id, args=user_wallet_dict)
+            self.update_one(pin=pin, args=user_wallet_dict)
             return True
 
         except Exception as e:

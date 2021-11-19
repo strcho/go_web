@@ -15,12 +15,12 @@ class UserAccount(MBHandler):
     @coroutine
     @use_args_query(UserAccountDeserializer)
     def get(self, args):
-        pin_id = args.get('pin_id')
+        pin = args.get('pin')
 
-        user_wallet = yield mb_async(WalletService().query_one)(pin_id)
-        user_riding_card = yield mb_async(WalletService().query_one)(pin_id)
-        user_deposit_card = yield mb_async(WalletService().query_one)(pin_id)
-        user_free_order = yield mb_async(WalletService().query_one)(pin_id)
-        user_discount = yield mb_async(WalletService().query_one)(pin_id)
+        user_wallet = yield mb_async(WalletService().query_one)(pin)
+        user_riding_card = yield mb_async(WalletService().query_one)(pin)
+        user_deposit_card = yield mb_async(WalletService().query_one)(pin)
+        user_free_order = yield mb_async(WalletService().query_one)(pin)
+        user_discount = yield mb_async(WalletService().query_one)(pin)
 
         self.success()

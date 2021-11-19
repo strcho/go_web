@@ -9,4 +9,4 @@ class UserAccountDeserializer(ReqBaseDeserializer):
     """
     pass
 
-    pin_id = fields.String(required=True, description="用户标识")
+    pin = fields.String(required=True, description="用户标识")

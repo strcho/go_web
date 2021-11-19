@@ -16,9 +16,6 @@ class GetWalletDeserializer(ReqBaseDeserializer):
 
 
 class UserWalletSerializer(Schema):
-    """
-    用户钱包序列化器
-    """
 
     pin = fields.String(description="用户标识")
     balance = fields.String(description="余额")

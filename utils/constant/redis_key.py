@@ -165,7 +165,7 @@ CAR_INFO_DATA = "xc_ebike_car_info_agg_by_hours_{hour}"  # 数据统计相关，
 
 SERVICE_ASSIGNED_WORKMANIDS = "xc_mieba_assigned_workmanids_{service_id}"
 
-# 用户id获取设备
+# 用户标识获取设备
 USER_RIDING_DEVICE = "xc_ebike_{agent_id}_usrRidingDevice_{user_id}"
 # imei 和 agent_id 绑定关系
 IMEI_AGENT_BINDING = "xc_ebike_imeiAgentBinding_{imei}"
@@ -173,7 +173,7 @@ IMEI_AGENT_BINDING = "xc_ebike_imeiAgentBinding_{imei}"
 USER_AGENT_BINDING = "xc_ebike_usrAgentBindings_{user_id}"
 # device状态
 DEVICE_STATE = "xc_ebike_device_state_{imei}"
-# 通过device查看用户id
+# 通过device查看用户标识
 DEVICE_RIDING_USER_ID = "xc_ebike_deviceRidingUsrId_{imei}"
 # 查看用户状态
 USER_STATE = "xc_ebike_2_userState_{user_id}"
@@ -251,4 +251,4 @@ WXLITE_PAYMENT = "xc_mieba_payment_wxlite_{pay_type}"
 
 # 新key
 
-USER_WALLET_CACHE = "user_account_wallet_{tenant_id}_{pin_id}"
+USER_WALLET_CACHE = "user_account_wallet_{tenant_id}_{pin}"

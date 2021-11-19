@@ -138,7 +138,9 @@ class MBService:
 
     @staticmethod
     def get_model_common_field(commandContext: dict = None):
-
+        """
+        获取模型公共字段字典
+        """
         fields_dict = dict(
             id=ID_Worker(),
             tenant_id=None,

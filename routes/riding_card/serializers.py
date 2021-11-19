@@ -12,7 +12,7 @@ class GetRidingCardDeserializer(ReqBaseDeserializer):
     获取用户骑行卡
     """
 
-    pin_id = fields.Integer(required=True, description="用户标识")
+    pin = fields.String(required=True, description="用户标识")
 
 
 class EditRidingCardDeserializer(ReqBaseDeserializer):
@@ -30,7 +30,7 @@ class SendRidingCardDeserializer(ReqBaseDeserializer):
     发放骑行卡给用户
     """
 
-    pin_id = fields.Integer(required=True, description="用户标识")
+    pin = fields.String(required=True, description="用户标识")
     config_id = fields.Integer(required=True, description="骑行卡配置ID（card_id）")
     content = fields.String(required=True, description="购卡时候配置信息")
 
@@ -69,7 +69,7 @@ class RidingCardSerializer(Schema):
 class CurrentDuringTimeDeserializer(ReqBaseDeserializer):
     """查询当前骑行卡的持续时间参数反序列化"""
 
-    pin_id = fields.Integer(required=True, description='用户ID')
+    pin = fields.String(required=True, description='用户标识')
     service_id = fields.Integer(required=True, description='服务区ID')
 
 
@@ -77,7 +77,10 @@ class CurrentDuringTimeSerializer(Schema):
     """
     当前骑行卡的持续时间响应序列化
     """
-    pass
+
+    free_time = fields.Integer(description="单位秒", dump_default=0)
+    free_distance = fields.Integer(description="单位米", dump_default=0)
+    free_money = fields.Integer(description="单位分", dump_default=0)
 
 
 class AddCountHandlerDeserializer(ReqBaseDeserializer):

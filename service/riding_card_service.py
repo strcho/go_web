@@ -49,14 +49,14 @@ class RidingCardService(MBService):
             riding_card = None
         return riding_card
 
-    def insert_one(self, pin_id: int, args: dict):
+    def insert_one(self, pin: str, args: dict):
         """
         插入一条骑行卡
         """
         commandContext = args['commandContext']
         data = self.get_model_common_field(commandContext)
 
-        data['pin_id'] = pin_id
+        data['pin'] = pin
         print(data)
         user_riding_card = TRidingCard(**data)
         dao_session.session.tenant_db().add(user_riding_card)
@@ -100,20 +100,20 @@ class RidingCardService(MBService):
         """
         获取用户骑行卡信息
         """
-        pin_id, _ = valid_data
+        pin, _ = valid_data
         try:
             dao_session.session.tenant_db().query(TRidingCard).filter(
                 TRidingCard.state == UserRidingCardState.USING.value,
-                TRidingCard.pin_id == pin_id,
+                TRidingCard.pin == pin,
                 TRidingCard.card_expired_date <= datetime.now()).update(
                 {"state": UserRidingCardState.EXPIRED.value})
             dao_session.session.tenant_db().commit()
         except Exception:
             pass
-        service_id = dao_session.redis_session.r.hget(ALL_USER_LAST_SERVICE_ID, pin_id) or 0
-        return self.query_my_list_in_platform((service_id,), pin_id)
+        service_id = dao_session.redis_session.r.hget(ALL_USER_LAST_SERVICE_ID, pin) or 0
+        return self.query_my_list_in_platform((service_id,), pin)
 
-    def query_my_list_in_platform(self, valid_data: tuple, pin_id: int) -> dict:
+    def query_my_list_in_platform(self, valid_data: tuple, pin: str) -> dict:
         """
         :return:
     {
@@ -133,16 +133,16 @@ class RidingCardService(MBService):
     }
         """
         service_id, = valid_data
-        dao_session.redis_session.r.hset(ALL_USER_LAST_SERVICE_ID, pin_id, service_id)
+        dao_session.redis_session.r.hset(ALL_USER_LAST_SERVICE_ID, pin, service_id)
 
         # 暂时移除此字段
         # rule_info = ConfigService().get_router_content(ConfigName.SUPERRIDINGCARD.value, service_id)\
         #     .get("rule_info", "")
 
-        first_id = self.get_current_card_id(service_id, pin_id)
+        first_id = self.get_current_card_id(service_id, pin)
         res_dict = {"used": [], "expired": [], "rule_info": "", "cost_use": first_id}
         result = dao_session.session.tenant_db().query(TRidingCard).filter(
-            TRidingCard.pin_id == pin_id,
+            TRidingCard.pin == pin,
             TRidingCard.state <= UserRidingCardState.EXPIRED.value,
             TRidingCard.card_expired_date >= datetime.now() - timedelta(weeks=13)).order_by(
             TRidingCard.created_at.desc()).all()
@@ -175,13 +175,13 @@ class RidingCardService(MBService):
         return res_dict
 
     @staticmethod
-    def get_current_card_id(service_id: int, pin_id: int) -> int:
+    def get_current_card_id(service_id: int, pin: str) -> int:
         """
         该用户的,没有过期的, 使用中的,  union,
         (无次卡的, deductionType越小, 最后一次使用不是今日的, 剩余次数最多的额)(次卡的, 过期时间最近的, 次数够的)
         服务区没有配置或者在配置服务区里面的
         :param service_id:
-        :param pin_id:
+        :param pin:
         :return:
         """
 
@@ -189,7 +189,7 @@ class RidingCardService(MBService):
         dao_session.session.tenant_db().query(
             TRidingCard
         ).filter(
-            TRidingCard.pin_id == pin_id,
+            TRidingCard.pin == pin,
             TRidingCard.state == UserRidingCardState.USING.value,
             TRidingCard.card_expired_date < datetime.now()
         ).update({"state": UserRidingCardState.EXPIRED.value})
@@ -198,7 +198,7 @@ class RidingCardService(MBService):
         dao_session.session.tenant_db().query(
             TRidingCard
         ).filter(
-            TRidingCard.pin_id == pin_id,
+            TRidingCard.pin == pin,
             TRidingCard.state == UserRidingCardState.USING.value,
             TRidingCard.iz_total_times == 0,
             or_(TRidingCard.last_use_time < datetime.now().date(),
@@ -215,7 +215,7 @@ class RidingCardService(MBService):
             TRidingCard.id,
             TRidingCard.effective_service_ids
         ).filter(
-            TRidingCard.pin_id == pin_id,
+            TRidingCard.pin == pin,
             TRidingCard.state == UserRidingCardState.USING.value,
             TRidingCard.card_expired_date >= datetime.now(),
             TRidingCard.remain_times > 0
@@ -235,16 +235,16 @@ class RidingCardService(MBService):
         看不到骑行卡其他信息(解决方式是继续按照老的方式添加, 等到app用新的之后再走新卡添加)
         2老的app, 新的服务的时候, 赠送购买的卡也是新的个人骑行卡
         """
-        pin_id = args['pin_id']
+        pin = args['pin']
         config_id = args['config_id']
         content_str = args['content']
         if send_time and datetime.now().timestamp() - send_time > 5:
-            raise MbException("请求超时", config_id, pin_id)
+            raise MbException("请求超时", config_id, pin)
 
         content = json.loads(content_str)
         iz_total_times = content.get("serialType", "10") == SERIAL_TYPE.RIDING_COUNT_CARD.value  # bool形可以隐式转化0,1
         params = {
-            "pin_id": pin_id,
+            "pin": pin,
             "deduction_type": content["deduction_type"],
             "config_id": config_id,
             "free_time": content["free_time_seconds"],
@@ -300,8 +300,8 @@ class RidingCardService(MBService):
                 }
         """
         service_id = args['service_id']
-        pin_id = args['pin_id']
-        first_card_id = self.get_current_card_id(service_id=service_id, pin_id=pin_id)
+        pin = args['pin']
+        first_card_id = self.get_current_card_id(service_id=service_id, pin=pin)
         if first_card_id:
             first_card: TRidingCard = dao_session.session.tenant_db().query(TRidingCard).filter_by(id=first_card_id).first()
             if first_card:

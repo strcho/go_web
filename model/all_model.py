@@ -5,12 +5,9 @@ from sqlalchemy import (
     Index,
     String,
     text,
-    Text,
 )
 from sqlalchemy.dialects.mysql import (
     INTEGER,
-    TINYINT,
-    BIGINT,
 )
 
 from mbshort.orm import (
@@ -25,7 +22,7 @@ class TUserWallet(CommonField):
         {'mysql_charset': 'utf8mb4'}
     )
 
-    pin_id = Column(BIGINT(64), nullable=False, comment="用户PIN")
+    pin = Column(String(64), nullable=False, comment="用户PIN")
     balance = Column(INTEGER(11), server_default=text("'0'"), comment="总余额")
     recharge = Column(INTEGER(11), server_default=text("'0'"), comment='充值余额')
     present = Column(INTEGER(11), server_default=text("'0'"), comment='赠送余额')
@@ -34,17 +31,17 @@ class TUserWallet(CommonField):
     deposited_stats = Column(INTEGER(11), nullable=False, server_default=text("'0'"), comment='押金状态')
 
     def keys(self):
-        return self.base_keys.add('pin_id', 'balance', 'recharge', 'present', 'deposited_mount', 'deposited_stats')
+        return self.base_keys.add('pin', 'balance', 'recharge', 'present', 'deposited_mount', 'deposited_stats')
 
 
 class TRidingCard(CommonField):
 
     __tablename__ = 't_ebike_account_riding_card' + '_suffix'
     __table_args__ = (
-        Index('idx_pin_id_state', 'pin_id', 'state'), {'mysql_charset': 'utf8mb4'}
+        Index('idx_pin_state', 'pin', 'state'), {'mysql_charset': 'utf8mb4'}
     )
 
-    pin_id = Column(BIGINT(64), nullable=False, comment="用户PIN")
+    pin = Column(String(64), nullable=False, comment="用户PIN")
     deduction_type = Column(INTEGER(11), server_default=text("'1'"), comment="抵扣类型, 1时长卡, 2里程卡, 3减免卡, 4次卡")
     config_id = Column(INTEGER(32), nullable=False, comment="骑行卡配置ID")
     free_time = Column(INTEGER(11), default=0, server_default=text("'0'"), comment="免时长, 单位秒")
@@ -69,7 +66,7 @@ class TDepositCard(CommonField):
         {'mysql_charset': 'utf8mb4'}
     )
 
-    pin_id = Column(BIGINT(64), nullable=False, index=True, comment='用户ID')
+    pin = Column(String(64), nullable=False, index=True, comment='用户标识')
     config_id = Column(INTEGER(32), nullable=False, comment='押金卡配置ID')
     type = Column(INTEGER(10), comment='')
     money = Column(INTEGER(10), comment='押金卡金额')
@@ -88,12 +85,9 @@ class TFavorableCard(CommonField):
         {'mysql_charset': 'utf8mb4'}
     )
 
-    pin_id = Column(BIGINT(64), nullable=False, index=True, comment='用户ID')  # 主键id
+    pin = Column(String(64), nullable=False, index=True, comment='用户标识')
     begin_time = Column(DateTime, nullable=False, comment='开始时间')  # 使用优惠卡的开始时间
     end_time = Column(DateTime, nullable=False, comment='结束时间')  # 使用优惠卡的结束时间
-    iz_found = Column(TINYINT(1), nullable=False, server_default=text("'0'"), comment='收否退款，退款和已退款的为1，正常的为0')
-    price = Column(INTEGER(10), nullable=False, comment='购买金额')
-    card_id = Column(INTEGER(11), nullable=False, comment='优惠卡的id')
     config_id = Column(INTEGER(11), nullable=False, comment='计费配置的id')  # 计费配置的id
     service_id = Column(INTEGER(11), nullable=False, index=True, comment='服务区的id')  # 服务区的id
 
@@ -105,7 +99,7 @@ class TDiscountsUser(CommonField):
         {'mysql_charset': 'utf8mb4'}
     )
 
-    pin_id = Column(BIGINT(64), nullable=False, index=True, comment='用户ID')  # 主键id
+    pin = Column(String(64), nullable=False, index=True, comment='用户标识')
     discounts_info = Column(String(64), nullable=False, server_default=text("'0'"), comment='折扣信息 「 "0.9，0.8" 」')
 
 
@@ -116,6 +110,6 @@ class TFreeOrderUser(CommonField):
         {'mysql_charset': 'utf8mb4'}
     )
 
-    pin_id = Column(BIGINT(64), nullable=False, index=True, comment='用户ID')  # 主键id
+    pin = Column(String(64), nullable=False, index=True, comment='用户标识')
     free_hour = Column(INTEGER(5), nullable=False, server_default=text("'0'"), comment='每单的免费时长')
     free_num = Column(INTEGER(5), nullable=False, server_default=text("'0'"), comment='折扣次数')
