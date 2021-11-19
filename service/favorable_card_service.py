@@ -83,11 +83,14 @@ class FavorableCardUserService(MBService):
 
         duration = args['duration']
 
-        # riding_card: TFavorableCard = self.query_one(args)
-        # if not riding_card:
-        #     raise MbException("未找到优惠卡")
-        #
+        riding_card: TFavorableCard = self.query_one(args)
+        if not riding_card:
+            raise MbException("未找到优惠卡")
+
         # try:
         #     if self.exists_param(duration):
-        #         riding_card.card_expired_date = datetime.now() + timedelta(days=duration)
-        #
+        #         if duration == 0:
+        #             riding_card.end_time = datetime.now()
+        #         else:
+        #             riding_card.end_time = datetime.now() + timedelta(days=duration)
+

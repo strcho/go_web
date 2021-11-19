@@ -15,6 +15,10 @@ class GetWalletDeserializer(ReqBaseDeserializer):
     pin = fields.String(required=True, description="用户标识")
 
 
+class GetWalletListDeserializer(ReqBaseDeserializer):
+    pass
+
+
 class UserWalletSerializer(Schema):
     """
     用户钱包序列化器
