@@ -106,18 +106,14 @@ class WalletService(MBService):
                     )
                 )
             exist_pin = {w.pin for w in user_wallets}
-            for pin in pin_list:
-                if pin not in exist_pin:
-                    data_list.append(
-                        dict(
+            [data_list.append(dict(
                             pin=pin,
                             balance=0,
                             recharge=0,
                             present=0,
                             deposited_mount=0,
                             deposited_stats=0,
-                        )
-                    )
+                        )) for pin in pin_list if pin not in exist_pin]
 
         except Exception as e:
             dao_session.session.tenant_db().rollback()
