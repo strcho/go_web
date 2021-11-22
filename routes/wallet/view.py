@@ -110,21 +110,24 @@ class GetWalletHandle(MBHandler):
 
 
 class GetWalletListHandle(MBHandler):
+    """
+    用户钱包
+    """
 
     @coroutine
     @use_args_query(GetWalletListDeserializer)
     def post(self, args: dict):
         """
-        获取用户钱包信息
+        获取用户钱包信息列表
         ---
         tags: [钱包]
-        summary: 获取用户钱包信息
-        description: 获取用户钱包信息
+        summary: 获取用户钱包信息列表
+        description: 获取用户钱包信息列表
 
         parameters:
           - in: body
             schema:
-                GetWalletDeserializer
+                GetWalletListDeserializer
         responses:
             200:
                 schema:
@@ -145,9 +148,9 @@ class GetWalletListHandle(MBHandler):
                             UserWalletSerializer
         """
 
-        pin = args.get('pin')
-        valid_data = (pin, args)
-        data = yield mb_async(WalletService().get_user_wallet)(*valid_data)
-        data = UserWalletSerializer().dump(data)
+        pins = args.get('pin')
+        valid_data = (pins, args["commandContext"],)
+        data = yield mb_async(WalletService().query_list)(valid_data)
+        data = UserWalletSerializer(many=True).dump(data)
 
         self.success(data)
