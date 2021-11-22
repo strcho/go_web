@@ -10,7 +10,7 @@ class CommandContext(Schema):
     pin = fields.String(required=False, description="用户PIN")
     ip = fields.String(required=False, description="ip地址")
     source = fields.String(required=False, description="系统标识")
-    stressTesting = fields.String(required=False, description="false  压测标识)true 压测请求 false 正常请求")
+    stressTesting = fields.Bool(required=False, description="false  压测标识)true 压测请求 false 正常请求")
 
 
 class ReqBaseDeserializer(Schema):
