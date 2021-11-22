@@ -57,9 +57,9 @@ class GetRidingCardHandle(MBHandler):
         pin = args['pin']
         valid_data = (pin, args)
         data = yield mb_async(RidingCardService().user_card_info)(valid_data)
-        data = RidingCardSerializer().dump(data)
+        response = RidingCardSerializer().dump(data)
 
-        self.success(data)
+        self.success(response)
 
 
 class EditRidingCardHandle(MBHandler):
@@ -100,9 +100,9 @@ class EditRidingCardHandle(MBHandler):
                         data:
                             type: boolean
         """
-        data = yield mb_async(RidingCardService().modify_time(args))
+        response = yield mb_async(RidingCardService().modify_time(args))
 
-        self.success(data)
+        self.success(response)
 
 
 class SendRidingCardHandle(MBHandler):
@@ -144,9 +144,9 @@ class SendRidingCardHandle(MBHandler):
                             type: boolean
         """
 
-        data = yield mb_async(RidingCardService.send_riding_card)(args)
+        response = yield mb_async(RidingCardService.send_riding_card)(args)
 
-        self.success(data=data)
+        self.success(response)
 
 
 class CurrentDuringTimeHandler(MBHandler):
@@ -188,9 +188,9 @@ class CurrentDuringTimeHandler(MBHandler):
                             CurrentDuringTimeSerializer
         """
         data = yield mb_async(RidingCardService.current_during_time)(args)
-        data = CurrentDuringTimeSerializer().dump(data)
+        response = CurrentDuringTimeSerializer().dump(data)
 
-        self.success(data)
+        self.success(response)
 
 
 class AddCountHandler(MBHandler):
@@ -231,6 +231,6 @@ class AddCountHandler(MBHandler):
                         data:
                             type: str
         """
-        data = yield mb_async(RidingCardService.add_count)(args)
+        response = yield mb_async(RidingCardService.add_count)(args)
 
-        self.success(data)
+        self.success(response)

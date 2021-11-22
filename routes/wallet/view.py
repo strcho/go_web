@@ -54,12 +54,12 @@ class EditWalletHandle(MBHandler):
       """
         pin = args.get('pin')
         valid_data = (pin, args)
-        data = yield mb_async(WalletService().set_user_wallet)(*valid_data)
+        response = yield mb_async(WalletService().set_user_wallet)(*valid_data)
 
         # 测试内部调用
         # yield mb_async(print)("response: ", apiTest4({"name": "zhangsan", "timeout": 1000}))
 
-        self.success(data)
+        self.success(response)
 
 
 class GetWalletHandle(MBHandler):
@@ -104,9 +104,9 @@ class GetWalletHandle(MBHandler):
         pin = args.get('pin')
         valid_data = (pin, args)
         data = yield mb_async(WalletService().get_user_wallet)(*valid_data)
-        data = UserWalletSerializer().dump(data)
+        response = UserWalletSerializer().dump(data)
 
-        self.success(data)
+        self.success(response)
 
 
 class GetWalletListHandle(MBHandler):
@@ -151,7 +151,6 @@ class GetWalletListHandle(MBHandler):
         pin_list = args.get('pin_list')
         valid_data = (pin_list, args["commandContext"],)
         data = yield mb_async(WalletService().query_list)(valid_data)
-        print(data)
-        data = UserWalletSerializer(many=True).dump(data)
+        response = UserWalletSerializer(many=True).dump(data)
 
-        self.success(data)
+        self.success(response)

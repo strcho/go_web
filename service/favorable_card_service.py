@@ -13,10 +13,15 @@ from . import MBService
 
 
 class FavorableCardUserService(MBService):
+    """
+    用户骑行卡
+    """
 
-    # 获取当前用户的优惠卡
-    def query_one(self, args: dict):
-        service_id = args['service']
+    def query_one(self, args: dict) -> TFavorableCard:
+        """
+        获取当前用户的优惠卡
+        """
+        service_id = args['service_id']
         pin = args['pin']
         card_info = None
         try:
@@ -28,6 +33,22 @@ class FavorableCardUserService(MBService):
             logger.error("show favorable card days is error: {}".format(e))
             logger.exception(e)
         return card_info
+
+    def query_all(self, args: dict):
+        """
+        获取当前用户的全部优惠卡
+        """
+        pin = args['pin']
+        card_info_list = []
+        try:
+            card_info_list = dao_session.session.tenant_db().query(TFavorableCard). \
+                filter(TFavorableCard.pin == pin,).all()
+
+        except Exception as e:
+            dao_session.session.tenant_db().rollback()
+            logger.error("show favorable card days is error: {}".format(e))
+            logger.exception(e)
+        return card_info_list
 
     # 获取当前用户的优惠卡剩余天数
     def query_one_day(self, valid_data):
@@ -73,7 +94,6 @@ class FavorableCardUserService(MBService):
                 res = False
         else:
             res = True
-
         return res
 
     def modify_time(self, args: dict):
@@ -87,10 +107,16 @@ class FavorableCardUserService(MBService):
         if not riding_card:
             raise MbException("未找到优惠卡")
 
-        # try:
-        #     if self.exists_param(duration):
-        #         if duration == 0:
-        #             riding_card.end_time = datetime.now()
-        #         else:
-        #             riding_card.end_time = datetime.now() + timedelta(days=duration)
+        try:
+            if self.exists_param(duration):
+                if duration == 0:
+                    riding_card.end_time = datetime.now()
+                else:
+                    riding_card.end_time = datetime.now() + timedelta(days=duration)
+            dao_session.session.tenant_db().commit()
 
+        except Exception as e:
+            dao_session.session.tenant_db().rollback()
+            logger.error("modify user favorable card is error: {}".format(e))
+            logger.exception(e)
+            return False
