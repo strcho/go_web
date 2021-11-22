@@ -6,8 +6,8 @@ from routes.wallet.view import (
 
 # /account/user
 urls = [
-        (r'/edit_wallet', EditWalletHandle),  # 用户钱包
-        (r'/get_wallet_info', GetWalletHandle),  # 用户钱包
-        (r'/get_wallet_info_list', GetWalletListHandle),  # 用户钱包
+        (r'/edit_wallet', EditWalletHandle),
+        (r'/get_wallet_info', GetWalletHandle),
+        (r'/get_wallet_info_list', GetWalletListHandle),
 
 ]

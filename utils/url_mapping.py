@@ -8,6 +8,7 @@ def add_handler(prefix):
         (r'{}/data_fix'.format(prefix), include('routes.data_fix')),
         (r'{}/user'.format(prefix), include('routes.wallet')),
         (r'{}/user'.format(prefix), include('routes.riding_card')),
+        (r'{}/user'.format(prefix), include('routes.favorable_card')),
     ])
 
 
