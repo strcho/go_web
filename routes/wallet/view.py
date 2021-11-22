@@ -148,9 +148,10 @@ class GetWalletListHandle(MBHandler):
                             UserWalletSerializer
         """
 
-        pins = args.get('pin')
-        valid_data = (pins, args["commandContext"],)
+        pin_list = args.get('pin_list')
+        valid_data = (pin_list, args["commandContext"],)
         data = yield mb_async(WalletService().query_list)(valid_data)
+        print(data)
         data = UserWalletSerializer(many=True).dump(data)
 
         self.success(data)

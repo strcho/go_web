@@ -84,42 +84,48 @@ class WalletService(MBService):
 
     def query_list(self, valid_data, enable=2):
 
-        pins, commandContext = valid_data
+        pin_list, commandContext = valid_data
 
+        print(pin_list, commandContext)
         user_wallets = dao_session.session.tenant_db()\
             .query(TUserWallet)\
-            .filter(TUserWallet.pin.in_(pins), TUserWallet.tenant_id == commandContext['tenant_id'])\
+            .filter(TUserWallet.pin.in_(pin_list), TUserWallet.tenant_id == commandContext['tenant_id'])\
             .all()
         data_list = []
-        count = len(data_list)
         try:
             for user_wallet in user_wallets:
                 user_wallet: TUserWallet = user_wallet
                 data_list.append(
                     dict(
-                        id=user_wallet.id,
-                        tenant_id=user_wallet.tenant_id,
-                        created_at=user_wallet.created,
-                        created_pin=user_wallet.created_pin,
-                        updated_at=user_wallet.updated_at,
-                        updated_pin=user_wallet.updated_pin,
-                        version=user_wallet.version,
-                        iz_del=user_wallet.iz_del,
-                        pin=TUserWallet.pin,
-                        balance=TUserWallet.balance,
-                        recharge=TUserWallet.recharge,
-                        present=TUserWallet.present,
-                        deposited_mount=TUserWallet.deposited_mount,
-                        deposited_stats=TUserWallet.deposited_stats,
+                        pin=user_wallet.pin,
+                        balance=user_wallet.balance,
+                        recharge=user_wallet.recharge,
+                        present=user_wallet.present,
+                        deposited_mount=user_wallet.deposited_mount,
+                        deposited_stats=user_wallet.deposited_stats,
                     )
                 )
+            exist_pin = {w.pin for w in user_wallets}
+            for pin in pin_list:
+                if pin not in exist_pin:
+                    data_list.append(
+                        dict(
+                            pin=pin,
+                            balance=0,
+                            recharge=0,
+                            present=0,
+                            deposited_mount=0,
+                            deposited_stats=0,
+                        )
+                    )
+
         except Exception as e:
             dao_session.session.tenant_db().rollback()
             logger.error("")
             logger.exception(e)
             return False
 
-        return data_list, count
+        return data_list
 
     def get_user_wallet(self, pin: str, args: dict):
         """从redis或mysql获取用户钱包信息"""
