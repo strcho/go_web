@@ -5,33 +5,33 @@ from mbutils.autodoc import (
     use_args_query,
 )
 from mbutils.mb_handler import MBHandler
-from routes.free_order.serializers import (
-    GetUserFreeOrderDeserializer,
-    UserFreeOrderSerializer,
-    UpdateUserFreeOrderDeserializer,
+from routes.discount.serializers import (
+    GetUserDiscountDeserializer,
+    UserDiscountSerializer,
+    UpdateUserDiscountDeserializer,
 )
-from service.free_order_service import FreeOrderService
+from service.user_discount_service import UserDiscountService
 
 
-class GetUserFreeOrderHandler(MBHandler):
+class GetUserDiscountHandler(MBHandler):
     """
-    用户免单
+    用户折扣
     """
 
     @coroutine
-    @use_args_query(GetUserFreeOrderDeserializer)
+    @use_args_query(GetUserDiscountDeserializer)
     def post(self, args):
         """
-        获取用户的免单优惠
+        获取用户的折扣优惠
         ---
-        tags: [免单]
-        summary: 获取用户的免单优惠
-        description: 获取用户的免单优惠
+        tags: [折扣]
+        summary: 获取用户的折扣优惠
+        description: 获取用户的折扣优惠
 
         parameters:
           - in: body
             schema:
-                GetUserFreeOrderDeserializer
+                GetUserDiscountDeserializer
         responses:
             200:
                 schema:
@@ -49,35 +49,35 @@ class GetUserFreeOrderHandler(MBHandler):
                         msg:
                             type: str
                         data:
-                            UserFreeOrderSerializer
+                            UserDiscountSerializer
         """
 
-        data = mb_async(FreeOrderService.query_one)(args)
+        data = mb_async(UserDiscountService.query_one)(args)
 
-        response = UserFreeOrderSerializer().dump(data)
+        response = UserDiscountSerializer().dump(data)
 
         self.success(response)
 
 
-class GetUserAllFreeOrderHandler(MBHandler):
+class GetUserAllDiscountHandler(MBHandler):
     """
-    用户全部免单优惠
+    用户全部折扣优惠
     """
 
     @coroutine
-    @use_args_query(GetUserFreeOrderDeserializer)
+    @use_args_query(GetUserDiscountDeserializer)
     def post(self, args):
         """
-        获取用户的全部免单优惠
+        获取用户的全部折扣优惠
         ---
-        tags: [免单]
-        summary: 获取用户的全部免单优惠
-        description: 获取用户的全部免单优惠
+        tags: [折扣]
+        summary: 获取用户的全部折扣优惠
+        description: 获取用户的全部折扣优惠
 
         parameters:
           - in: body
             schema:
-                GetUserFreeOrderDeserializer
+                GetUserDiscountDeserializer
         responses:
             200:
                 schema:
@@ -95,35 +95,35 @@ class GetUserAllFreeOrderHandler(MBHandler):
                         msg:
                             type: str
                         data:
-                            UserFreeOrderSerializer
+                            UserDiscountSerializer
         """
 
-        data = mb_async(FreeOrderService.query_all)(args)
+        data = mb_async(UserDiscountService.query_all)(args)
 
-        response = UserFreeOrderSerializer(many=True).dump(data)
+        response = UserDiscountSerializer(many=True).dump(data)
 
         self.success(response)
 
 
-class UpdateUserFreeOrderHandler(MBHandler):
+class UpdateUserDiscountHandler(MBHandler):
     """
-    更新用户的免单优惠
+    更新用户的折扣优惠
     """
 
     @coroutine
-    @use_args_query(UpdateUserFreeOrderDeserializer)
+    @use_args_query(UpdateUserDiscountDeserializer)
     def post(self, args):
         """
-        更新用户的免单优惠
+        更新用户的折扣优惠
         ---
-        tags: [免单]
-        summary: 更新用户的免单优惠
-        description: 更新用户的免单优惠
+        tags: [折扣]
+        summary: 更新用户的折扣优惠
+        description: 更新用户的折扣优惠
 
         parameters:
           - in: body
             schema:
-                UpdateUserFreeOrderDeserializer
+                UpdateUserDiscountDeserializer
         responses:
             200:
                 schema:
@@ -144,6 +144,6 @@ class UpdateUserFreeOrderHandler(MBHandler):
                             type: boolean
         """
 
-        response = mb_async(FreeOrderService.update_user_free_order)(args)
+        response = mb_async(UserDiscountService.update_user_discount)(args)
 
         self.success(response)

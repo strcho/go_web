@@ -9,6 +9,8 @@ def add_handler(prefix):
         (r'{}/user'.format(prefix), include('routes.wallet')),
         (r'{}/user'.format(prefix), include('routes.riding_card')),
         (r'{}/user'.format(prefix), include('routes.favorable_card')),
+        (r'{}/user'.format(prefix), include('routes.free_order')),
+        (r'{}/user'.format(prefix), include('routes.discount')),
     ])
 
 

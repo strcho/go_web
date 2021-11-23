@@ -60,3 +60,21 @@ class DepositedState(MbEnum):
 #   MOVE_CAR: '8', // 挪车 【虚拟状态】
 #   // 空。设备login但未上架
 # };
+
+
+class UserFreeOrderType(MbEnum):
+    """
+    用户免单
+    """
+
+    ADD_FREE_ORDER = 1  # 添加用户免单
+    use_FREE_ORDER = 2  # 使用用户免单
+
+
+class DiscountsUserType(MbEnum):
+    """
+    用户折扣
+    """
+
+    ADD_DISCOUNT = 1  # 添加用户折扣
+    USE_DISCOUNT = 2  # 使用用户折扣

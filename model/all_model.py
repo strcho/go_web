@@ -30,15 +30,12 @@ class TUserWallet(CommonField):
     deposited_mount = Column(INTEGER(11), server_default=text("'0'"), comment='押金金额')
     deposited_stats = Column(INTEGER(11), nullable=False, server_default=text("'0'"), comment='押金状态')
 
-    def keys(self):
-        return self.base_keys.add('pin', 'balance', 'recharge', 'present', 'deposited_mount', 'deposited_stats')
-
 
 class TRidingCard(CommonField):
 
     __tablename__ = 't_ebike_account_riding_card' + '_suffix'
     __table_args__ = (
-        Index('idx_pin_state', 'pin', 'state'), {'mysql_charset': 'utf8mb4'}
+        Index('idx_pin_state', 'pin', 'state'),
     )
 
     pin = Column(String(64), nullable=False, comment="用户PIN")
@@ -62,9 +59,6 @@ class TRidingCard(CommonField):
 
 class TDepositCard(CommonField):
     __tablename__ = 't_ebike_account_deposit_card' + '_suffix'
-    __table_args__ = (
-        {'mysql_charset': 'utf8mb4'}
-    )
 
     pin = Column(String(64), nullable=False, index=True, comment='用户标识')
     config_id = Column(INTEGER(32), nullable=False, comment='押金卡配置ID')
@@ -81,9 +75,6 @@ class TDepositCard(CommonField):
 # 用户的优惠卡
 class TFavorableCard(CommonField):
     __tablename__ = 't_ebike_account_favorable_card' + '_suffix'
-    __table_args__ = (
-        {'mysql_charset': 'utf8mb4'}
-    )
 
     pin = Column(String(64), nullable=False, index=True, comment='用户标识')
     begin_time = Column(DateTime, nullable=False, comment='开始时间')  # 使用优惠卡的开始时间
@@ -95,21 +86,15 @@ class TFavorableCard(CommonField):
 # 用户折扣
 class TDiscountsUser(CommonField):
     __tablename__ = 't_ebike_account_discounts_user' + '_suffix'
-    __table_args__ = (
-        {'mysql_charset': 'utf8mb4'}
-    )
 
     pin = Column(String(64), nullable=False, index=True, comment='用户标识')
-    discounts_info = Column(String(64), nullable=False, server_default=text("'0'"), comment='折扣信息 「 "0.9，0.8" 」')
+    discount_rate = Column(INTEGER(10), nullable=False, server_default=text("'0'"), comment='折扣信息 10 表示 1折')
 
 
 # 用户免单
 class TFreeOrderUser(CommonField):
     __tablename__ = 't_ebike_account_free_order_user' + '_suffix'
-    __table_args__ = (
-        {'mysql_charset': 'utf8mb4'}
-    )
 
     pin = Column(String(64), nullable=False, index=True, comment='用户标识')
-    free_hour = Column(INTEGER(5), nullable=False, server_default=text("'0'"), comment='每单的免费时长')
-    free_num = Column(INTEGER(5), nullable=False, server_default=text("'0'"), comment='折扣次数')
+    free_second = Column(INTEGER(5), nullable=False, server_default=text("'0'"), comment='每单的免费时长')
+    free_num = Column(INTEGER(5), nullable=False, server_default=text("'0'"), comment='免单次数')

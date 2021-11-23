@@ -1,13 +1,9 @@
 # coding:utf-8
-import concurrent.futures
 import os.path
-import signal
 import sys
 
 # 将ebike-mb-tools目录加入环境变量
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../ebike-mb-tools/")))
-
-import time
 
 from mbutils.app_start_init import AppInit
 import tornado.ioloop

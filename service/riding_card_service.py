@@ -231,9 +231,7 @@ class RidingCardService(MBService):
 
     def send_riding_card(self, args, send_time: datetime = datetime.now()) -> str:
         """
-        1新app, 新服务的时候, 参加老的赠送, 购买卡得到的都是新的个人骑行卡; 这种情况下用户可以看到自己的骑行卡流水,
-        看不到骑行卡其他信息(解决方式是继续按照老的方式添加, 等到app用新的之后再走新卡添加)
-        2老的app, 新的服务的时候, 赠送购买的卡也是新的个人骑行卡
+        添加骑行卡
         """
         pin = args['pin']
         config_id = args['config_id']

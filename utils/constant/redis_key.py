@@ -252,3 +252,4 @@ WXLITE_PAYMENT = "xc_mieba_payment_wxlite_{pay_type}"
 # 新key
 
 USER_WALLET_CACHE = "user_account_wallet_{tenant_id}_{pin}"
+# FREE_ORDER_USER_CACHE = "user_account_free_order_{tenant_id}_{pin}"
