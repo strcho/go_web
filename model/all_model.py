@@ -61,15 +61,14 @@ class TDepositCard(CommonField):
     __tablename__ = 't_ebike_account_deposit_card' + '_suffix'
 
     pin = Column(String(64), nullable=False, index=True, comment='用户标识')
-    config_id = Column(INTEGER(32), nullable=False, comment='押金卡配置ID')
-    type = Column(INTEGER(10), comment='')
-    money = Column(INTEGER(10), comment='押金卡金额')
-    channel = Column(INTEGER(10), comment='')
-    days = Column(INTEGER(10), comment='有效天数')
-    trade_no = Column(String(64), nullable=False, index=True)
-    expiredDate = Column(DateTime, comment='到期时间')
-    content = Column(String(1024), nullable=False, comment='押金卡详情')
-    service_id = Column(INTEGER(11), comment='服务区ID')
+    # config_id = Column(INTEGER(32), nullable=False, comment='押金卡配置ID')
+    # money = Column(INTEGER(10), comment='押金卡金额')
+    # channel = Column(INTEGER(10), comment='获取方式')
+    # days = Column(INTEGER(10), comment='有效天数')
+    # trade_no = Column(String(64), nullable=False, index=True)
+    # service_id = Column(INTEGER(11), comment='服务区ID')
+    # content = Column(String(1024), nullable=False, comment='押金卡详情')
+    expired_date = Column(DateTime, comment='到期时间')
 
 
 # 用户的优惠卡

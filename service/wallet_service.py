@@ -146,6 +146,9 @@ class WalletService(MBService):
 
     def set_user_wallet(self, pin: str, args: dict,):
 
+        if self.exists_param(args['test']):
+            print("yes!")
+
         try:
             user_wallet_dict = self.get_user_wallet(pin=pin, args=args)
 

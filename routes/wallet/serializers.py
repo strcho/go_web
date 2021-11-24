@@ -1,9 +1,13 @@
 from marshmallow import (
     fields,
     Schema,
+    validate,
 )
 
-from mbutils import DefaultMaker
+from mbutils import (
+    DefaultMaker,
+    ARG_DEFAULT,
+)
 from utils.base_serializer import ReqBaseDeserializer
 
 
@@ -40,7 +44,7 @@ class UpdateWalletDeserializer(ReqBaseDeserializer):
     """
 
     pin = fields.String(required=True, description="用户标识")
-    change_recharge = fields.Integer(required=False, load_default=DefaultMaker, description="变动的充值金额*100")
-    change_present = fields.Integer(required=False, load_default=DefaultMaker, description="变动的赠送金额*100")
-    change_deposited_mount = fields.Integer(required=False, load_default=DefaultMaker, description="变动的押金金额*100")
-    deposited_stats = fields.Integer(required=False, load_default=DefaultMaker, description="押金状态")
+    change_recharge = fields.Integer(required=False, load_default=ARG_DEFAULT, description="变动的充值金额*100")
+    change_present = fields.Integer(required=False, load_default=ARG_DEFAULT, description="变动的赠送金额*100")
+    change_deposited_mount = fields.Integer(required=False, load_default=ARG_DEFAULT, description="变动的押金金额*100")
+    deposited_stats = fields.Integer(required=False, load_default=ARG_DEFAULT, description="押金状态")
