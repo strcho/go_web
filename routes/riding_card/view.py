@@ -71,11 +71,11 @@ class EditRidingCardHandle(MBHandler):
     @use_args_query(EditRidingCardDeserializer)
     def post(self, args: dict):
         """
-        平台修改用户骑行卡信息
+        修改用户骑行卡信息
         ---
         tags: [骑行卡]
-        summary: 平台修改用户骑行卡信息
-        description: 平台修改用户骑行卡信息
+        summary: 修改用户骑行卡信息
+        description: 修改用户骑行卡信息
 
         parameters:
           - in: body

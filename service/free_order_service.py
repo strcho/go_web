@@ -120,7 +120,6 @@ class FreeOrderService(MBService):
             self.insert_one(args)
         # 扣减免单次数
         else:
-            # self.update_one(args)
             user_free_order: TFreeOrderUser = self.query_one(args)
             if not user_free_order:
                 raise MbException("未找到免单优惠")
