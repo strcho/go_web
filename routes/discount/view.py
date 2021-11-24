@@ -52,7 +52,7 @@ class GetUserDiscountHandler(MBHandler):
                             UserDiscountSerializer
         """
 
-        data = mb_async(UserDiscountService.query_one)(args)
+        data = yield mb_async(UserDiscountService().query_one)(args)
 
         response = UserDiscountSerializer().dump(data)
 
@@ -98,7 +98,7 @@ class GetUserAllDiscountHandler(MBHandler):
                             UserDiscountSerializer
         """
 
-        data = mb_async(UserDiscountService.query_all)(args)
+        data = yield mb_async(UserDiscountService().query_all)(args)
 
         response = UserDiscountSerializer(many=True).dump(data)
 
@@ -144,6 +144,6 @@ class UpdateUserDiscountHandler(MBHandler):
                             type: boolean
         """
 
-        response = mb_async(UserDiscountService.update_user_discount)(args)
+        response = yield mb_async(UserDiscountService().update_user_discount)(args)
 
         self.success(response)

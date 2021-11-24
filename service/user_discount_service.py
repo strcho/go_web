@@ -30,7 +30,7 @@ class UserDiscountService(MBService):
                 TDiscountsUser.tenant_id == tenant_id,
                 TDiscountsUser.pin == args['pin'],
                 TDiscountsUser.iz_del == 0,
-            ).order_by(TDiscountsUser.created_at.asc()).first()
+            ).order_by(TDiscountsUser.id.asc()).first()
         except Exception as ex:
             dao_session.session.tenant_db().rollback()
             logger.error("query user discount is error: {}".format(ex))
@@ -51,7 +51,7 @@ class UserDiscountService(MBService):
                 TDiscountsUser.tenant_id == tenant_id,
                 TDiscountsUser.pin == args['pin'],
                 TDiscountsUser.iz_del == 0,
-            ).order_by(TDiscountsUser.created_at.asc()).all()
+            ).order_by(TDiscountsUser.id.asc()).all()
         except Exception as ex:
             dao_session.session.tenant_db().rollback()
             logger.error("query user all free order is error: {}".format(ex))

@@ -28,7 +28,7 @@ class FreeOrderService(MBService):
                 TFreeOrderUser.tenant_id == tenant_id,
                 TFreeOrderUser.pin == args['pin'],
                 TFreeOrderUser.free_num > 0,
-            ).order_by(TFreeOrderUser.created_at.asc()).first()
+            ).order_by(TFreeOrderUser.id.asc()).first()
         except Exception as ex:
             dao_session.session.tenant_db().rollback()
             logger.error("query user free order is error: {}".format(ex))
@@ -49,7 +49,7 @@ class FreeOrderService(MBService):
                 TFreeOrderUser.tenant_id == tenant_id,
                 TFreeOrderUser.pin == args['pin'],
                 TFreeOrderUser.free_num > 0,
-            ).order_by(TFreeOrderUser.created_at.asc()).all()
+            ).order_by(TFreeOrderUser.id.asc()).all()
         except Exception as ex:
             dao_session.session.tenant_db().rollback()
             logger.error("query user all free order is error: {}".format(ex))
@@ -79,6 +79,37 @@ class FreeOrderService(MBService):
 
         return True
 
+    def update_one(self, args: dict):
+        """
+        更新一条
+        """
+
+        data = {
+            "free_num": TFreeOrderUser.free_num - 1
+        }
+        try:
+            tenant_id = args['commandContext']['tenant_id']
+            d =  dao_session.session.tenant_db(
+            ).query(TFreeOrderUser).filter(
+                TFreeOrderUser.tenant_id == tenant_id,
+                TFreeOrderUser.pin == args['pin'],
+                TFreeOrderUser.free_num > 0,
+            ).order_by(TFreeOrderUser.id.asc()).first()
+            dao_session.session.tenant_db(
+            ).query(TFreeOrderUser).filter(
+                TFreeOrderUser.tenant_id == tenant_id,
+                TFreeOrderUser.id == d.id
+            ).update(data)
+
+            dao_session.session.tenant_db().commit()
+        except Exception as ex:
+            dao_session.session.tenant_db().rollback()
+            logger.error("query user free order is error: {}".format(ex))
+            logger.exception(ex)
+            raise MbException('更新用户免单优惠失败')
+
+        return True
+
     def update_user_free_order(self, args: dict):
         """
         更新用户免单信息
@@ -89,6 +120,7 @@ class FreeOrderService(MBService):
             self.insert_one(args)
         # 扣减免单次数
         else:
+            # self.update_one(args)
             user_free_order: TFreeOrderUser = self.query_one(args)
             if not user_free_order:
                 raise MbException("未找到免单优惠")
@@ -96,9 +128,10 @@ class FreeOrderService(MBService):
                 user_free_order.free_num -= 1
                 dao_session.session.tenant_db().commit()
             except Exception as ex:
-                dao_session.session.tenant_db().rollback()
+
                 logger.error("update user free order is error: {}".format(ex))
                 logger.exception(ex)
+                dao_session.session.tenant_db().rollback()
                 raise MbException("扣减用户免单优惠失败")
 
         return True

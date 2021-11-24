@@ -52,7 +52,7 @@ class GetUserFreeOrderHandler(MBHandler):
                             UserFreeOrderSerializer
         """
 
-        data = mb_async(FreeOrderService.query_one)(args)
+        data = yield mb_async(FreeOrderService().query_one)(args)
 
         response = UserFreeOrderSerializer().dump(data)
 
@@ -98,7 +98,7 @@ class GetUserAllFreeOrderHandler(MBHandler):
                             UserFreeOrderSerializer
         """
 
-        data = mb_async(FreeOrderService.query_all)(args)
+        data = yield mb_async(FreeOrderService().query_all)(args)
 
         response = UserFreeOrderSerializer(many=True).dump(data)
 
@@ -144,6 +144,6 @@ class UpdateUserFreeOrderHandler(MBHandler):
                             type: boolean
         """
 
-        response = mb_async(FreeOrderService.update_user_free_order)(args)
+        response = yield mb_async(FreeOrderService().update_user_free_order)(args)
 
         self.success(response)
