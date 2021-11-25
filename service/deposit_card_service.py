@@ -117,7 +117,7 @@ class DepositCardService(MBService):
             dao_session.session.tenant_db().rollback()
             logger.error("update user deposit card is error: {}".format(ex))
             logger.exception(ex)
-            raise MbException('更新用户押金卡时限失败')
+            raise MbException('更新用户押金卡时长失败')
 
     def query_one_day(self, args):
         """

@@ -100,6 +100,6 @@ class UserDiscountService(MBService):
                 dao_session.session.tenant_db().rollback()
                 logger.error("update user discount is error: {}".format(ex))
                 logger.exception(ex)
-                raise MbException("扣减用户免单次数失败")
+                raise MbException("删除用户折扣失败")
 
         return True
