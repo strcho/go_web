@@ -9,6 +9,7 @@ from routes.favorable_card.serializers import (
     GetFavorableWithServiceIdDeserializer,
     SendFavorableCardDeserializer,
     ModifyFavorableCardDeserializer,
+    UserFavorableCardDaysSerializer,
 )
 from service.favorable_card_service import FavorableCardUserService
 
@@ -98,12 +99,12 @@ class GetUserFavorableDaysHandle(MBHandler):
                         msg:
                             type: str
                         data:
-                            type: boolean
+                            UserFavorableCardDaysSerializer
         """
 
         data = yield mb_async(FavorableCardUserService().query_one_day)(args)
 
-        response = UserFavorableCardSerializer().dump(data)
+        response = UserFavorableCardDaysSerializer().dump(data)
 
         self.success(response)
 

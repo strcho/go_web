@@ -5,10 +5,10 @@ from mbutils.autodoc import use_args_query
 from mbutils.mb_handler import MBHandler
 from routes.deposit_card.serializers import (
     UserDepositCardSerializer,
-    GetDepositWithServiceIdDeserializer,
     SendDepositCardDeserializer,
     ModifyDepositCardDeserializer,
     GetDepositDeserializer,
+    UserDepositCardDaysSerializer,
 )
 from service.deposit_card_service import DepositCardService
 
@@ -95,12 +95,12 @@ class GetUserDepositDaysHandle(MBHandler):
                         msg:
                             type: str
                         data:
-                            type: boolean
+                            UserDepositCardDaysSerializer
         """
 
         data = yield mb_async(DepositCardService().query_one_day)(args)
 
-        response = UserDepositCardSerializer().dump(data)
+        response = UserDepositCardDaysSerializer().dump(data)
 
         self.success(response)
 
@@ -188,6 +188,6 @@ class ModifyUserDepositCardHandle(MBHandler):
                             type: boolean
         """
 
-        response = yield mb_async(DepositCardService().modify_time)(args)
+        response = yield mb_async(DepositCardService().modify_deposit_card_time)(args)
 
         self.success(response)

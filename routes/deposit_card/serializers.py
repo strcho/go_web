@@ -4,10 +4,10 @@ from marshmallow import (
 )
 
 from mbutils import (
-    DefaultMaker,
     ARG_DEFAULT,
 )
 from utils.base_serializer import ReqBaseDeserializer
+from utils.ebike_fields import EDateTime
 
 
 class GetDepositDeserializer(ReqBaseDeserializer):
@@ -20,7 +20,7 @@ class GetDepositDeserializer(ReqBaseDeserializer):
 
 class ModifyDepositCardDeserializer(ReqBaseDeserializer):
     """
-    修改用户优惠卡信息
+    修改用户押金卡信息
     """
 
     pin = fields.String(required=True, description="用户标识")
@@ -29,7 +29,7 @@ class ModifyDepositCardDeserializer(ReqBaseDeserializer):
 
 class SendDepositCardDeserializer(ReqBaseDeserializer):
     """
-    添加用户优惠卡
+    添加用户押金卡
     """
 
     pin = fields.String(required=True, description="用户标识")
@@ -38,8 +38,17 @@ class SendDepositCardDeserializer(ReqBaseDeserializer):
 
 class UserDepositCardSerializer(Schema):
     """
-    用户优惠卡
+    用户押金卡
     """
 
     pin = fields.Integer(required=False, load_default=ARG_DEFAULT, description="用户标识")
-    expired_date = fields.DateTime(description="过期时间")
+    expired_date = EDateTime(description="过期时间")
+
+
+class UserDepositCardDaysSerializer(Schema):
+    """
+    用户押金卡可用天数
+    """
+
+    days = fields.Integer(required=True, description='可用天数')
+    expired_date_str = fields.String(required=True, description='到期时间')

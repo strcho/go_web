@@ -58,7 +58,13 @@ class FavorableCardUserService(MBService):
             end_time = card_info.end_time
             end_time_str = end_time.strftime("%Y-%m-%d %H:%M")
             day_time = (end_time - datetime.now()).days
-        return day_time + 1 if day_time >= 0 else 0, end_time_str
+
+        data = {
+            'days': day_time + 1 if day_time >= 0 else 0,
+            'expired_date_str': end_time_str
+        }
+
+        return data
 
     # 插入一张优惠卡
     def insert_one(self, args):
