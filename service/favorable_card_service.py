@@ -21,34 +21,16 @@ class FavorableCardUserService(MBService):
         """
         获取当前用户的优惠卡
         """
-        service_id = args['service_id']
         pin = args['pin']
         card_info = None
         try:
             card_info = dao_session.session.tenant_db().query(TFavorableCard). \
-                filter(TFavorableCard.pin == pin,
-                       TFavorableCard.service_id == service_id).first()
+                filter(TFavorableCard.pin == pin).first()
         except Exception as e:
             dao_session.session.tenant_db().rollback()
             logger.error("show favorable card days is error: {}".format(e))
             logger.exception(e)
         return card_info
-
-    def query_all(self, args: dict):
-        """
-        获取当前用户的全部优惠卡
-        """
-        pin = args['pin']
-        card_info_list = []
-        try:
-            card_info_list = dao_session.session.tenant_db().query(TFavorableCard). \
-                filter(TFavorableCard.pin == pin,).all()
-
-        except Exception as e:
-            dao_session.session.tenant_db().rollback()
-            logger.error("show favorable card days is error: {}".format(e))
-            logger.exception(e)
-        return card_info_list
 
     # 获取当前用户的优惠卡剩余天数
     def query_one_day(self, args):
@@ -70,12 +52,10 @@ class FavorableCardUserService(MBService):
     def insert_one(self, args):
         commandContext = args['commandContext']
         param = self.get_model_common_field(commandContext)
-        param = param.update({
+        param.update({
             "pin": args['pin'],
             "begin_time": datetime.now(),
             "end_time": datetime.now() + timedelta(days=args["card_time"]),
-            "config_id": args['config_id'],
-            "service_id": args['service_id'],
         })
         try:
             user_card = TFavorableCard(**param)

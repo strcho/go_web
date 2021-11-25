@@ -108,12 +108,10 @@ class DepositCardService(MBService):
             if days == 0:
                 expired_date = datetime.now()
             else:
-                if deposit_card.expired_date > datetime.now():
-                    expired_date = deposit_card.expired_date + timedelta(days=days)
-                else:
-                    expired_date = datetime.now() + timedelta(days=days)
+                expired_date = datetime.now() + timedelta(days=days)
 
             deposit_card.expired_date = expired_date
+            dao_session.session.tenant_db().commit()
         except Exception as ex:
             dao_session.session.tenant_db().rollback()
             logger.error("update user deposit card is error: {}".format(ex))
@@ -126,14 +124,11 @@ class DepositCardService(MBService):
         """
 
         card_info: TDepositCard = self.query_one(args)
-        print(card_info)
         day_time, expired_date_str = -1, '-'
         if card_info:
             expired_date = card_info.expired_date
             expired_date_str = expired_date.strftime("%Y-%m-%d %H:%M")
             day_time = (expired_date - datetime.now()).days
-            print(day_time)
-
         data = {
             'days': day_time + 1 if day_time >= 0 else 0,
             'expired_date_str': expired_date_str

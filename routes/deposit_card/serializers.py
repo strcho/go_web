@@ -10,7 +10,7 @@ from utils.base_serializer import ReqBaseDeserializer
 from utils.ebike_fields import EDateTime
 
 
-class GetDepositDeserializer(ReqBaseDeserializer):
+class GetDepositCardDeserializer(ReqBaseDeserializer):
     """
     用户信息
     """

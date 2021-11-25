@@ -56,9 +56,6 @@ class EditWalletHandle(MBHandler):
         valid_data = (pin, args)
         response = yield mb_async(WalletService().set_user_wallet)(*valid_data)
 
-        # 测试内部调用
-        # yield mb_async(print)("response: ", apiTest4({"name": "zhangsan", "timeout": 1000}))
-
         self.success(response)
 
 

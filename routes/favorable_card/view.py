@@ -1,3 +1,5 @@
+import datetime
+
 from tornado.gen import coroutine
 
 from mbutils import mb_async
@@ -6,7 +8,6 @@ from mbutils.mb_handler import MBHandler
 from routes.favorable_card.serializers import (
     GetFavorableDeserializer,
     UserFavorableCardSerializer,
-    GetFavorableWithServiceIdDeserializer,
     SendFavorableCardDeserializer,
     ModifyFavorableCardDeserializer,
     UserFavorableCardDaysSerializer,
@@ -53,10 +54,9 @@ class GetUserFavorableCardHandle(MBHandler):
                             UserFavorableCardSerializer
         """
 
-        if args.get("service_id"):
-            data = yield mb_async(FavorableCardUserService().query_one)(args)
-        else:
-            data = yield mb_async(FavorableCardUserService().query_all)(args)
+        data = yield mb_async(FavorableCardUserService().query_one)(args)
+
+        data = None if data.end_time <= datetime.datetime.now() else data
 
         response = UserFavorableCardSerializer().dump(data)
 
@@ -69,7 +69,7 @@ class GetUserFavorableDaysHandle(MBHandler):
     """
 
     @coroutine
-    @use_args_query(GetFavorableWithServiceIdDeserializer)
+    @use_args_query(GetFavorableDeserializer)
     def post(self, args):
         """
         获取用户优惠卡剩余天数

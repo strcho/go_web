@@ -6,6 +6,7 @@ from mbutils import (
     dao_session,
     logger,
     DefaultMaker,
+    MbException,
 )
 from model.all_model import TUserWallet
 from service import MBService
@@ -23,12 +24,9 @@ class WalletService(MBService):
             user_wallet = dao_session.session.tenant_db().query(TUserWallet)\
                 .filter(TUserWallet.pin == pin,
                         TUserWallet.tenant_id == tenant_id).first()
-            print('insert_one', '0000000', user_wallet)
             if not user_wallet:
-                print('insert_one', '11111111')
                 is_suc = self.insert_one(pin, args)
                 if is_suc:
-                    print('insert_one', '222222')
                     user_wallet = dao_session.session.tenant_db().query(TUserWallet)\
                         .filter(TUserWallet.pin == pin,
                                 TUserWallet.tenant_id == tenant_id).first()
@@ -44,16 +42,13 @@ class WalletService(MBService):
         data = self.get_model_common_field(commandContext)
 
         data['pin'] = pin
-        print(data)
         user_wallet = TUserWallet(**data)
         dao_session.session.tenant_db().add(user_wallet)
         try:
-            print('insert one')
             dao_session.session.tenant_db().commit()
             return True
 
         except Exception as e:
-            print('insert one, 222222', e)
             dao_session.session.tenant_db().rollback()
             logger.error("insert user wallet is error: {}".format(e))
             logger.exception(e)
@@ -75,12 +70,11 @@ class WalletService(MBService):
                 .filter(TUserWallet.pin == args["pin"], TUserWallet.tenant_id == args["tenant_id"]) \
                 .update(params)
             dao_session.session.tenant_db().commit()
-            return True
         except Exception as e:
             dao_session.session.tenant_db().rollback()
             logger.error("update user wallet is error: {}".format(e))
             logger.exception(e)
-            return False
+            raise MbException("更新用户钱包失败")
 
     def query_list(self, valid_data, enable=2):
 
@@ -141,7 +135,6 @@ class WalletService(MBService):
                 dao_session.redis_session.r.hset(USER_WALLET_CACHE.format(tenant_id=tenant_id, pin=pin),
                                                  mapping={"content": json.dumps(user_wallet_dict),
                                                           "version": datetime.now().timestamp()})
-
         return user_wallet_dict
 
     def set_user_wallet(self, pin: str, args: dict,):
@@ -149,18 +142,18 @@ class WalletService(MBService):
         try:
             user_wallet_dict = self.get_user_wallet(pin=pin, args=args)
 
-            if not isinstance(args.get('change_recharge'), DefaultMaker):
+            if self.exists_param(args['change_recharge']):
                 user_wallet_dict['balance'] += args['change_recharge']
                 user_wallet_dict['recharge'] += args['change_recharge']
 
-            if not isinstance(args.get('change_present'), DefaultMaker):
+            if self.exists_param(args['change_present']):
                 user_wallet_dict['present'] += args['change_present']
                 user_wallet_dict['recharge'] += args['change_present']
 
-            if not isinstance(args.get('change_deposited_mount'), DefaultMaker):
-                user_wallet_dict['balance'] += args['change_recharge']
+            if self.exists_param(args['change_deposited_mount']):
+                user_wallet_dict['deposited_mount'] += args['change_deposited_mount']
 
-            if not isinstance(args.get('deposited_stats'), DefaultMaker):
+            if self.exists_param(args['deposited_stats']):
                 user_wallet_dict['deposited_stats'] = args['deposited_stats']
 
             dao_session.redis_session.r.hset(USER_WALLET_CACHE.format(tenant_id=user_wallet_dict['tenant_id'], pin=pin),
@@ -171,4 +164,7 @@ class WalletService(MBService):
             return True
 
         except Exception as e:
-            return False
+            dao_session.session.tenant_db().rollback()
+            logger.error("update user wallet is error: {}".format(e))
+            logger.exception(e)
+            raise MbException("更新用户钱包失败")

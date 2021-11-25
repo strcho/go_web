@@ -78,8 +78,8 @@ class TFavorableCard(CommonField):
     pin = Column(String(64), nullable=False, index=True, comment='用户标识')
     begin_time = Column(DateTime, nullable=False, comment='开始时间')  # 使用优惠卡的开始时间
     end_time = Column(DateTime, nullable=False, comment='结束时间')  # 使用优惠卡的结束时间
-    config_id = Column(INTEGER(11), nullable=False, comment='计费配置的id')  # 计费配置的id
-    service_id = Column(INTEGER(11), nullable=False, index=True, comment='服务区的id')  # 服务区的id
+    # config_id = Column(INTEGER(11), nullable=False, comment='计费配置的id')  # 计费配置的id
+    # service_id = Column(INTEGER(11), nullable=False, index=True, comment='服务区的id')  # 服务区的id
 
 
 # 用户折扣

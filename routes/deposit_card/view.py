@@ -7,7 +7,7 @@ from routes.deposit_card.serializers import (
     UserDepositCardSerializer,
     SendDepositCardDeserializer,
     ModifyDepositCardDeserializer,
-    GetDepositDeserializer,
+    GetDepositCardDeserializer,
     UserDepositCardDaysSerializer,
 )
 from service.deposit_card_service import DepositCardService
@@ -19,7 +19,7 @@ class GetUserDepositCardHandle(MBHandler):
     """
 
     @coroutine
-    @use_args_query(GetDepositDeserializer)
+    @use_args_query(GetDepositCardDeserializer)
     def post(self, args):
         """
         获取用户押金卡
@@ -31,7 +31,7 @@ class GetUserDepositCardHandle(MBHandler):
         parameters:
           - in: body
             schema:
-                GetDepositDeserializer
+                GetDepositCardDeserializer
         responses:
             200:
                 schema:
@@ -65,7 +65,7 @@ class GetUserDepositDaysHandle(MBHandler):
     """
 
     @coroutine
-    @use_args_query(GetDepositDeserializer)
+    @use_args_query(GetDepositCardDeserializer)
     def post(self, args):
         """
         获取用户押金卡剩余天数
@@ -77,7 +77,7 @@ class GetUserDepositDaysHandle(MBHandler):
         parameters:
           - in: body
             schema:
-                GetDepositDeserializer
+                GetDepositCardDeserializer
         responses:
             200:
                 schema:
