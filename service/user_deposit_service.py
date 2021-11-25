@@ -28,7 +28,7 @@ class UserDepositService(WalletService):
                 print('user_wallet_dict = find_user_wallet["content"]')
                 user_wallet_dict = find_user_wallet["content"]
         else:
-            user_wallet: TUserWallet = self.query_one(pin=pin, args=args)
+            user_wallet: TUserWallet = self.query_one(args=args)
             user_wallet_dict = orm_to_dict(user_wallet, TUserWallet)
 
             if user_wallet:

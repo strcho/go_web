@@ -96,11 +96,11 @@ class RidingCardService(MBService):
         except Exception:
             raise MbException("修改骑行卡时长失败")
 
-    def user_card_info(self, valid_data):
+    def user_card_info(self, args):
         """
         获取用户骑行卡信息
         """
-        pin, _ = valid_data
+        pin = args['pin']
         try:
             dao_session.session.tenant_db().query(TRidingCard).filter(
                 TRidingCard.state == UserRidingCardState.USING.value,
@@ -134,10 +134,6 @@ class RidingCardService(MBService):
         """
         service_id, = valid_data
         dao_session.redis_session.r.hset(ALL_USER_LAST_SERVICE_ID, pin, service_id)
-
-        # 暂时移除此字段
-        # rule_info = ConfigService().get_router_content(ConfigName.SUPERRIDINGCARD.value, service_id)\
-        #     .get("rule_info", "")
 
         first_id = self.get_current_card_id(service_id, pin)
         res_dict = {"used": [], "expired": [], "rule_info": "", "cost_use": first_id}

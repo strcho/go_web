@@ -54,9 +54,7 @@ class GetRidingCardHandle(MBHandler):
                             RidingCardSerializer
         """
 
-        pin = args['pin']
-        valid_data = (pin, args)
-        data = yield mb_async(RidingCardService().user_card_info)(valid_data)
+        data = yield mb_async(RidingCardService().user_card_info)(args)
         response = RidingCardSerializer().dump(data)
 
         self.success(response)

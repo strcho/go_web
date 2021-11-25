@@ -18,8 +18,9 @@ class WalletService(MBService):
     钱包
     """
 
-    def query_one(self, pin: str, args: dict):
+    def query_one(self, args: dict):
         try:
+            pin = args['pin']
             tenant_id = args['commandContext']['tenant_id']
             user_wallet = dao_session.session.tenant_db().query(TUserWallet)\
                 .filter(TUserWallet.pin == pin,
@@ -128,7 +129,7 @@ class WalletService(MBService):
                 print('user_wallet_dict = find_user_wallet["content"]')
                 user_wallet_dict = find_user_wallet["content"]
         else:
-            user_wallet: TUserWallet = self.query_one(pin=pin, args=args)
+            user_wallet: TUserWallet = self.query_one(args=args)
             user_wallet_dict = orm_to_dict(user_wallet, TUserWallet)
 
             if user_wallet:

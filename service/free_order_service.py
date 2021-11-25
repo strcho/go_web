@@ -10,7 +10,7 @@ from service import MBService
 from utils.constant.user import UserFreeOrderType
 
 
-class FreeOrderService(MBService):
+class UserFreeOrderService(MBService):
     """
     用户免单
     """

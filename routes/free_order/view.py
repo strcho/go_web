@@ -10,7 +10,7 @@ from routes.free_order.serializers import (
     UserFreeOrderSerializer,
     UpdateUserFreeOrderDeserializer,
 )
-from service.free_order_service import FreeOrderService
+from service.free_order_service import UserFreeOrderService
 
 
 class GetUserFreeOrderHandler(MBHandler):
@@ -52,7 +52,7 @@ class GetUserFreeOrderHandler(MBHandler):
                             UserFreeOrderSerializer
         """
 
-        data = yield mb_async(FreeOrderService().query_one)(args)
+        data = yield mb_async(UserFreeOrderService().query_one)(args)
 
         response = UserFreeOrderSerializer().dump(data)
 
@@ -98,7 +98,7 @@ class GetUserAllFreeOrderHandler(MBHandler):
                             UserFreeOrderSerializer
         """
 
-        data = yield mb_async(FreeOrderService().query_all)(args)
+        data = yield mb_async(UserFreeOrderService().query_all)(args)
 
         response = UserFreeOrderSerializer(many=True).dump(data)
 
@@ -144,6 +144,6 @@ class UpdateUserFreeOrderHandler(MBHandler):
                             type: boolean
         """
 
-        response = yield mb_async(FreeOrderService().update_user_free_order)(args)
+        response = yield mb_async(UserFreeOrderService().update_user_free_order)(args)
 
         self.success(response)

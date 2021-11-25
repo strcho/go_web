@@ -23,10 +23,11 @@ class DepositCardService(MBService):
         """
 
         try:
+            pin = args['pin']
             deposit_card: TDepositCard = (
                 dao_session.session.tenant_db().query(TDepositCard).filter(
                     TDepositCard.tenant_id == args['commandContext']['tenant_id'],
-                    TDepositCard.pin == args['pin'],
+                    TDepositCard.pin == pin,
                 ).first()
             )
         except Exception as ex:
