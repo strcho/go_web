@@ -4,6 +4,8 @@ from datetime import datetime
 from mbshort.str_and_datetime import orm_to_dict
 from mbutils import (
     dao_session,
+    logger,
+    MbException,
 )
 from model.all_model import TUserWallet
 from service.wallet_service import WalletService
@@ -54,4 +56,7 @@ class UserDepositService(WalletService):
             return True
 
         except Exception as e:
-            return False
+            dao_session.session.tenant_db().rollback()
+            logger.error("update user wallet is error: {}".format(e))
+            logger.exception(e)
+            raise MbException("更新用户押金失败")
