@@ -52,7 +52,7 @@ class EditWalletHandle(MBHandler):
                         data:
                             type: boolean
       """
-        pin = args.get('pin')
+        pin = args['commandContext']['pin']
         valid_data = (pin, args)
         response = yield mb_async(WalletService().set_user_wallet)(*valid_data)
 
@@ -98,7 +98,7 @@ class GetWalletHandle(MBHandler):
                             UserWalletSerializer
         """
 
-        pin = args.get('pin')
+        pin = args['commandContext']['pin']
         valid_data = (pin, args)
         data = yield mb_async(WalletService().get_user_wallet)(*valid_data)
         response = UserWalletSerializer().dump(data)

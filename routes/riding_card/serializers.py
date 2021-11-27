@@ -3,7 +3,6 @@ from marshmallow import (
     Schema,
 )
 
-from mbutils import DefaultMaker
 from utils.base_serializer import ReqBaseDeserializer
 
 
@@ -12,7 +11,8 @@ class GetRidingCardDeserializer(ReqBaseDeserializer):
     获取用户骑行卡
     """
 
-    pin = fields.String(required=True, description="用户标识")
+    # pin = fields.String(required=True, description="用户标识")
+    pass
 
 
 class EditRidingCardDeserializer(ReqBaseDeserializer):
@@ -30,7 +30,7 @@ class SendRidingCardDeserializer(ReqBaseDeserializer):
     发放骑行卡给用户
     """
 
-    pin = fields.String(required=True, description="用户标识")
+    # pin = fields.String(required=True, description="用户标识")
     config_id = fields.Integer(required=True, description="骑行卡配置ID（card_id）")
     content = fields.String(required=True, description="购卡时候配置信息")
 
@@ -69,7 +69,7 @@ class RidingCardSerializer(Schema):
 class CurrentDuringTimeDeserializer(ReqBaseDeserializer):
     """查询当前骑行卡的持续时间参数反序列化"""
 
-    pin = fields.String(required=True, description='用户标识')
+    # pin = fields.String(required=True, description='用户标识')
     service_id = fields.Integer(required=True, description='服务区ID')
 
 

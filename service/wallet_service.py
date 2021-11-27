@@ -20,7 +20,7 @@ class WalletService(MBService):
 
     def query_one(self, args: dict):
         try:
-            pin = args['pin']
+            pin = args['commandContext']['pin']
             tenant_id = args['commandContext']['tenant_id']
             user_wallet = dao_session.session.tenant_db().query(TUserWallet)\
                 .filter(TUserWallet.pin == pin,

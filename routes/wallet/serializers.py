@@ -16,7 +16,8 @@ class GetWalletDeserializer(ReqBaseDeserializer):
     获取用户钱包信息
     """
 
-    pin = fields.String(required=True, description="用户标识")
+    # pin = fields.String(required=True, description="用户标识")
+    pass
 
 
 class GetWalletListDeserializer(ReqBaseDeserializer):
@@ -43,7 +44,7 @@ class UpdateWalletDeserializer(ReqBaseDeserializer):
     更新用户钱包信息
     """
 
-    pin = fields.String(required=True, description="用户标识")
+    # pin = fields.String(required=True, description="用户标识")
     change_recharge = fields.Integer(required=False, load_default=ARG_DEFAULT, description="变动的充值金额*100")
     change_present = fields.Integer(required=False, load_default=ARG_DEFAULT, description="变动的赠送金额*100")
     change_deposited_mount = fields.Integer(required=False, load_default=ARG_DEFAULT, description="变动的押金金额*100")

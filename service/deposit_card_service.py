@@ -23,7 +23,7 @@ class DepositCardService(MBService):
         """
 
         try:
-            pin = args['pin']
+            pin = args['commandContext']['pin']
             deposit_card: TDepositCard = (
                 dao_session.session.tenant_db().query(TDepositCard).filter(
                     TDepositCard.tenant_id == args['commandContext']['tenant_id'],

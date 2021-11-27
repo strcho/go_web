@@ -12,15 +12,14 @@ from routes.wallet.serializers import UserWalletSerializer
 from utils.base_serializer import ReqBaseDeserializer
 
 
-class UserAccountDeserializer(ReqBaseDeserializer):
+class PlatformUserAccountDeserializer(Schema):
     """
     获取用户资产信息
     """
-    # pin = fields.String(required=True, description="用户标识")
-    pass
+    pin = fields.String(required=True, description="用户标识")
 
 
-class UserAccountSerializer(Schema):
+class PlatformUserAccountSerializer(Schema):
     """
     用户资产信息序列化
     """

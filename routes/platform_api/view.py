@@ -5,9 +5,9 @@ from tornado.gen import coroutine
 from mbutils import mb_async
 from mbutils.autodoc import use_args_query
 from mbutils.mb_handler import MBHandler
-from routes.user_account.serializers import (
-    UserAccountDeserializer,
-    UserAccountSerializer,
+from routes.platform_api.serializers import (
+    PlatformUserAccountDeserializer,
+    PlatformUserAccountSerializer,
 )
 from service.deposit_card_service import DepositCardService
 from service.favorable_card_service import FavorableCardUserService
@@ -17,16 +17,16 @@ from service.user_discount_service import UserDiscountService
 from service.wallet_service import WalletService
 
 
-class UserAccount(MBHandler):
+class PlatformUserAccount(MBHandler):
     """
     用户资产
     """
 
     @coroutine
-    @use_args_query(UserAccountDeserializer)
+    @use_args_query(PlatformUserAccountDeserializer)
     def post(self, args):
         """
-          获取用户资产
+          平台获取用户资产
           ---
           tags: [资产]
           summary: 获取用户资产
@@ -57,7 +57,7 @@ class UserAccount(MBHandler):
           """
 
         user_wallet = yield mb_async(WalletService().query_one)(args)
-        user_riding_card = yield mb_async(RidingCardService().current_duriong_card)(args)
+        user_riding_card = yield mb_async(RidingCardService().user_card_info)(args)
         user_deposit_card = yield mb_async(DepositCardService().query_one)(args)
         user_favorable_card = yield mb_async(FavorableCardUserService().query_one)(args)
         user_free_order = yield mb_async(UserFreeOrderService().query_one)(args)
@@ -72,6 +72,6 @@ class UserAccount(MBHandler):
             "user_discount": user_discount,
         }
 
-        respose = UserAccountSerializer().dump(data)
+        respose = PlatformUserAccountSerializer().dump(data)
 
         self.success(respose)

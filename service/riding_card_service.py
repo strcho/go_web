@@ -100,7 +100,7 @@ class RidingCardService(MBService):
         """
         获取用户骑行卡信息
         """
-        pin = args['pin']
+        pin = args['commandContext']['pin']
         try:
             dao_session.session.tenant_db().query(TRidingCard).filter(
                 TRidingCard.state == UserRidingCardState.USING.value,
@@ -229,7 +229,7 @@ class RidingCardService(MBService):
         """
         添加骑行卡
         """
-        pin = args['pin']
+        pin = args['commandContext']['pin']
         config_id = args['config_id']
         content_str = args['content']
         if send_time and datetime.now().timestamp() - send_time > 5:
@@ -294,7 +294,7 @@ class RidingCardService(MBService):
                 }
         """
         service_id = args['service_id']
-        pin = args['pin']
+        pin = args['commandContext']['pin']
         first_card_id = self.get_current_card_id(service_id=service_id, pin=pin)
         if first_card_id:
             first_card: TRidingCard = dao_session.session.tenant_db().query(TRidingCard).filter_by(id=first_card_id).first()
@@ -308,3 +308,52 @@ class RidingCardService(MBService):
                     "free_distance": 0,
                     "free_money": 0
                     }
+
+    def current_duriong_card(self, args: dict):
+
+        pin = args['commandContext']['pin']
+        service_id = dao_session.redis_session.r.hget(ALL_USER_LAST_SERVICE_ID, pin) or 0
+
+        # 1.骑行卡过期判定
+        dao_session.session.tenant_db().query(
+            TRidingCard
+        ).filter(
+            TRidingCard.pin == pin,
+            TRidingCard.state == UserRidingCardState.USING.value,
+            TRidingCard.card_expired_date < datetime.now()
+        ).update({"state": UserRidingCardState.EXPIRED.value})
+
+        # 2.骑行卡次数重置, 如果上次使用时间不是今天的, 则把非次卡的, 时间和剩余次数重置到最多再计算
+        dao_session.session.tenant_db().query(
+            TRidingCard
+        ).filter(
+            TRidingCard.pin == pin,
+            TRidingCard.state == UserRidingCardState.USING.value,
+            TRidingCard.iz_total_times == 0,
+            or_(TRidingCard.last_use_time < datetime.now().date(),
+                TRidingCard.last_use_time is None),
+        ).update(
+            {
+                "remain_times": TRidingCard.rece_times,
+                "last_use_time": datetime.now()
+            }
+        )
+        dao_session.session.tenant_db().commit()
+        # 3.选出最佳骑行卡
+        many = dao_session.session.tenant_db().query(
+            TRidingCard
+        ).filter(
+            TRidingCard.pin == pin,
+            TRidingCard.state == UserRidingCardState.USING.value,
+            TRidingCard.card_expired_date >= datetime.now(),
+            TRidingCard.remain_times > 0
+        ).order_by(TRidingCard.deduction_type.asc(), TRidingCard.iz_total_times.asc(),
+                   TRidingCard.card_expired_date.asc()).all()
+        card = {}
+        for card in many:
+            if not card.effective_service_ids or card.effective_service_ids == "all":
+                return card
+            else:
+                if str(service_id) in card.effective_service_ids.split(";"):
+                    return card
+        return card

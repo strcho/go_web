@@ -13,7 +13,8 @@ class GetFavorableDeserializer(ReqBaseDeserializer):
     用户信息
     """
 
-    pin = fields.String(required=True, description="用户标识")
+    # pin = fields.String(required=True, description="用户标识")
+    pass
 
 
 class ModifyFavorableCardDeserializer(ReqBaseDeserializer):
@@ -21,7 +22,7 @@ class ModifyFavorableCardDeserializer(ReqBaseDeserializer):
     修改用户优惠卡信息
     """
 
-    pin = fields.String(required=True, description="用户标识")
+    # pin = fields.String(required=True, description="用户标识")
     duration = fields.Integer(required=True, description="优惠卡时长")
 
 
@@ -30,7 +31,7 @@ class SendFavorableCardDeserializer(ReqBaseDeserializer):
     添加用户优惠卡
     """
 
-    pin = fields.String(required=True, description="用户标识")
+    # pin = fields.String(required=True, description="用户标识")
     card_time = fields.Integer(required=True, description="优惠卡天数")
 
 

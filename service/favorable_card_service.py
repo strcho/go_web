@@ -21,7 +21,7 @@ class FavorableCardUserService(MBService):
         """
         获取当前用户的优惠卡
         """
-        pin = args['pin']
+        pin = args['commandContext']['pin']
         card_info = None
         try:
             card_info = dao_session.session.tenant_db().query(TFavorableCard). \
