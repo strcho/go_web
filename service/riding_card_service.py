@@ -205,6 +205,21 @@ class RidingCardService(MBService):
                 "last_use_time": datetime.now()
             }
         )
+        # 过期当日将非次卡的可用次数置零
+        dao_session.session.tenant_db().query(
+            TRidingCard
+        ).filter(
+            TRidingCard.pin == pin,
+            TRidingCard.state == UserRidingCardState.USING.value,
+            TRidingCard.iz_total_times == 0,
+            TRidingCard.card_expired_date.date() == datetime.now().date(),
+        ).update(
+            {
+                "remain_times": 0,
+                "last_use_time": datetime.now()
+            }
+        )
+
         dao_session.session.tenant_db().commit()
         # 3.选出最佳骑行卡id
         many = dao_session.session.tenant_db().query(
