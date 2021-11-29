@@ -14,10 +14,11 @@ def add_handler(prefix):
         (r'{}/internal'.format(prefix), include('routes.deposit_card')),
         (r'{}/internal'.format(prefix), include('routes.user_deposit')),
         (r'{}/internal'.format(prefix), include('routes.user_account')),
+        (r'{}/platform'.format(prefix), include('routes.platform_api')),
     ])
 
 
-ROUTER = '/account'
+ROUTER = '/ebike-account'
 K8SROUTER = ""
 EBIKE_ROUTER = cfg.get("ROUTER", "")
 handlers = create_handlers(ROUTER, add_handler, EBIKE_ROUTER)

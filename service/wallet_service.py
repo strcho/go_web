@@ -142,7 +142,7 @@ class WalletService(MBService):
 
         try:
             user_wallet_dict = self.get_user_wallet(pin=pin, args=args)
-
+            dao_session.redis_session.r.delete(USER_WALLET_CACHE.format(tenant_id=user_wallet_dict['tenant_id'], pin=pin))
             if self.exists_param(args['change_recharge']):
                 user_wallet_dict['balance'] += args['change_recharge']
                 user_wallet_dict['recharge'] += args['change_recharge']
@@ -156,10 +156,6 @@ class WalletService(MBService):
 
             if self.exists_param(args['deposited_stats']):
                 user_wallet_dict['deposited_stats'] = args['deposited_stats']
-
-            dao_session.redis_session.r.hset(USER_WALLET_CACHE.format(tenant_id=user_wallet_dict['tenant_id'], pin=pin),
-                                             mapping={"content": json.dumps(user_wallet_dict),
-                                                      "version": datetime.now().timestamp()})
 
             self.update_one(pin=pin, args=user_wallet_dict)
             return True

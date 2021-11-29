@@ -1,8 +1,7 @@
-from routes.user_account.view import UserAccount
+from routes.platform_api.view import PlatformUserAccount
 
 
 # /account/user
 urls = [
-        (r'/user_account', UserAccount),  # 用户资产
-        (r'pal/user_account', UserAccount),  # 用户资产
+        (r'/platform_user_account', PlatformUserAccount),  # 用户资产
 ]

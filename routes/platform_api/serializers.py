@@ -9,7 +9,6 @@ from routes.favorable_card.serializers import UserFavorableCardSerializer
 from routes.free_order.serializers import UserFreeOrderSerializer
 from routes.riding_card.serializers import RidingCardInfoSerializer
 from routes.wallet.serializers import UserWalletSerializer
-from utils.base_serializer import ReqBaseDeserializer
 
 
 class PlatformUserAccountDeserializer(Schema):
