@@ -72,6 +72,6 @@ class PlatformUserAccount(MBHandler):
             "user_discount": user_discount,
         }
 
-        respose = PlatformUserAccountSerializer().dump(data)
+        response = PlatformUserAccountSerializer().dump(data)
 
-        self.success(respose)
+        self.success(response)
