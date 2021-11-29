@@ -18,7 +18,7 @@ def add_handler(prefix):
     ])
 
 
-ROUTER = '/ebike-account'
+ROUTER = '/ebike_account'
 K8SROUTER = ""
 EBIKE_ROUTER = cfg.get("ROUTER", "")
 handlers = create_handlers(ROUTER, add_handler, EBIKE_ROUTER)
