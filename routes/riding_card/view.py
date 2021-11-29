@@ -232,3 +232,46 @@ class AddCountHandler(MBHandler):
         response = yield mb_async(RidingCardService().add_count)(args)
 
         self.success(response)
+
+
+class BusEditRidingCardHandle(MBHandler):
+    """
+    编辑用户骑行卡
+    """
+
+    @coroutine
+    @use_args_query(EditRidingCardDeserializer)
+    def post(self, args: dict):
+        """
+        修改用户骑行卡信息
+        ---
+        tags: [B端-骑行卡]
+        summary: 修改用户骑行卡信息
+        description: 修改用户骑行卡信息
+
+        parameters:
+          - in: body
+            schema:
+                EditRidingCardDeserializer
+        responses:
+            200:
+                schema:
+                    type: object
+                    required:
+                      - success
+                      - code
+                      - msg
+                      - data
+                    properties:
+                        success:
+                            type: boolean
+                        code:
+                            type: str
+                        msg:
+                            type: str
+                        data:
+                            type: boolean
+        """
+        response = yield mb_async(RidingCardService().modify_time(args))
+
+        self.success(response)

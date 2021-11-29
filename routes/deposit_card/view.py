@@ -191,3 +191,48 @@ class ModifyUserDepositCardHandle(MBHandler):
         response = yield mb_async(DepositCardService().modify_deposit_card_time)(args)
 
         self.success(response)
+
+
+class BusModifyUserDepositCardHandle(MBHandler):
+    """
+    编辑用户押金卡
+    """
+
+    @coroutine
+    @use_args_query(ModifyDepositCardDeserializer)
+    def post(self, args):
+        """
+        修改用户押金卡
+        ---
+        tags: [B端-押金卡]
+        summary: 修改用户押金卡
+        description: 修改用户押金卡
+
+        parameters:
+          - in: body
+            schema:
+                ModifyDepositCardDeserializer
+        responses:
+            200:
+                schema:
+                    type: object
+                    required:
+                      - success
+                      - code
+                      - msg
+                      - data
+                    properties:
+                        success:
+                            type: boolean
+                        code:
+                            type: str
+                        msg:
+                            type: str
+                        data:
+                            type: boolean
+        """
+
+        response = yield mb_async(DepositCardService().modify_deposit_card_time)(args)
+
+        self.success(response)
+

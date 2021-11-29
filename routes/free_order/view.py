@@ -147,3 +147,47 @@ class UpdateUserFreeOrderHandler(MBHandler):
         response = yield mb_async(UserFreeOrderService().update_user_free_order)(args)
 
         self.success(response)
+
+
+class BusUpdateUserFreeOrderHandler(MBHandler):
+    """
+    更新用户的免单优惠
+    """
+
+    @coroutine
+    @use_args_query(UpdateUserFreeOrderDeserializer)
+    def post(self, args):
+        """
+        更新用户的免单优惠
+        ---
+        tags: [B端-免单]
+        summary: 更新用户的免单优惠
+        description: 更新用户的免单优惠
+
+        parameters:
+          - in: body
+            schema:
+                UpdateUserFreeOrderDeserializer
+        responses:
+            200:
+                schema:
+                    type: object
+                    required:
+                      - success
+                      - code
+                      - msg
+                      - data
+                    properties:
+                        success:
+                            type: boolean
+                        code:
+                            type: str
+                        msg:
+                            type: str
+                        data:
+                            type: boolean
+        """
+
+        response = yield mb_async(UserFreeOrderService().update_user_free_order)(args)
+
+        self.success(response)

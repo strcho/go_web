@@ -147,3 +147,47 @@ class UpdateUserDiscountHandler(MBHandler):
         response = yield mb_async(UserDiscountService().update_user_discount)(args)
 
         self.success(response)
+
+
+class BusUpdateUserDiscountHandler(MBHandler):
+    """
+    更新用户的折扣优惠
+    """
+
+    @coroutine
+    @use_args_query(UpdateUserDiscountDeserializer)
+    def post(self, args):
+        """
+        更新用户的折扣优惠
+        ---
+        tags: [B端-折扣]
+        summary: 更新用户的折扣优惠
+        description: 更新用户的折扣优惠
+
+        parameters:
+          - in: body
+            schema:
+                UpdateUserDiscountDeserializer
+        responses:
+            200:
+                schema:
+                    type: object
+                    required:
+                      - success
+                      - code
+                      - msg
+                      - data
+                    properties:
+                        success:
+                            type: boolean
+                        code:
+                            type: str
+                        msg:
+                            type: str
+                        data:
+                            type: boolean
+        """
+
+        response = yield mb_async(UserDiscountService().update_user_discount)(args)
+
+        self.success(response)

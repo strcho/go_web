@@ -4,6 +4,7 @@ from routes.riding_card.view import (
         CurrentDuringTimeHandler,
         AddCountHandler,
         EditRidingCardHandle,
+        BusEditRidingCardHandle,
 )
 
 # /account/user
@@ -13,4 +14,7 @@ urls = [
         (r'/send_riding_card', SendRidingCardHandle),
         (r'/current_during_time', CurrentDuringTimeHandler),
         (r'/add_count', AddCountHandler),
+
+        # B端
+        (r"/business/edit_riding_card", BusEditRidingCardHandle),
 ]

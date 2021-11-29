@@ -195,3 +195,47 @@ class ModifyUserFavorableCardHandle(MBHandler):
         response = yield mb_async(FavorableCardUserService().modify_time)(args)
 
         self.success(response)
+
+
+class BusModifyUserFavorableCardHandle(MBHandler):
+    """
+    编辑用户优惠卡
+    """
+
+    @coroutine
+    @use_args_query(ModifyFavorableCardDeserializer)
+    def post(self, args):
+        """
+        修改用户优惠卡
+        ---
+        tags: [B端-优惠卡]
+        summary: 修改用户优惠卡
+        description: 修改用户优惠卡
+
+        parameters:
+          - in: body
+            schema:
+                ModifyFavorableCardDeserializer
+        responses:
+            200:
+                schema:
+                    type: object
+                    required:
+                      - success
+                      - code
+                      - msg
+                      - data
+                    properties:
+                        success:
+                            type: boolean
+                        code:
+                            type: str
+                        msg:
+                            type: str
+                        data:
+                            type: boolean
+        """
+
+        response = yield mb_async(FavorableCardUserService().modify_time)(args)
+
+        self.success(response)
