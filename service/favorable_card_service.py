@@ -3,12 +3,19 @@ from datetime import (
     timedelta,
 )
 
+from internal.user_apis import apiTest4
 from mbutils import (
     dao_session,
     MbException,
 )
 from mbutils import logger
 from model.all_model import TFavorableCard
+from utils.constant.redis_key import EDIT_USER_FAVORABLE_CARD_LOCK
+from utils.constant.user import UserState
+from utils.redis_lock import (
+    lock,
+    release_lock,
+)
 from . import MBService
 
 
@@ -98,6 +105,14 @@ class FavorableCardUserService(MBService):
         编辑用户优惠卡时间
         """
 
+        if not lock(EDIT_USER_FAVORABLE_CARD_LOCK.format(
+                {"tenant_id": args['commandContext']['tenant_id'],
+                 "pin": args['commandContext']['pin']}
+        )):
+            raise MbException("修改用户优惠卡时间中,请2s后重试")
+
+        self.user_can_modify_favorable_card_duration(args['commandContext']['pin'], )
+
         duration = args['duration']
 
         riding_card: TFavorableCard = self.query_one(args)
@@ -117,5 +132,32 @@ class FavorableCardUserService(MBService):
             logger.error("modify user favorable card is error: {}".format(ex))
             logger.exception(ex)
             return False
+        finally:
+            release_lock(EDIT_USER_FAVORABLE_CARD_LOCK.format(
+                {"tenant_id": args['commandContext']['tenant_id'],
+                 "pin": args['commandContext']['pin']}))
+
+        return True
+
+    def user_can_modify_favorable_card_duration(self, pin: str, service_id: int):
+        """
+        判断当前用户能否修改优惠卡时长,用户购卡信息表,非流水表
+        """
+
+        user_info = apiTest4({})  # todo 获取用户信息
+        user_state = user_info.get('userState')
+        if not user_info:
+            raise MbException("获取用户信息失败")
+        if user_state == UserState.SIGN_UP.value:
+            raise MbException("用户没有实名,无法进行退款")
+        if user_state in [UserState.LEAVING.value, UserState.RIDING.value]:
+            raise MbException("用户使用车辆中,请不要进行退优惠卡操作")
+        if user_state == UserState.TO_PAY.value:
+            raise MbException("用户有未完结的订单,完成支付后才能进行退款操作")
+
+        # todo 这边到底要不要记流水啊？!
+        favorable_buy_record = apiTest4({})  # 获取用户的购卡记录
+        if not favorable_buy_record:
+            raise MbException("用户没有优惠卡购买记录,无法进行退款")
 
         return True
