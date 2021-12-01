@@ -37,7 +37,7 @@ class UserAccount(MBHandler):
           parameters:
             - in: body
               schema:
-                  PlatformUserAccountDeserializer
+                  UserAccountDeserializer
           responses:
               200:
                   schema:
@@ -55,7 +55,7 @@ class UserAccount(MBHandler):
                           msg:
                               type: str
                           data:
-                              PlatformUserAccountSerializer
+                              UserAccountSerializer
           """
 
         user_wallet = yield mb_async(WalletService().query_one)(args)
