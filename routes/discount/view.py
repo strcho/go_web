@@ -9,6 +9,7 @@ from routes.discount.serializers import (
     GetUserDiscountDeserializer,
     UserDiscountSerializer,
     UpdateUserDiscountDeserializer,
+    BusUpdateUserDiscountDeserializer,
 )
 from service.user_discount_service import UserDiscountService
 
@@ -155,7 +156,7 @@ class BusUpdateUserDiscountHandler(MBHandler):
     """
 
     @coroutine
-    @use_args_query(UpdateUserDiscountDeserializer)
+    @use_args_query(BusUpdateUserDiscountDeserializer)
     def post(self, args):
         """
         更新用户的折扣优惠
@@ -167,7 +168,7 @@ class BusUpdateUserDiscountHandler(MBHandler):
         parameters:
           - in: body
             schema:
-                UpdateUserDiscountDeserializer
+                BusUpdateUserDiscountDeserializer
         responses:
             200:
                 schema:
@@ -188,6 +189,7 @@ class BusUpdateUserDiscountHandler(MBHandler):
                             type: boolean
         """
 
+        args['commandContext'] = self.get_context()
         response = yield mb_async(UserDiscountService().update_user_discount)(args)
 
         self.success(response)

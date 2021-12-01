@@ -9,6 +9,7 @@ from routes.free_order.serializers import (
     GetUserFreeOrderDeserializer,
     UserFreeOrderSerializer,
     UpdateUserFreeOrderDeserializer,
+    BusUpdateUserFreeOrderDeserializer,
 )
 from service.free_order_service import UserFreeOrderService
 
@@ -155,7 +156,7 @@ class BusUpdateUserFreeOrderHandler(MBHandler):
     """
 
     @coroutine
-    @use_args_query(UpdateUserFreeOrderDeserializer)
+    @use_args_query(BusUpdateUserFreeOrderDeserializer)
     def post(self, args):
         """
         更新用户的免单优惠
@@ -167,7 +168,7 @@ class BusUpdateUserFreeOrderHandler(MBHandler):
         parameters:
           - in: body
             schema:
-                UpdateUserFreeOrderDeserializer
+                BusUpdateUserFreeOrderDeserializer
         responses:
             200:
                 schema:
@@ -188,6 +189,7 @@ class BusUpdateUserFreeOrderHandler(MBHandler):
                             type: boolean
         """
 
+        args['commandContext'] = self.get_context()
         response = yield mb_async(UserFreeOrderService().update_user_free_order)(args)
 
         self.success(response)

@@ -4,6 +4,7 @@ from marshmallow import (
 )
 
 from mbutils import DefaultMaker
+from mbutils.mb_handler import ContextDeserializer
 from utils.base_serializer import ReqBaseDeserializer
 from utils.ebike_fields import EDateTime
 
@@ -18,6 +19,15 @@ class GetFavorableDeserializer(ReqBaseDeserializer):
 
 
 class ModifyFavorableCardDeserializer(ReqBaseDeserializer):
+    """
+    修改用户优惠卡信息
+    """
+
+    # pin = fields.String(required=True, description="用户标识")
+    duration = fields.Integer(required=True, description="优惠卡时长")
+
+
+class BusModifyFavorableCardDeserializer(ContextDeserializer):
     """
     修改用户优惠卡信息
     """

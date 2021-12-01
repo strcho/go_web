@@ -37,3 +37,8 @@ def apiTest5(*args, **kwargs):
 @nacosClient.customRequestClient(method="POST", url="/userState/depositedStateChange", requestParamJson=True)
 def internal_deposited_state_change(jsonData):
     pass
+
+
+@nacosClient.customRequestClient(method="POST", url="/userState/depositCardStateChange", requestParamJson=True)
+def internal_deposited_card_state_change(jsonData):
+    pass

@@ -3,6 +3,8 @@ from datetime import (
     timedelta,
 )
 
+from internal.user_apis import internal_deposited_card_state_change
+from mbshort.str_and_datetime import datetime_filter
 from mbutils import (
     dao_session,
     logger,
@@ -85,6 +87,15 @@ class DepositCardService(MBService):
                 self.modify_deposit_card_time(args)
             else:
                 deposit_card = self.insert_one(args)
+
+                # 向用户系统推送押金卡状态
+                internal_deposited_card_state_change({
+                    'pin': args['commandContext']['pin'],
+                    # 'depositCardOperate': ,  # todo
+                    'commandContext': args['commandContext'],
+                    'depositCardExpire': datetime_filter(datetime.now() + timedelta(days=args['duration'])),
+                })
+
         except Exception as ex:
             dao_session.session.tenant_db().rollback()
             logger.error("insert user deposit card is error: {}".format(ex))
@@ -113,6 +124,15 @@ class DepositCardService(MBService):
 
             deposit_card.expired_date = expired_date
             dao_session.session.tenant_db().commit()
+
+            # 向用户系统推送押金卡状态
+            internal_deposited_card_state_change({
+                'pin': args['commandContext']['pin'],
+                # 'depositCardOperate': ,  # todo
+                'commandContext': args['commandContext'],
+                'depositCardExpire': datetime_filter(expired_date),
+            })
+
         except Exception as ex:
             dao_session.session.tenant_db().rollback()
             logger.error("update user deposit card is error: {}".format(ex))

@@ -3,6 +3,7 @@ from marshmallow import (
     Schema,
 )
 
+from mbutils.mb_handler import ContextDeserializer
 from utils.base_serializer import ReqBaseDeserializer
 
 
@@ -16,6 +17,16 @@ class GetRidingCardDeserializer(ReqBaseDeserializer):
 
 
 class EditRidingCardDeserializer(ReqBaseDeserializer):
+    """
+    编辑用户骑行卡
+    """
+
+    card_id = fields.Integer(required=True, description="骑行卡id")
+    duration = fields.Integer(required=False, description='剩余天数')
+    remain_times = fields.Integer(required=False, description='今日剩余免费次数')
+
+
+class BusEditRidingCardDeserializer(ContextDeserializer):
     """
     编辑用户骑行卡
     """

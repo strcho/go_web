@@ -9,6 +9,7 @@ from routes.deposit_card.serializers import (
     ModifyDepositCardDeserializer,
     GetDepositCardDeserializer,
     UserDepositCardDaysSerializer,
+    BusModifyDepositCardDeserializer,
 )
 from service.deposit_card_service import DepositCardService
 
@@ -199,7 +200,7 @@ class BusModifyUserDepositCardHandle(MBHandler):
     """
 
     @coroutine
-    @use_args_query(ModifyDepositCardDeserializer)
+    @use_args_query(BusModifyDepositCardDeserializer)
     def post(self, args):
         """
         修改用户押金卡
@@ -211,7 +212,7 @@ class BusModifyUserDepositCardHandle(MBHandler):
         parameters:
           - in: body
             schema:
-                ModifyDepositCardDeserializer
+                BusModifyDepositCardDeserializer
         responses:
             200:
                 schema:
@@ -232,6 +233,7 @@ class BusModifyUserDepositCardHandle(MBHandler):
                             type: boolean
         """
 
+        args['commandContext'] = self.get_context()
         response = yield mb_async(DepositCardService().modify_deposit_card_time)(args)
 
         self.success(response)

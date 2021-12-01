@@ -11,6 +11,7 @@ from routes.favorable_card.serializers import (
     SendFavorableCardDeserializer,
     ModifyFavorableCardDeserializer,
     UserFavorableCardDaysSerializer,
+    BusModifyFavorableCardDeserializer,
 )
 from service.favorable_card_service import FavorableCardUserService
 
@@ -203,7 +204,7 @@ class BusModifyUserFavorableCardHandle(MBHandler):
     """
 
     @coroutine
-    @use_args_query(ModifyFavorableCardDeserializer)
+    @use_args_query(BusModifyFavorableCardDeserializer)
     def post(self, args):
         """
         修改用户优惠卡
@@ -215,7 +216,7 @@ class BusModifyUserFavorableCardHandle(MBHandler):
         parameters:
           - in: body
             schema:
-                ModifyFavorableCardDeserializer
+                BusModifyFavorableCardDeserializer
         responses:
             200:
                 schema:
@@ -236,6 +237,7 @@ class BusModifyUserFavorableCardHandle(MBHandler):
                             type: boolean
         """
 
+        args['commandContext'] = self.get_context()
         response = yield mb_async(FavorableCardUserService().modify_time)(args)
 
         self.success(response)

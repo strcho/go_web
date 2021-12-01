@@ -11,6 +11,7 @@ from routes.riding_card.serializers import (
     CurrentDuringTimeDeserializer,
     AddCountHandlerDeserializer,
     CurrentDuringTimeSerializer,
+    BusEditRidingCardDeserializer,
 )
 from service.riding_card_service import RidingCardService
 
@@ -240,7 +241,7 @@ class BusEditRidingCardHandle(MBHandler):
     """
 
     @coroutine
-    @use_args_query(EditRidingCardDeserializer)
+    @use_args_query(BusEditRidingCardDeserializer)
     def post(self, args: dict):
         """
         修改用户骑行卡信息
@@ -252,7 +253,7 @@ class BusEditRidingCardHandle(MBHandler):
         parameters:
           - in: body
             schema:
-                EditRidingCardDeserializer
+                BusEditRidingCardDeserializer
         responses:
             200:
                 schema:
@@ -272,6 +273,8 @@ class BusEditRidingCardHandle(MBHandler):
                         data:
                             type: boolean
         """
+
+        args['commandContext'] = self.get_context()
         response = yield mb_async(RidingCardService().modify_time(args))
 
         self.success(response)
