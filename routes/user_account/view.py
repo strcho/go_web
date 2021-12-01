@@ -8,6 +8,8 @@ from mbutils.mb_handler import MBHandler
 from routes.user_account.serializers import (
     UserAccountDeserializer,
     UserAccountSerializer,
+    BusUserAccountDeserializer,
+    CliUserAccountDeserializer,
 )
 from service.deposit_card_service import DepositCardService
 from service.favorable_card_service import FavorableCardUserService
@@ -83,7 +85,7 @@ class BusUserAccount(MBHandler):
     """
 
     @coroutine
-    @use_args_query(UserAccountDeserializer)
+    @use_args_query(BusUserAccountDeserializer)
     def post(self, args):
         """
         获取用户资产
@@ -95,7 +97,7 @@ class BusUserAccount(MBHandler):
         parameters:
         - in: body
           schema:
-              PlatformUserAccountDeserializer
+              BusUserAccountDeserializer
         responses:
           200:
               schema:
@@ -113,7 +115,7 @@ class BusUserAccount(MBHandler):
                       msg:
                           type: str
                       data:
-                          PlatformUserAccountSerializer
+                          UserAccountSerializer
         """
         
         user_wallet = yield mb_async(WalletService().query_one)(args)
@@ -143,7 +145,7 @@ class ClientUserAccount(MBHandler):
     """
 
     @coroutine
-    @use_args_query(UserAccountDeserializer)
+    @use_args_query(CliUserAccountDeserializer)
     def post(self, args):
         """
         获取用户资产
@@ -155,7 +157,7 @@ class ClientUserAccount(MBHandler):
         parameters:
         - in: body
           schema:
-              PlatformUserAccountDeserializer
+              CliUserAccountDeserializer
         responses:
           200:
               schema:
@@ -173,7 +175,7 @@ class ClientUserAccount(MBHandler):
                       msg:
                           type: str
                       data:
-                          PlatformUserAccountSerializer
+                          UserAccountSerializer
         """
 
         user_wallet = yield mb_async(WalletService().query_one)(args)

@@ -3,6 +3,7 @@ from marshmallow import (
     Schema,
 )
 
+from mbutils.mb_handler import ContextDeserializer
 from routes.deposit_card.serializers import UserDepositCardSerializer
 from routes.discount.serializers import UserDiscountSerializer
 from routes.favorable_card.serializers import UserFavorableCardSerializer
@@ -13,6 +14,22 @@ from utils.base_serializer import ReqBaseDeserializer
 
 
 class UserAccountDeserializer(ReqBaseDeserializer):
+    """
+    获取用户资产信息
+    """
+    # pin = fields.String(required=True, description="用户标识")
+    pass
+
+
+class BusUserAccountDeserializer(ContextDeserializer):
+    """
+    获取用户资产信息
+    """
+    # pin = fields.String(required=True, description="用户标识")
+    pass
+
+
+class CliUserAccountDeserializer(ContextDeserializer):
     """
     获取用户资产信息
     """

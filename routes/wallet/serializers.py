@@ -8,10 +8,20 @@ from mbutils import (
     DefaultMaker,
     ARG_DEFAULT,
 )
+from mbutils.mb_handler import ContextDeserializer
 from utils.base_serializer import ReqBaseDeserializer
 
 
 class GetWalletDeserializer(ReqBaseDeserializer):
+    """
+    获取用户钱包信息
+    """
+
+    # pin = fields.String(required=True, description="用户标识")
+    pass
+
+
+class BusGetWalletDeserializer(ContextDeserializer):
     """
     获取用户钱包信息
     """

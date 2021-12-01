@@ -8,6 +8,7 @@ from mbutils import (
     DefaultMaker,
     ARG_DEFAULT,
 )
+from mbutils.mb_handler import ContextDeserializer
 from utils.base_serializer import ReqBaseDeserializer
 
 
@@ -35,6 +36,14 @@ class UpdateDepositDeserializer(ReqBaseDeserializer):
     更新用户押金信息
     """
 
-    # pin = fields.String(required=True, description="用户标识")
+    change_deposited_mount = fields.Integer(required=False, load_default=ARG_DEFAULT, description="变动的押金金额*100")
+    deposited_stats = fields.Integer(required=False, load_default=ARG_DEFAULT, description="押金状态")
+
+
+class BusUpdateDepositDeserializer(ContextDeserializer):
+    """
+    更新用户押金信息
+    """
+
     change_deposited_mount = fields.Integer(required=False, load_default=ARG_DEFAULT, description="变动的押金金额*100")
     deposited_stats = fields.Integer(required=False, load_default=ARG_DEFAULT, description="押金状态")

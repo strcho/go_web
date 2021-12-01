@@ -10,6 +10,7 @@ from routes.wallet.serializers import (
     UpdateWalletDeserializer,
     UserWalletSerializer,
     GetWalletListDeserializer,
+    BusGetWalletDeserializer,
 )
 from service.wallet_service import WalletService
 
@@ -98,6 +99,54 @@ class GetWalletHandle(MBHandler):
                             UserWalletSerializer
         """
 
+        pin = args['commandContext']['pin']
+        valid_data = (pin, args)
+        data = yield mb_async(WalletService().get_user_wallet)(*valid_data)
+        response = UserWalletSerializer().dump(data)
+
+        self.success(response)
+
+
+class BusGetWalletHandle(MBHandler):
+    """
+    用户钱包
+    """
+
+    @coroutine
+    @use_args_query(BusGetWalletDeserializer)
+    def post(self, args: dict):
+        """
+        获取用户钱包信息
+        ---
+        tags: [B端-钱包]
+        summary: 获取用户钱包信息
+        description: 获取用户钱包信息
+
+        parameters:
+          - in: body
+            schema:
+                BusGetWalletDeserializer
+        responses:
+            200:
+                schema:
+                    type: object
+                    required:
+                      - success
+                      - code
+                      - msg
+                      - data
+                    properties:
+                        success:
+                            type: boolean
+                        code:
+                            type: str
+                        msg:
+                            type: str
+                        data:
+                            UserWalletSerializer
+        """
+
+        args = self.get_context()
         pin = args['commandContext']['pin']
         valid_data = (pin, args)
         data = yield mb_async(WalletService().get_user_wallet)(*valid_data)
