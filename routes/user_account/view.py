@@ -150,7 +150,7 @@ class ClientUserAccount(MBHandler):
         """
         获取用户资产
         ---
-        tags: [B端-资产]
+        tags: [C端-资产]
         summary: 获取用户资产
         description: 获取用户资产
 
