@@ -16,7 +16,7 @@ class GetDepositCardDeserializer(ReqBaseDeserializer):
     用户信息
     """
 
-    pass
+    pin = fields.Integer(required=True, load_default=ARG_DEFAULT, description="用户标识")
 
 
 class ModifyDepositCardDeserializer(ReqBaseDeserializer):
@@ -24,6 +24,7 @@ class ModifyDepositCardDeserializer(ReqBaseDeserializer):
     修改用户押金卡信息
     """
 
+    pin = fields.Integer(required=True, load_default=ARG_DEFAULT, description="用户标识")
     duration = fields.Integer(required=True, description="押金卡时长")
 
 
@@ -32,6 +33,7 @@ class SendDepositCardDeserializer(ReqBaseDeserializer):
     添加用户押金卡
     """
 
+    pin = fields.Integer(required=True, load_default=ARG_DEFAULT, description="用户标识")
     duration = fields.Integer(required=True, description="押金卡时长")
 
 
@@ -58,4 +60,5 @@ class BusModifyDepositCardDeserializer(ContextDeserializer):
     修改用户押金卡信息
     """
 
+    pin = fields.Integer(required=True, load_default=ARG_DEFAULT, description="用户标识")
     duration = fields.Integer(required=True, description="押金卡时长")

@@ -100,7 +100,7 @@ class RidingCardService(MBService):
         """
         获取用户骑行卡信息
         """
-        pin = args['commandContext']['pin']
+        pin = args['pin']
         try:
             dao_session.session.tenant_db().query(TRidingCard).filter(
                 TRidingCard.state == UserRidingCardState.USING.value,
@@ -244,7 +244,7 @@ class RidingCardService(MBService):
         """
         添加骑行卡
         """
-        pin = args['commandContext']['pin']
+        pin = args['pin']
         config_id = args['config_id']
         content_str = args['content']
         if send_time and datetime.now().timestamp() - send_time > 5:
@@ -309,7 +309,7 @@ class RidingCardService(MBService):
                 }
         """
         service_id = args['service_id']
-        pin = args['commandContext']['pin']
+        pin = args['pin']
         first_card_id = self.get_current_card_id(service_id=service_id, pin=pin)
         if first_card_id:
             first_card: TRidingCard = dao_session.session.tenant_db().query(TRidingCard).filter_by(id=first_card_id).first()
@@ -326,7 +326,7 @@ class RidingCardService(MBService):
 
     def current_duriong_card(self, args: dict):
 
-        pin = args['commandContext']['pin']
+        pin = args['pin']
         service_id = dao_session.redis_session.r.hget(ALL_USER_LAST_SERVICE_ID, pin) or 0
 
         # 1.骑行卡过期判定

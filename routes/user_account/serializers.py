@@ -17,24 +17,21 @@ class UserAccountDeserializer(ReqBaseDeserializer):
     """
     获取用户资产信息
     """
-    # pin = fields.String(required=True, description="用户标识")
-    pass
+    pin = fields.String(required=True, description="用户标识")
 
 
 class BusUserAccountDeserializer(ContextDeserializer):
     """
     获取用户资产信息
     """
-    # pin = fields.String(required=True, description="用户标识")
-    pass
+    pin = fields.String(required=True, description="用户标识")
 
 
 class CliUserAccountDeserializer(ContextDeserializer):
     """
     获取用户资产信息
     """
-    # pin = fields.String(required=True, description="用户标识")
-    pass
+    pin = fields.String(required=True, description="用户标识")
 
 
 class UserAccountSerializer(Schema):

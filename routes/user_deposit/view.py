@@ -52,7 +52,7 @@ class EditDepositHandle(MBHandler):
                         data:
                             type: boolean
       """
-        pin = args['commandContext']['pin']
+        pin = args['pin']
         valid_data = (pin, args)
         response = yield mb_async(UserDepositService().set_user_deposit)(*valid_data)
 
@@ -98,7 +98,7 @@ class GetDepositHandle(MBHandler):
                             UserDepositSerializer
         """
 
-        pin = args['commandContext']['pin']
+        pin = args['pin']
         valid_data = (pin, args)
         data = yield mb_async(UserDepositService().get_user_deposit)(*valid_data)
         response = UserDepositSerializer().dump(data)
@@ -146,7 +146,7 @@ class BusEditDepositHandle(MBHandler):
       """
 
         args['commandContext'] = self.get_context()
-        pin = args['commandContext']['pin']
+        pin = args['pin']
         valid_data = (pin, args)
         response = yield mb_async(UserDepositService().set_user_deposit)(*valid_data)
 
