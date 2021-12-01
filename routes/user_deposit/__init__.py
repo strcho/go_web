@@ -1,6 +1,7 @@
 from routes.user_deposit.view import (
         EditDepositHandle,
         GetDepositHandle,
+        BusEditDepositHandle,
 )
 
 # /account/user

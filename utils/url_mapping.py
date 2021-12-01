@@ -14,7 +14,6 @@ def add_handler(prefix):
         (r'{}/deposit_card'.format(prefix), include('routes.deposit_card')),
         (r'{}/user_deposit'.format(prefix), include('routes.user_deposit')),
         (r'{}/user_account'.format(prefix), include('routes.user_account')),
-        (r'{}/platform'.format(prefix), include('routes.platform_api')),
     ])
 
 

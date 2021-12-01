@@ -23,7 +23,7 @@ def apiTest3(formData):
     pass
 
 
-@nacosClient.customRequestClient(method="POST", url="/ebike/user/hello", requestParamJson=True)
+@nacosClient.customRequestClient(method="POST", url="/ebike/user/hello", )
 def apiTest4(jsonData):
     pass
 

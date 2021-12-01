@@ -24,7 +24,7 @@ def apiTest3(formData):
     pass
 
 
-@nacosClient.customRequestClient(method="POST", url="/ebike/user/hello", requestParamJson=True)
+@nacosClient.customRequestClient(method="POST", url="/ebike/user/hello",)
 def apiTest4(jsonData):
     pass
 
@@ -34,11 +34,11 @@ def apiTest5(*args, **kwargs):
     pass
 
 
-@nacosClient.customRequestClient(method="POST", url="/userState/depositedStateChange", requestParamJson=True)
+@nacosClient.customRequestClient(method="POST", url="/userState/depositedStateChange",)
 def internal_deposited_state_change(jsonData):
     pass
 
 
-@nacosClient.customRequestClient(method="POST", url="/userState/depositCardStateChange", requestParamJson=True)
+@nacosClient.customRequestClient(method="POST", url="/userState/depositCardStateChange",)
 def internal_deposited_card_state_change(jsonData):
     pass
