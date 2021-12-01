@@ -45,8 +45,9 @@ class UserState(MbEnum):
 
 class DepositedState(MbEnum):
     NO_DEPOSITED = 0  # 未缴纳押金
-    DEPOSITED = 1  # 已缴纳押金
-    REFUNDING = 2  # 押金退款流程中
+    DEPOSITED = 1  # 押金已缴纳
+    REFUNDED = 2  # 押金已退款
+    FROZEN = 3  # 押金已冻结
 
 # const XC_EBIKE_DEVICE_STATE = {
 #   READY: '1', // 可使用

@@ -1,6 +1,7 @@
 import json
 from datetime import datetime
 
+from internal.user_apis import internal_deposited_state_change
 from mbshort.str_and_datetime import orm_to_dict
 from mbutils import (
     dao_session,
@@ -10,6 +11,7 @@ from mbutils import (
 from model.all_model import TUserWallet
 from service.wallet_service import WalletService
 from utils.constant.redis_key import USER_WALLET_CACHE
+from utils.constant.user import DepositedState
 
 
 class UserDepositService(WalletService):
@@ -41,12 +43,29 @@ class UserDepositService(WalletService):
     def set_user_deposit(self, pin: str, args: dict,):
 
         try:
+            deposited_stats = None
             user_wallet_dict = self.get_user_wallet(pin=pin, args=args)
             if self.exists_param(args['change_deposited_mount']):
                 user_wallet_dict['deposited_mount'] += args['change_deposited_mount']
+                if args['change_deposited_mount'] < 0:
+                    deposited_stats = DepositedState.REFUNDED.value
+
+                elif args['change_deposited_mount'] > 0:
+                    deposited_stats = DepositedState.DEPOSITED.value
+                else:
+                    raise MbException('押金变动金额有误')
 
             if self.exists_param(args['deposited_stats']):
                 user_wallet_dict['deposited_stats'] = args['deposited_stats']
+                deposited_stats = args['deposited_stats']
+
+            #  向用户服务上报押金状态
+            if deposited_stats:
+                internal_deposited_state_change({
+                    'pin': pin,
+                    'depositedOperate': deposited_stats,
+                    'commandContext': args['commandContext']
+                })
 
             dao_session.redis_session.r.hset(USER_WALLET_CACHE.format(tenant_id=user_wallet_dict['tenant_id'], pin=pin),
                                              mapping={"content": json.dumps(user_wallet_dict),
