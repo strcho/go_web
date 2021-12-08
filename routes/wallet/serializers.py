@@ -40,11 +40,11 @@ class UserWalletSerializer(Schema):
     """
 
     pin = fields.String(description="用户标识")
-    balance = fields.String(description="余额")
-    recharge = fields.String(description="充值余额")
-    present = fields.String(description="增送余额")
-    deposited_mount = fields.String(description="押金金额")
-    deposited_stats = fields.String(description="押金状态")
+    balance = fields.Integer(description="余额")
+    recharge = fields.Integer(description="充值余额")
+    present = fields.Integer(description="增送余额")
+    deposited_mount = fields.Integer(description="押金金额")
+    deposited_stats = fields.Integer(description="押金状态")
 
 
 class UpdateWalletDeserializer(ReqBaseDeserializer):
