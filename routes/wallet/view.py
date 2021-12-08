@@ -146,7 +146,7 @@ class BusGetWalletHandle(MBHandler):
                             UserWalletSerializer
         """
 
-        args = self.get_context()
+        args["commandContext"] = self.get_context()
         pin = args['pin']
         valid_data = (pin, args)
         data = yield mb_async(WalletService().get_user_wallet)(*valid_data)
