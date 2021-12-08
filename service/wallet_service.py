@@ -118,7 +118,10 @@ class WalletService(MBService):
         return data_list
 
     def get_user_wallet(self, pin: str, args: dict):
-        """从redis或mysql获取用户钱包信息"""
+        """
+        从redis或mysql获取用户钱包信息
+        """
+
         tenant_id = args['commandContext']['tenant_id']
         find_user_wallet = dao_session.redis_session.r.hgetall(USER_WALLET_CACHE.format(tenant_id=tenant_id, pin=pin))
         if find_user_wallet:
