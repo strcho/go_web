@@ -48,7 +48,6 @@ class WalletService(MBService):
         try:
             dao_session.session.tenant_db().commit()
             return True
-
         except Exception as e:
             dao_session.session.tenant_db().rollback()
             logger.error("insert user wallet is error: {}".format(e))
@@ -123,6 +122,7 @@ class WalletService(MBService):
         tenant_id = args['commandContext']['tenant_id']
         find_user_wallet = dao_session.redis_session.r.hgetall(USER_WALLET_CACHE.format(tenant_id=tenant_id, pin=pin))
         if find_user_wallet:
+            print(find_user_wallet, pin)
             try:
                 user_wallet_dict = json.loads(find_user_wallet['content'])
             except Exception:
