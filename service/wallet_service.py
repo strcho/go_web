@@ -168,3 +168,42 @@ class WalletService(MBService):
             logger.error("update user wallet is error: {}".format(e))
             logger.exception(e)
             raise MbException("更新用户钱包失败")
+
+    def deduction_balance(self, pin: str, args: dict,):
+
+        deduction_amount = args['deduction_amount']
+        pin = args[pin]
+        tenant_id = args['commandContext']['tenant_id']
+
+        try:
+            user_wallet = self.get_user_wallet(pin, args)
+            dao_session.redis_session.r.delete(USER_WALLET_CACHE.format(tenant_id=tenant_id, pin=pin))
+            balance = user_wallet['balance'] - deduction_amount
+            # 优先扣减充值余额
+            if deduction_amount > user_wallet['recharge']:
+                if balance < 0:
+                    present = 0
+                    recharge = balance
+                else:
+                    recharge = 0
+                    present = balance
+            else:
+                recharge = user_wallet['recharge'] - deduction_amount
+                present = user_wallet['present']
+
+            params = dict(
+                tenant_id=tenant_id,
+                balance=balance,
+                recharge=recharge,
+                present=present,
+                deposited_mount=user_wallet["deposited_mount"],
+                deposited_stats=user_wallet["deposited_stats"],
+            )
+
+            self.update_one(pin=pin, args=params)
+            return True
+        except Exception as ex:
+            dao_session.session.tenant_db().rollback()
+            logger.error("update user wallet is error: {}".format(ex))
+            logger.exception(ex)
+            raise MbException("更新余额失败")

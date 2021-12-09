@@ -57,3 +57,12 @@ class UpdateWalletDeserializer(ReqBaseDeserializer):
     change_present = fields.Integer(required=False, load_default=ARG_DEFAULT, description="变动的赠送金额*100")
     change_deposited_mount = fields.Integer(required=False, load_default=ARG_DEFAULT, description="变动的押金金额*100")
     deposited_stats = fields.Integer(required=False, load_default=ARG_DEFAULT, description="押金状态")
+
+
+class DeductionBalanceDeserializer(ReqBaseDeserializer):
+    """
+    扣减用户余额
+    """
+
+    pin = fields.String(required=True, description="用户标识")
+    change_recharge = fields.Integer(required=False, load_default=ARG_DEFAULT, description="扣减的余额*100")

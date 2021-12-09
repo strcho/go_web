@@ -11,6 +11,7 @@ from routes.wallet.serializers import (
     UserWalletSerializer,
     GetWalletListDeserializer,
     BusGetWalletDeserializer,
+    DeductionBalanceDeserializer,
 )
 from service.wallet_service import WalletService
 
@@ -197,6 +198,51 @@ class GetWalletListHandle(MBHandler):
         pin_list = args.get('pin_list')
         valid_data = (pin_list, args["commandContext"],)
         data = yield mb_async(WalletService().query_list)(valid_data)
+        response = UserWalletSerializer(many=True).dump(data)
+
+        self.success(response)
+
+
+class DeductionBalanceHandle(MBHandler):
+    """
+    余额
+    """
+    @coroutine
+    @use_args_query(DeductionBalanceDeserializer)
+    def post(self, args: dict):
+        """
+        扣减用户余额
+        ---
+        tags: [钱包]
+        summary: 扣减用户余额
+        description: 扣减用户余额
+
+        parameters:
+          - in: body
+            schema:
+                DeductionBalanceDeserializer
+        responses:
+            200:
+                schema:
+                    type: object
+                    required:
+                      - success
+                      - code
+                      - msg
+                      - data
+                    properties:
+                        success:
+                            type: boolean
+                        code:
+                            type: str
+                        msg:
+                            type: str
+                        data:
+                            type: boolean
+        """
+
+        valid_data = args['pin'], args
+        data = yield mb_async(WalletService().deduction_balance)(*valid_data)
         response = UserWalletSerializer(many=True).dump(data)
 
         self.success(response)
