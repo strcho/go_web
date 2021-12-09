@@ -242,7 +242,6 @@ class DeductionBalanceHandle(MBHandler):
         """
 
         valid_data = args['pin'], args
-        data = yield mb_async(WalletService().deduction_balance)(*valid_data)
-        response = UserWalletSerializer(many=True).dump(data)
+        response = yield mb_async(WalletService().deduction_balance)(*valid_data)
 
         self.success(response)

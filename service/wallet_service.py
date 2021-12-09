@@ -68,7 +68,7 @@ class WalletService(MBService):
         try:
             # 更新余额考虑使用 update({"balance": TUserWallet.balance - change})
             dao_session.session.tenant_db().query(TUserWallet) \
-                .filter(TUserWallet.pin == args["pin"], TUserWallet.tenant_id == args["tenant_id"]) \
+                .filter(TUserWallet.pin == pin, TUserWallet.tenant_id == args["tenant_id"]) \
                 .update(params)
             dao_session.session.tenant_db().commit()
         except Exception as e:
@@ -172,7 +172,6 @@ class WalletService(MBService):
     def deduction_balance(self, pin: str, args: dict,):
 
         deduction_amount = args['deduction_amount']
-        pin = args[pin]
         tenant_id = args['commandContext']['tenant_id']
 
         try:
@@ -192,6 +191,7 @@ class WalletService(MBService):
                 present = user_wallet['present']
 
             params = dict(
+                pin=pin,
                 tenant_id=tenant_id,
                 balance=balance,
                 recharge=recharge,
