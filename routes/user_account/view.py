@@ -69,7 +69,7 @@ class UserAccount(MBHandler):
             "user_wallet": user_wallet,
             "user_riding_card": user_riding_card,
             "user_deposit_card": user_deposit_card,
-            "user_favorable_card": None if user_favorable_card.end_time <= datetime.now() else user_favorable_card,
+            "user_favorable_card": None if user_favorable_card and user_favorable_card.end_time <= datetime.now() else user_favorable_card,
             "user_free_order": user_free_order,
             "user_discount": user_discount,
         }
@@ -131,7 +131,7 @@ class BusUserAccount(MBHandler):
             "user_wallet": user_wallet,
             "user_riding_card": user_riding_card,
             "user_deposit_card": user_deposit_card,
-            "user_favorable_card": None if user_favorable_card.end_time <= datetime.now() else user_favorable_card,
+            "user_favorable_card": None if user_favorable_card and user_favorable_card.end_time <= datetime.now() else user_favorable_card,
             "user_free_order": user_free_order,
             "user_discount": user_discount,
         }
@@ -193,7 +193,7 @@ class ClientUserAccount(MBHandler):
             "user_wallet": user_wallet,
             "user_riding_card": user_riding_card,
             "user_deposit_card": user_deposit_card,
-            "user_favorable_card": None if user_favorable_card.end_time <= datetime.now() else user_favorable_card,
+            "user_favorable_card": None if user_favorable_card and user_favorable_card.end_time <= datetime.now() else user_favorable_card,
             "user_free_order": user_free_order,
             "user_discount": user_discount,
         }
