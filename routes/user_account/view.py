@@ -117,7 +117,7 @@ class BusUserAccount(MBHandler):
                       data:
                           UserAccountSerializer
         """
-        
+        args['commandContext'] = self.get_context()
         user_wallet = yield mb_async(WalletService().query_one)(args)
         user_riding_card = yield mb_async(RidingCardService().user_card_info)(args)
         user_deposit_card = yield mb_async(DepositCardService().query_one)(args)
@@ -178,6 +178,7 @@ class ClientUserAccount(MBHandler):
                           UserAccountSerializer
         """
 
+        args['commandContext'] = self.get_context()
         user_wallet = yield mb_async(WalletService().query_one)(args)
         user_riding_card = yield mb_async(RidingCardService().user_card_info)(args)
         user_deposit_card = yield mb_async(DepositCardService().query_one)(args)

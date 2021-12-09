@@ -19,6 +19,7 @@ class WalletService(MBService):
     """
 
     def query_one(self, args: dict):
+        user_wallet = {}
         try:
             pin = args['pin']
             tenant_id = args['commandContext']['tenant_id']
