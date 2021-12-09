@@ -190,6 +190,7 @@ class BusUpdateUserFreeOrderHandler(MBHandler):
         """
 
         args['commandContext'] = self.get_context()
+        args['commandContext']["tenant_id"] = args['commandContext']['tenantId']
         response = yield mb_async(UserFreeOrderService().update_user_free_order)(args)
 
         self.success(response)

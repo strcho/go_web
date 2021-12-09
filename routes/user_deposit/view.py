@@ -146,6 +146,7 @@ class BusEditDepositHandle(MBHandler):
       """
 
         args['commandContext'] = self.get_context()
+        args['commandContext']["tenant_id"] = args['commandContext']['tenantId']
         pin = args['pin']
         valid_data = (pin, args)
         response = yield mb_async(UserDepositService().set_user_deposit)(*valid_data)
