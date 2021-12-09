@@ -3,6 +3,7 @@ from routes.wallet.view import (
         GetWalletHandle,
         GetWalletListHandle,
         BusGetWalletHandle,
+        DeductionBalanceHandle,
 )
 
 # /account/user
