@@ -65,4 +65,4 @@ class DeductionBalanceDeserializer(ReqBaseDeserializer):
     """
 
     pin = fields.String(required=True, description="用户标识")
-    change_recharge = fields.Integer(required=False, load_default=ARG_DEFAULT, description="扣减的余额*100")
+    change_recharge = fields.Integer(required=True, description="扣减的余额*100")
