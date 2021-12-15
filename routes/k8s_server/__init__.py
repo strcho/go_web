@@ -6,5 +6,5 @@ from routes.k8s_server.view import (
 # /account
 urls = [
     (r'/heartbeat/k8s', K8sHandler),  # 心跳探测接口需要保留
-    (r'/hello', helloHandler)
+    (r'/internal/hello', helloHandler)
 ]

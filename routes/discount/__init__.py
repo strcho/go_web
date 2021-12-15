@@ -8,9 +8,9 @@ from routes.discount.view import (
 
 # /account/user
 urls = [
-    ("/get_user_discount", GetUserDiscountHandler),
-    ("/get_user_all_discount", GetUserAllDiscountHandler),
-    ("/update_user_discount", UpdateUserDiscountHandler),
+    ("/internal/get_user_discount", GetUserDiscountHandler),
+    ("/internal/get_user_all_discount", GetUserAllDiscountHandler),
+    ("/internal/update_user_discount", UpdateUserDiscountHandler),
 
     # B端网关
     ("/business/update_user_discount", BusUpdateUserDiscountHandler),
