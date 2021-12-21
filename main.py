@@ -31,9 +31,9 @@ class Application(tornado.web.Application):
 if __name__ == "__main__":
     loop = tornado.ioloop.IOLoop.current()
     app = Application()
-    AppInit(loop, service_name='ebike-account', dataId=['ebike_account.json'])
 
-    logger.initialize(server_name=cfg["name"], debug=cfg['debug'])
+    logger.initialize(debug=cfg['debug'])
+    AppInit(loop, service_name='ebike-account', dataId=['ebike_account.json'])
     application = tornado.httpserver.HTTPServer(app, xheaders=True)
 
     YearType = ["2020", "2021", "2022"]
