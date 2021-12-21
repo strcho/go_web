@@ -49,9 +49,11 @@ class RidingCardInfoSerializer(Schema):
     """
     骑行卡详情
     """
-    card_expired_date = fields.String()
-    card_id = fields.Integer()
-    deduction_type = fields.Integer()
+
+    id = fields.Integer(description='用户骑行卡id')
+    card_expired_date = fields.String(description='骑行卡到期时间')
+    card_id = fields.Integer(description='母卡信息')
+    deduction_type = fields.Integer(description='抵扣类型, 1时长卡, 2里程卡, 3减免卡, 4次卡')
     description_tag = fields.Integer(description='说明标签')
     detail_info = fields.String(description='详情')
     free_distance_meter = fields.Integer(description='免里程, 单位米')

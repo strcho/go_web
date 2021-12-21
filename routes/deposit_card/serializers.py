@@ -42,6 +42,7 @@ class UserDepositCardSerializer(Schema):
     用户押金卡
     """
 
+    id = fields.Integer(required=True, description="押金卡id")
     pin = fields.Integer(required=False, load_default=ARG_DEFAULT, description="用户标识")
     expired_date = EDateTime(description="过期时间")
 

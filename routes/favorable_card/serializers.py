@@ -50,6 +50,7 @@ class UserFavorableCardSerializer(Schema):
     用户优惠卡
     """
 
+    id = fields.Integer(required=True, description="优惠卡id")
     pin = fields.String(description="用户标识")
     begin_time = EDateTime(description="开始时间")
     end_time = EDateTime(description="结束时间")

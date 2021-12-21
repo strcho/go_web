@@ -22,6 +22,7 @@ class UserFreeOrderSerializer(Schema):
     用户免单信息序列化
     """
 
+    id = fields.Integer(required=True, description="免单卡id")
     pin = fields.String(required=True, description='用户标识')
     free_second = fields.Integer(required=True, description='每单的免费时长')
     free_num = fields.Integer(required=True, description='免单次数')
