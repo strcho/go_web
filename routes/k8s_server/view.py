@@ -13,9 +13,7 @@ class K8sHandler(MBHandler):
 
     @coroutine
     def get(self):
-
-        print("?????????????")
-        self.success("OK,???")
+        self.success("OK")
 
 
 class helloHandler(MBHandler):
