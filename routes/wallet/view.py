@@ -11,7 +11,7 @@ from routes.wallet.serializers import (
     UserWalletSerializer,
     GetWalletListDeserializer,
     BusGetWalletDeserializer,
-    DeductionBalanceDeserializer,
+    DeductionBalanceDeserializer, WalletToKafkaSerializer,
 )
 from service.wallet_service import WalletService
 
@@ -245,3 +245,49 @@ class DeductionBalanceHandle(MBHandler):
         response = yield mb_async(WalletService().deduction_balance)(*valid_data)
 
         self.success(response)
+
+
+class WalletToKafkaHandle(MBHandler):
+    """
+    支付钱包调用，向kafka推送数据
+    """
+    @coroutine
+    @use_args_query(WalletToKafkaSerializer)
+    def post(self, args: dict):
+        """
+        支付钱包调用，向kafka推送数据
+        ---
+        tags: [钱包]
+        summary: 支付钱包调用，向kafka推送数据
+        description: 支付钱包调用，向kafka推送数据
+
+        parameters:
+          - in: body
+            schema:
+                WalletToKafkaSerializer
+        responses:
+            200:
+                schema:
+                    type: object
+                    required:
+                      - success
+                      - code
+                      - msg
+                      - data
+                    properties:
+                        success:
+                            type: boolean
+                        code:
+                            type: str
+                        msg:
+                            type: str
+                        data:
+                            type: boolean
+        """
+
+        valid_data = args.get('commandContext', {}), args
+        response = yield mb_async(WalletService().wallet_to_kafka)(*valid_data)
+        if not response.get("suc"):
+            self.error(promt=response.get('data'))
+        self.success(response.get('data'))
+

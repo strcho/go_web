@@ -1,6 +1,7 @@
 import json
 from datetime import datetime
 
+from internal import user_apis
 from mbshort.str_and_datetime import orm_to_dict
 from mbutils import (
     dao_session,
@@ -10,6 +11,8 @@ from mbutils import (
 )
 from model.all_model import TUserWallet
 from service import MBService
+from service.kafka import PayKey
+from service.kafka.producer import kafka_client
 from utils.constant.redis_key import USER_WALLET_CACHE
 
 
@@ -207,3 +210,37 @@ class WalletService(MBService):
             logger.error("update user wallet is error: {}".format(ex))
             logger.exception(ex)
             raise MbException("更新余额失败")
+
+    @staticmethod
+    def wallet_to_kafka(commandContext, args: dict):
+        # todo 根据用户id查询服务区id
+        try:
+            user_info = user_apis.apiTest4({"user_id": args.get("pin_id")})
+            service_id = user_info.get('service_id')
+        except Exception as e:
+            logger.info(f"user_apis err: {e}")
+            service_id = 61193175763522450
+
+        try:
+            wallet_dict = {
+                "tenant_id": commandContext.get('tenant_id'),
+                "created_pin": args.get("created_pin"),
+                "pin_id": args.get("pin_id"),
+                "service_id": service_id,
+                "type": args.get("type"),
+                "channel": args.get("channel"),
+                "sys_trade_no": args.get("sys_trade_no"),
+                "merchant_trade_no": args.get("merchant_trade_no"),
+                "recharge_amount": args.get("recharge_amount"),
+                "present_amount": args.get("present_amount"),
+            }
+            logger.info(f"wallet_record send is {wallet_dict}")
+            state = kafka_client.pay_send(wallet_dict, PayKey.WALLET.value)
+            if not state:
+                return {"suc": False, "data": "kafka send failed"}
+        except Exception as e:
+            logger.info(f"wallet_record send err {e}")
+            return {"suc": False, "data": f"wallet_to_kafka err: {e}"}
+        return {"suc": True, "data": "wallet_kafka send success"}
+
+

@@ -66,3 +66,14 @@ class DeductionBalanceDeserializer(ReqBaseDeserializer):
 
     pin = fields.String(required=True, description="用户标识")
     deduction_amount = fields.Integer(required=True, description="扣减的余额*100")
+
+
+class WalletToKafkaSerializer(ReqBaseDeserializer):
+    created_pin = fields.String(required=True, description="创建用户标识"),
+    pin_id = fields.String(required=True, description="用户标识"),
+    type = fields.Integer(required=True, description="支付类型"),
+    channel = fields.String(required=True, description="支付渠道"),
+    sys_trade_no = fields.String(required=True, description="系统订单号"),
+    merchant_trade_no = fields.String(required=True, description="外部支付渠道订单号"),
+    recharge_amount = fields.Integer(required=True, description="充值金额"),
+    present_amount = fields.Integer(required=True, description="充值赠送金额")
