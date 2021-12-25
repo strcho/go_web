@@ -212,18 +212,19 @@ class WalletService(MBService):
             raise MbException("更新余额失败")
 
     @staticmethod
-    def wallet_to_kafka(commandContext, args: dict):
-        # todo 根据用户id查询服务区id
+    def wallet_to_kafka(context, args: dict):
+        # todo 根据用户id查询服务区id，
         try:
             user_info = user_apis.apiTest4({"user_id": args.get("pin_id")})
             service_id = user_info.get('service_id')
         except Exception as e:
+            # service_id获取失败暂不报错
             logger.info(f"user_apis err: {e}")
             service_id = 61193175763522450
 
         try:
             wallet_dict = {
-                "tenant_id": commandContext.get('tenant_id'),
+                "tenant_id": context.get('tenant_id'),
                 "created_pin": args.get("created_pin"),
                 "pin_id": args.get("pin_id"),
                 "service_id": service_id,

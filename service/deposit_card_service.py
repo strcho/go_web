@@ -3,6 +3,7 @@ from datetime import (
     timedelta,
 )
 
+from internal import user_apis
 from internal.user_apis import internal_deposited_card_state_change
 from mbshort.str_and_datetime import datetime_filter
 from mbutils import (
@@ -12,6 +13,8 @@ from mbutils import (
 )
 from model.all_model import TDepositCard
 from service import MBService
+from service.kafka import PayKey
+from service.kafka.producer import kafka_client
 
 
 class DepositCardService(MBService):
@@ -156,3 +159,39 @@ class DepositCardService(MBService):
         }
 
         return data
+
+    @staticmethod
+    def deposit_card_to_kafka(context, args: dict):
+        # todo 根据用户id查询服务区id，
+        try:
+            user_info = user_apis.apiTest4({"user_id": args.get("pin_id")})
+            service_id = user_info.get('service_id')
+        except Exception as e:
+            # service_id获取失败暂不报错
+            logger.info(f"user_apis err: {e}")
+            service_id = 61193175763522450
+
+        try:
+            deposit_card_dict = {
+                "tenant_id": context.get('tenant_id'),
+                "created_pin": args.get("created_pin"),
+                "pin_id": args.get("pin_id"),
+                "service_id": service_id,
+                "type": args.get("type"),
+                "channel": args.get("channel"),
+                "sys_trade_no": args.get("sys_trade_no"),
+                "merchant_trade_no": args.get("merchant_trade_no"),
+                "name": "deposit",
+                "amount": args.get("amount"),
+            }
+            logger.info(f"deposit_card_record send is {deposit_card_dict}")
+            state = kafka_client.pay_send(deposit_card_dict, PayKey.DEPOSIT_CARD.value)
+            if not state:
+                return {"suc": False, "data": "kafka send failed"}
+        except Exception as e:
+            logger.info(f"deposit_card_record send err {e}")
+            return {"suc": False, "data": f"deposit_card_to_kafka err: {e}"}
+        return {"suc": True, "data": "deposit_card_kafka send success"}
+
+
+

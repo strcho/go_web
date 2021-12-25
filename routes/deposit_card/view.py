@@ -9,7 +9,7 @@ from routes.deposit_card.serializers import (
     ModifyDepositCardDeserializer,
     GetDepositCardDeserializer,
     UserDepositCardDaysSerializer,
-    BusModifyDepositCardDeserializer,
+    BusModifyDepositCardDeserializer, DepositCardToKafkaSerializer,
 )
 from service.deposit_card_service import DepositCardService
 
@@ -238,4 +238,50 @@ class BusModifyUserDepositCardHandle(MBHandler):
         response = yield mb_async(DepositCardService().modify_deposit_card_time)(args)
 
         self.success(response)
+
+
+class DepositCardToKafkaHandle(MBHandler):
+    """
+    支付押金卡调用，向kafka推送数据
+    """
+    @coroutine
+    @use_args_query(DepositCardToKafkaSerializer)
+    def post(self, args: dict):
+        """
+        支付押金卡调用，向kafka推送数据
+        ---
+        tags: [押金卡]
+        summary: 支付押金卡调用，向kafka推送数据
+        description: 支付押金卡调用，向kafka推送数据
+
+        parameters:
+          - in: body
+            schema:
+                DepositCardToKafkaSerializer
+        responses:
+            200:
+                schema:
+                    type: object
+                    required:
+                      - success
+                      - code
+                      - msg
+                      - data
+                    properties:
+                        success:
+                            type: boolean
+                        code:
+                            type: str
+                        msg:
+                            type: str
+                        data:
+                            type: boolean
+        """
+        valid_data = args.get('commandContext', {}), args
+        response = yield mb_async(DepositCardService().deposit_card_to_kafka)(*valid_data)
+        if not response.get("suc"):
+            self.error(promt=response.get('data'))
+        self.success(response.get('data'))
+
+
 

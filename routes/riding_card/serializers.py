@@ -102,3 +102,7 @@ class AddCountHandlerDeserializer(ReqBaseDeserializer):
 
     card_id = fields.Integer(required=True, description='骑行卡ID')
 
+
+class RidingCardToKafkaSerializer(ReqBaseDeserializer):
+
+    pass

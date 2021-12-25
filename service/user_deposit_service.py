@@ -1,6 +1,7 @@
 import json
 from datetime import datetime
 
+from internal import user_apis, marketing_api
 from internal.user_apis import internal_deposited_state_change
 from mbshort.str_and_datetime import orm_to_dict
 from mbutils import (
@@ -9,6 +10,8 @@ from mbutils import (
     MbException,
 )
 from model.all_model import TUserWallet
+from service.kafka import PayKey
+from service.kafka.producer import kafka_client
 from service.wallet_service import WalletService
 from utils.constant.redis_key import USER_WALLET_CACHE
 from utils.constant.user import DepositedState
@@ -79,3 +82,45 @@ class UserDepositService(WalletService):
             logger.error("update user wallet is error: {}".format(e))
             logger.exception(e)
             raise MbException("更新用户押金失败")
+
+    @staticmethod
+    def deposit_to_kafka(context, args: dict):
+        # todo 根据用户id查询服务区id，
+        try:
+            user_info = user_apis.apiTest4({"user_id": args.get("pin_id")})
+            service_id = user_info.get('service_id')
+        except Exception as e:
+            # service_id获取失败暂不报错
+            logger.info(f"user_apis err: {e}")
+            service_id = 61193175763522450
+        # todo 获取诚信金金额
+        try:
+            deposit_info = marketing_api.apiTest1({"service_id": service_id})
+        except Exception as e:
+            logger.info(f"{e}")
+            return {"suc": False, "data": "获取诚信金失败"}
+
+        try:
+            deposit_dict = {
+                "tenant_id": context.get('tenant_id'),
+                "created_pin": args.get("created_pin"),
+                "pin_id": args.get("pin_id"),
+                "service_id": service_id,
+                "type": args.get("type"),
+                "channel": args.get("channel"),
+                "sys_trade_no": args.get("sys_trade_no"),
+                "merchant_trade_no": args.get("merchant_trade_no"),
+                "name": "deposit",
+                "amount": deposit_info.get("amount"),
+            }
+            logger.info(f"wallet_record send is {deposit_dict}")
+            state = kafka_client.pay_send(deposit_dict, PayKey.DEPOSIT.value)
+            if not state:
+                return {"suc": False, "data": "kafka send failed"}
+        except Exception as e:
+            logger.info(f"deposit_record send err {e}")
+            return {"suc": False, "data": f"deposit_to_kafka err: {e}"}
+        return {"suc": True, "data": "deposit_to_kafka send success"}
+
+
+

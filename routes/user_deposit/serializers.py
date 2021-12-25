@@ -48,3 +48,8 @@ class BusUpdateDepositDeserializer(ContextDeserializer):
     pin = fields.Integer(required=True, description="用户标识")
     change_deposited_mount = fields.Integer(required=False, load_default=ARG_DEFAULT, description="变动的押金金额*100")
     deposited_stats = fields.Integer(required=False, load_default=ARG_DEFAULT, description="押金状态")
+
+
+class DepositToKafkaSerializer(ContextDeserializer):
+
+    pass

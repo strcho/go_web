@@ -11,7 +11,7 @@ from routes.riding_card.serializers import (
     CurrentDuringTimeDeserializer,
     AddCountHandlerDeserializer,
     CurrentDuringTimeSerializer,
-    BusEditRidingCardDeserializer,
+    BusEditRidingCardDeserializer, RidingCardInfoSerializer,
 )
 from service.riding_card_service import RidingCardService
 
@@ -279,3 +279,42 @@ class BusEditRidingCardHandle(MBHandler):
         response = yield mb_async(RidingCardService().modify_time(args))
 
         self.success(response)
+
+
+class RidingCardToKafkaHandle(MBHandler):
+    @coroutine
+    @use_args_query(RidingCardInfoSerializer)
+    def post(self, args):
+        """
+        tags: [优惠卡]
+        summary: 支付骑行卡调用，向kafka推送数据
+        description: 支付骑行卡调用，向kafka推送数据
+
+        parameters:
+          - in: body
+            schema:
+                RidingCardInfoSerializer
+        responses:
+            200:
+                schema:
+                    type: object
+                    required:
+                      - success
+                      - code
+                      - msg
+                      - data
+                    properties:
+                        success:
+                            type: boolean
+                        code:
+                            type: str
+                        msg:
+                            type: str
+                        data:
+                            type: boolean
+        """
+        valid_data = args.get('commandContext', {}), args
+        response = yield mb_async(RidingCardService().riding_card_to_kafka)(*valid_data)
+        if not response.get("suc"):
+            self.error(promt=response.get('data'))
+        self.success(response.get('data'))

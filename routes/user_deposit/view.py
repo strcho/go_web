@@ -9,7 +9,7 @@ from routes.user_deposit.serializers import (
     GetDepositDeserializer,
     UpdateDepositDeserializer,
     UserDepositSerializer,
-    BusUpdateDepositDeserializer,
+    BusUpdateDepositDeserializer, DepositToKafkaSerializer,
 )
 from service.user_deposit_service import UserDepositService
 
@@ -152,3 +152,50 @@ class BusEditDepositHandle(MBHandler):
         response = yield mb_async(UserDepositService().set_user_deposit)(*valid_data)
 
         self.success(response)
+
+
+class DepositToKafkaHandle(MBHandler):
+    """
+    用户押金调用，向kafka推送数据
+    """
+    @coroutine
+    @use_args_query(DepositToKafkaSerializer)
+    def post(self, args: dict):
+        """
+        调用，向kafka推送数据
+        ---
+        tags: [押金]
+        summary: 调用，向kafka推送数据
+        description: 调用，向kafka推送数据
+
+        parameters:
+          - in: body
+            schema:
+                DepositToKafkaSerializer
+        responses:
+            200:
+                schema:
+                    type: object
+                    required:
+                      - success
+                      - code
+                      - msg
+                      - data
+                    properties:
+                        success:
+                            type: boolean
+                        code:
+                            type: str
+                        msg:
+                            type: str
+                        data:
+                            type: boolean
+        """
+        valid_data = args.get('commandContext', {}), args
+        response = yield mb_async(UserDepositService().deposit_to_kafka)(*valid_data)
+        if not response.get("suc"):
+            self.error(promt=response.get('data'))
+        self.success(response.get('data'))
+
+
+

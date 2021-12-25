@@ -63,3 +63,8 @@ class UserFavorableCardDaysSerializer(Schema):
 
     days = fields.Integer(required=True, description='可用天数')
     expired_date_str = fields.String(required=True, description='到期时间')
+
+
+class FavorableCardToKafkaSerializer(ReqBaseDeserializer):
+
+    pass

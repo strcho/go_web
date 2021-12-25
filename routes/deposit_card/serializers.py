@@ -63,3 +63,8 @@ class BusModifyDepositCardDeserializer(ContextDeserializer):
 
     pin = fields.Integer(required=True, description="用户标识")
     duration = fields.Integer(required=True, description="押金卡时长")
+
+
+class DepositCardToKafkaSerializer(ContextDeserializer):
+
+    pass

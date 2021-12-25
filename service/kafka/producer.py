@@ -84,7 +84,7 @@ class KafkaClient():
             # sasl_plain_username='producer',
             # sasl_plain_password='1GyMeXs4X4',
             # client_id='visual',
-            client_id='account',
+            client_id='visual',
             retries=3,
             retry_backoff_ms=1000,
             max_block_ms=3000,
@@ -108,24 +108,25 @@ class KafkaClient():
         :param key:指定发送的key
         :return:
         """
-        # try:
-        if isinstance(msg, dict):
-            msg = json.dumps(msg)
-        print(self.producer.config)
-        self.producer.send('test_account', msg).add_callback(self.on_send_success).add_errback(
-            self.on_send_error)
-        self.producer.flush()
-        return True
-        # except Exception as ex:
-        #     print("kafka发送支付消息失败", ex)
-        #     return False
+        try:
+            if isinstance(msg, dict):
+                msg = json.dumps(msg)
+            print(self.producer.config)
+            self.producer.send('test_visual', value=msg, key=key.encode("utf-8")).add_callback(
+                self.on_send_success).add_errback(
+                self.on_send_error)
+            self.producer.flush()
+            return True
+        except Exception as ex:
+            print("kafka发送支付消息失败", ex)
+            return False
 
 
 kafka_client = KafkaClient()
 
 if __name__ == '__main__':
     test = {"bike": "test"}
-    kafka_client.pay_send(test, "account")
+    kafka_client.pay_send(test, "wallet")
 
 
 
