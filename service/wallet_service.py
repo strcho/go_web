@@ -26,13 +26,13 @@ class WalletService(MBService):
         try:
             pin = args['pin']
             tenant_id = args['commandContext']['tenant_id']
-            user_wallet = dao_session.session.tenant_db().query(TUserWallet)\
+            user_wallet = dao_session.session.tenant_db().query(TUserWallet) \
                 .filter(TUserWallet.pin == pin,
                         TUserWallet.tenant_id == tenant_id).first()
             if not user_wallet:
                 is_suc = self.insert_one(pin, args)
                 if is_suc:
-                    user_wallet = dao_session.session.tenant_db().query(TUserWallet)\
+                    user_wallet = dao_session.session.tenant_db().query(TUserWallet) \
                         .filter(TUserWallet.pin == pin,
                                 TUserWallet.tenant_id == tenant_id).first()
         except Exception as e:
@@ -85,9 +85,9 @@ class WalletService(MBService):
         pin_list, commandContext = valid_data
 
         print(pin_list, commandContext)
-        user_wallets = dao_session.session.tenant_db()\
-            .query(TUserWallet)\
-            .filter(TUserWallet.pin.in_(pin_list), TUserWallet.tenant_id == commandContext['tenant_id'])\
+        user_wallets = dao_session.session.tenant_db() \
+            .query(TUserWallet) \
+            .filter(TUserWallet.pin.in_(pin_list), TUserWallet.tenant_id == commandContext['tenant_id']) \
             .all()
         data_list = []
         try:
@@ -105,13 +105,13 @@ class WalletService(MBService):
                 )
             exist_pin = {w.pin for w in user_wallets}
             [data_list.append(dict(
-                            pin=pin,
-                            balance=0,
-                            recharge=0,
-                            present=0,
-                            deposited_mount=0,
-                            deposited_stats=0,
-                        )) for pin in pin_list if pin not in exist_pin]
+                pin=pin,
+                balance=0,
+                recharge=0,
+                present=0,
+                deposited_mount=0,
+                deposited_stats=0,
+            )) for pin in pin_list if pin not in exist_pin]
 
         except Exception as e:
             dao_session.session.tenant_db().rollback()
@@ -144,11 +144,12 @@ class WalletService(MBService):
                                                           "version": datetime.now().timestamp()})
         return user_wallet_dict
 
-    def set_user_wallet(self, pin: str, args: dict,):
+    def set_user_wallet(self, pin: str, args: dict, ):
 
         try:
             user_wallet_dict = self.get_user_wallet(pin=pin, args=args)
-            dao_session.redis_session.r.delete(USER_WALLET_CACHE.format(tenant_id=user_wallet_dict['tenant_id'], pin=pin))
+            dao_session.redis_session.r.delete(
+                USER_WALLET_CACHE.format(tenant_id=user_wallet_dict['tenant_id'], pin=pin))
             if self.exists_param(args['change_recharge']):
                 user_wallet_dict['balance'] += args['change_recharge']
                 user_wallet_dict['recharge'] += args['change_recharge']
@@ -172,7 +173,7 @@ class WalletService(MBService):
             logger.exception(e)
             raise MbException("更新用户钱包失败")
 
-    def deduction_balance(self, pin: str, args: dict,):
+    def deduction_balance(self, pin: str, args: dict, ):
 
         deduction_amount = args['deduction_amount']
         tenant_id = args['commandContext']['tenant_id']
@@ -215,13 +216,19 @@ class WalletService(MBService):
     def wallet_to_kafka(context, args: dict):
         # todo 根据用户id查询服务区id，
         try:
-            user_info = user_apis.apiTest4({"user_id": args.get("pin_id")})
-            service_id = user_info.get('service_id')
+            user_res = user_apis.internal_get_userinfo_by_id(
+                {"pin": args.get("pin_id"), 'commandContext': context})
+            user_info = json.loads(user_res).get("data")
+            service_id = user_info.get('serviceId')
+            pin_phone = user_info.get("phone")
+            pin_name = user_info.get("authName")
         except Exception as e:
             # service_id获取失败暂不报错
             logger.info(f"user_apis err: {e}")
-            service_id = 61193175763522450
-
+            # return {"suc": False, "data": f"用户信息获取失败: err: {e}"}
+            service_id = 0
+            pin_phone = ''
+            pin_name = ''
         try:
             wallet_dict = {
                 "tenant_id": context.get('tenant_id'),
@@ -234,6 +241,8 @@ class WalletService(MBService):
                 "merchant_trade_no": args.get("merchant_trade_no"),
                 "recharge_amount": args.get("recharge_amount"),
                 "present_amount": args.get("present_amount"),
+                "pin_phone": pin_phone,
+                "pin_name": pin_name
             }
             logger.info(f"wallet_record send is {wallet_dict}")
             state = kafka_client.pay_send(wallet_dict, PayKey.WALLET.value)
@@ -243,5 +252,3 @@ class WalletService(MBService):
             logger.info(f"wallet_record send err {e}")
             return {"suc": False, "data": f"wallet_to_kafka err: {e}"}
         return {"suc": True, "data": "wallet_kafka send success"}
-
-

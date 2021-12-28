@@ -3,6 +3,8 @@ from marshmallow import (
     fields,
 )
 
+from mbutils.mb_handler import ContextDeserializer
+
 
 class CommandContext(Schema):
     tenant_id = fields.String(required=False, description="租户ID", data_key='tenantId')
@@ -13,6 +15,6 @@ class CommandContext(Schema):
     stressTesting = fields.Bool(required=False, description="false  压测标识)true 压测请求 false 正常请求")
 
 
-class ReqBaseDeserializer(Schema):
-
+class ReqBaseDeserializer(ContextDeserializer):
+    # pass
     commandContext = fields.Nested(CommandContext, required=True, description="公共请求信息")

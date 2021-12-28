@@ -1,3 +1,4 @@
+import json
 from datetime import (
     datetime,
     timedelta,
@@ -164,13 +165,19 @@ class DepositCardService(MBService):
     def deposit_card_to_kafka(context, args: dict):
         # todo 根据用户id查询服务区id，
         try:
-            user_info = user_apis.apiTest4({"user_id": args.get("pin_id")})
-            service_id = user_info.get('service_id')
+            user_res = user_apis.internal_get_userinfo_by_id(
+                {"pin": args.get("pin_id"), 'commandContext': context})
+            user_info = json.loads(user_res).get("data")
+            service_id = user_info.get('serviceId')
+            pin_phone = user_info.get("phone")
+            pin_name = user_info.get("authName")
         except Exception as e:
             # service_id获取失败暂不报错
             logger.info(f"user_apis err: {e}")
-            service_id = 61193175763522450
-
+            return {"suc": False, "data": "用户信息获取失败"}
+            # service_id = 61193175763522450
+            # pin_phone = ''
+            # pin_name = ''
         try:
             deposit_card_dict = {
                 "tenant_id": context.get('tenant_id'),
@@ -183,6 +190,8 @@ class DepositCardService(MBService):
                 "merchant_trade_no": args.get("merchant_trade_no"),
                 "name": "deposit",
                 "amount": args.get("amount"),
+                "pin_phone": pin_phone,
+                "pin_name": pin_name
             }
             logger.info(f"deposit_card_record send is {deposit_card_dict}")
             state = kafka_client.pay_send(deposit_card_dict, PayKey.DEPOSIT_CARD.value)

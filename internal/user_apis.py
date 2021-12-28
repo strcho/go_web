@@ -24,8 +24,8 @@ def apiTest3(formData):
     pass
 
 
-@nacosClient.customRequestClient(method="POST", url="/ebike/user/hello",)
-def apiTest4(jsonData):
+@nacosClient.customRequestClient(method="POST", url="/user/detail",)
+def internal_get_userinfo_by_id(jsonData):
     pass
 
 

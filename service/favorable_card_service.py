@@ -4,7 +4,7 @@ from datetime import (
 )
 
 from internal import user_apis
-from internal.user_apis import apiTest4
+from internal.user_apis import internal_get_userinfo_by_id
 from mbutils import (
     dao_session,
     MbException,
@@ -147,7 +147,7 @@ class FavorableCardUserService(MBService):
         判断当前用户能否修改优惠卡时长,用户购卡信息表,非流水表
         """
 
-        user_info = apiTest4({})  # todo 获取用户信息
+        user_info = internal_get_userinfo_by_id({})  # todo 获取用户信息
         user_state = user_info.get('userState')
         if not user_info:
             raise MbException("获取用户信息失败")
@@ -159,7 +159,7 @@ class FavorableCardUserService(MBService):
             raise MbException("用户有未完结的订单,完成支付后才能进行退款操作")
 
         # todo 这边到底要不要记流水啊？!
-        favorable_buy_record = apiTest4({})  # 获取用户的购卡记录
+        favorable_buy_record = internal_get_userinfo_by_id({})  # 获取用户的购卡记录
         if not favorable_buy_record:
             raise MbException("用户没有优惠卡购买记录,无法进行退款")
 
@@ -169,7 +169,7 @@ class FavorableCardUserService(MBService):
     def favorable_card_to_kafka(context, args: dict):
         # todo 根据用户id查询服务区id，
         try:
-            user_info = user_apis.apiTest4({"user_id": args.get("pin_id")})
+            user_info = user_apis.internal_get_userinfo_by_id({"user_id": args.get("pin_id")})
             service_id = user_info.get('service_id')
         except Exception as e:
             # service_id获取失败暂不报错

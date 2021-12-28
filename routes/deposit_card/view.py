@@ -277,8 +277,8 @@ class DepositCardToKafkaHandle(MBHandler):
                         data:
                             type: boolean
         """
-        valid_data = args.get('commandContext', {}), args
-        response = yield mb_async(DepositCardService().deposit_card_to_kafka)(*valid_data)
+        command_context = self.get_context()
+        response = yield mb_async(DepositCardService().deposit_card_to_kafka)(command_context, args)
         if not response.get("suc"):
             self.error(promt=response.get('data'))
         self.success(response.get('data'))
