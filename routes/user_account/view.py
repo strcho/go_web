@@ -58,12 +58,14 @@ class UserAccount(MBHandler):
                               UserAccountSerializer
           """
 
-        user_wallet = yield mb_async(WalletService().query_one)(args)
-        user_riding_card = yield mb_async(RidingCardService().current_duriong_card)(args)
-        user_deposit_card = yield mb_async(DepositCardService().query_one)(args)
-        user_favorable_card = yield mb_async(FavorableCardUserService().query_one)(args)
-        user_free_order = yield mb_async(UserFreeOrderService().query_one)(args)
-        user_discount = yield mb_async(UserDiscountService().query_one)(args)
+        user_wallet, user_riding_card, user_deposit_card, user_favorable_card, user_free_order, user_discount = yield [
+            mb_async(WalletService().query_one)(args),
+            mb_async(RidingCardService().current_duriong_card)(args),
+            mb_async(DepositCardService().query_one)(args),
+            mb_async(FavorableCardUserService().query_one)(args),
+            mb_async(UserFreeOrderService().query_one)(args),
+            mb_async(UserDiscountService().query_one)(args)
+        ]
 
         data = {
             "user_wallet": user_wallet,
