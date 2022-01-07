@@ -57,6 +57,7 @@ class EditWalletHandle(MBHandler):
         pin = args['pin']
         valid_data = (pin, args)
         response = yield mb_async(WalletService().set_user_wallet)(*valid_data)
+        mb_async(WalletService().wallet_to_kafka)(args["command_context"], args)
 
         self.success(response)
 
