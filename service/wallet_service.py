@@ -13,6 +13,10 @@ from model.all_model import TUserWallet
 from service import MBService
 from service.kafka import PayKey
 from service.kafka.producer import kafka_client
+from utils.constant.account import (
+    PAY_TYPE,
+    STATISTICS_CHANNELS,
+)
 from utils.constant.redis_key import USER_WALLET_CACHE
 
 
@@ -239,8 +243,8 @@ class WalletService(MBService):
                 "channel": args.get("channel"),
                 "sys_trade_no": args.get("sys_trade_no"),
                 "merchant_trade_no": args.get("merchant_trade_no"),
-                "recharge_amount": args.get("recharge_amount"),
-                "present_amount": args.get("present_amount"),
+                "recharge_amount": args.get("change_recharge", 0),
+                "present_amount": args.get("change_present", 0),
                 "pin_phone": pin_phone,
                 "pin_name": pin_name
             }
