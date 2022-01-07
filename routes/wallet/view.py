@@ -11,7 +11,9 @@ from routes.wallet.serializers import (
     UserWalletSerializer,
     GetWalletListDeserializer,
     BusGetWalletDeserializer,
-    DeductionBalanceDeserializer, WalletToKafkaSerializer,
+    DeductionBalanceDeserializer,
+    WalletToKafkaSerializer,
+    BusUpdateWalletDeserializer,
 )
 from service.wallet_service import WalletService
 
@@ -244,7 +246,7 @@ class DeductionBalanceHandle(MBHandler):
 
         valid_data = args['pin'], args
         response = yield mb_async(WalletService().deduction_balance)(*valid_data)
-
+        mb_async(WalletService().wallet_to_kafka)(args["command_context"], args)
         self.success(response)
 
 
@@ -291,3 +293,50 @@ class WalletToKafkaHandle(MBHandler):
             self.error(promt=response.get('data'))
         self.success(response.get('data'))
 
+
+class BusSetWalletHandle(MBHandler):
+    """
+    B端编辑用户钱包
+    """
+
+    @coroutine
+    @use_args_query(BusUpdateWalletDeserializer)
+    def post(self, args: dict):
+        """
+        B端编辑用户钱包
+        ---
+        tags: [B端-钱包]
+        summary: 编辑用户钱包信息
+        description: 编辑用户钱包信息
+
+        parameters:
+          - in: body
+            schema:
+                BusUpdateWalletDeserializer
+        responses:
+            200:
+                schema:
+                    type: object
+                    required:
+                      - success
+                      - code
+                      - msg
+                      - data
+                    properties:
+                        success:
+                            type: boolean
+                        code:
+                            type: str
+                        msg:
+                            type: str
+                        data:
+                            type: boolean
+        """
+
+        args['commandContext'] = self.get_context()
+        args['commandContext']["tenant_id"] = args['commandContext']['tenantId']
+        valid_data = (args['pin'], args)
+        response = yield mb_async(WalletService().set_user_wallet)(*valid_data)
+        mb_async(WalletService().wallet_to_kafka)(args["command_context"], args)
+
+        self.success(response)

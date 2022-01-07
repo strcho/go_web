@@ -64,6 +64,23 @@ class UpdateWalletDeserializer(ReqBaseDeserializer):
     merchant_trade_no = fields.String(load_default=ARG_DEFAULT, description="外部支付渠道订单号")
 
 
+class BusUpdateWalletDeserializer(ContextDeserializer):
+    """
+    B端更新用户钱包信息
+    """
+
+    pin = fields.String(required=True, description="用户标识")
+    change_recharge = fields.Integer(required=False, load_default=ARG_DEFAULT, description="变动的充值金额*100")
+    change_present = fields.Integer(required=False, load_default=ARG_DEFAULT, description="变动的赠送金额*100")
+    change_deposited_mount = fields.Integer(required=False, load_default=ARG_DEFAULT, description="变动的押金金额*100")
+    deposited_stats = fields.Integer(required=False, load_default=ARG_DEFAULT, description="押金状态")
+
+    type = fields.Integer(required=True, description="支付类型")
+    channel = fields.String(required=True, description="支付渠道")
+    sys_trade_no = fields.String(load_default=ARG_DEFAULT, description="系统订单号")
+    merchant_trade_no = fields.String(load_default=ARG_DEFAULT, description="外部支付渠道订单号")
+
+
 class DeductionBalanceDeserializer(ReqBaseDeserializer):
     """
     扣减用户余额
