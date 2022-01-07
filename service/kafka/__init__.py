@@ -18,6 +18,21 @@ class PayKey(MbEnum):
     ORDER = "order"
 
 
+class ChannelType(MbEnum):
+    PLATFORM = 0  # 平台 (活动相关，平台修改的都属于平台)
+
+    ALIPAY = 1  # 支付宝APP支付
+    ALIPAY_LITE = 2  # 支付宝小程序支付
+
+    WEPAY = 11  # 微信APP支付
+    WXLITE = 12  # 微信小程序支付
+    WEPAY_H5 = 13  # 微信H5支付
+
+    UNIONPAY_WXLITE = 21  # 云闪付=>微信小程序支付
+    UNIONPAY_CODE = 22  # 云闪付-二维码支付
+    UNIONPAY_APP = 23  # 云闪付-APP支付
+
+
 class TransactionType(MbEnum):
     BOUGHT = 1  # 充值（购买）
     REFUND = 2  # 退款

@@ -11,7 +11,11 @@ from mbutils import (
 )
 from model.all_model import TUserWallet
 from service import MBService
-from service.kafka import PayKey
+from service.kafka import (
+    PayKey,
+    TransactionType,
+    ChannelType,
+)
 from service.kafka.producer import kafka_client
 from utils.constant.account import (
     PAY_TYPE,
@@ -239,8 +243,8 @@ class WalletService(MBService):
                 "created_pin": args.get("created_pin"),
                 "pin_id": args.get("pin_id"),
                 "service_id": service_id,
-                "type": args.get("type"),
-                "channel": args.get("channel"),
+                "type": args.get("type") or TransactionType.BOUGHT.value,
+                "channel": args.get("channel") or ChannelType.ALIPAY_LITE.value,
                 "sys_trade_no": args.get("sys_trade_no"),
                 "merchant_trade_no": args.get("merchant_trade_no"),
                 "recharge_amount": args.get("change_recharge", 0),
