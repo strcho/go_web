@@ -59,7 +59,7 @@ class EditWalletHandle(MBHandler):
         pin = args['pin']
         valid_data = (pin, args)
         response = yield mb_async(WalletService().set_user_wallet)(*valid_data)
-        mb_async(WalletService().wallet_to_kafka)(args["command_context"], args)
+        mb_async(WalletService().wallet_to_kafka)(args["commandContext"], args)
 
         self.success(response)
 
@@ -246,7 +246,7 @@ class DeductionBalanceHandle(MBHandler):
 
         valid_data = args['pin'], args
         response = yield mb_async(WalletService().deduction_balance)(*valid_data)
-        mb_async(WalletService().wallet_to_kafka)(args["command_context"], args)
+        mb_async(WalletService().wallet_to_kafka)(args["commandContext"], args)
         self.success(response)
 
 
@@ -337,6 +337,6 @@ class BusSetWalletHandle(MBHandler):
         args['commandContext']["tenant_id"] = args['commandContext']['tenantId']
         valid_data = (args['pin'], args)
         response = yield mb_async(WalletService().set_user_wallet)(*valid_data)
-        mb_async(WalletService().wallet_to_kafka)(args["command_context"], args)
+        mb_async(WalletService().wallet_to_kafka)(args["commandContext"], args)
 
         self.success(response)
