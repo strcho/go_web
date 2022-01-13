@@ -9,7 +9,10 @@ from mbutils import (
     ARG_DEFAULT,
 )
 from mbutils.mb_handler import ContextDeserializer
-from utils.base_serializer import ReqBaseDeserializer
+from utils.base_serializer import (
+    ReqBaseDeserializer,
+    BaseSchema,
+)
 
 
 class GetWalletDeserializer(ReqBaseDeserializer):
@@ -34,7 +37,7 @@ class GetWalletListDeserializer(ReqBaseDeserializer):
     pin_list = fields.List(fields.String(required=True), required="pin 列表")
 
 
-class UserWalletSerializer(Schema):
+class UserWalletSerializer(BaseSchema):
     """
     用户钱包序列化器
     """

@@ -2,6 +2,7 @@ from marshmallow import (
     fields,
     Schema,
 )
+from marshmallow.schema import BaseSchema
 
 from mbutils.mb_handler import ContextDeserializer
 from routes.deposit_card.serializers import UserDepositCardSerializer
@@ -34,7 +35,7 @@ class CliUserAccountDeserializer(ContextDeserializer):
     pin = fields.String(required=True, description="用户标识")
 
 
-class UserAccountSerializer(Schema):
+class UserAccountSerializer(BaseSchema):
     """
     用户资产信息序列化
     """

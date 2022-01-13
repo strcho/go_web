@@ -4,7 +4,10 @@ from marshmallow import (
 )
 
 from mbutils.mb_handler import ContextDeserializer
-from utils.base_serializer import ReqBaseDeserializer
+from utils.base_serializer import (
+    ReqBaseDeserializer,
+    BaseSchema,
+)
 
 
 class GetRidingCardDeserializer(ReqBaseDeserializer):
@@ -45,7 +48,7 @@ class SendRidingCardDeserializer(ReqBaseDeserializer):
     content = fields.String(required=True, description="购卡时候配置信息")
 
 
-class RidingCardInfoSerializer(Schema):
+class RidingCardInfoSerializer(BaseSchema):
     """
     骑行卡详情
     """
@@ -67,7 +70,7 @@ class RidingCardInfoSerializer(Schema):
     remain_times = fields.Integer(description='骑行卡剩余使用次数')
 
 
-class RidingCardSerializer(Schema):
+class RidingCardSerializer(BaseSchema):
     """
     用户骑行卡序列化器
     """
@@ -85,7 +88,7 @@ class CurrentDuringTimeDeserializer(ReqBaseDeserializer):
     service_id = fields.Integer(required=True, description='服务区ID')
 
 
-class CurrentDuringTimeSerializer(Schema):
+class CurrentDuringTimeSerializer(BaseSchema):
     """
     当前骑行卡的持续时间响应序列化
     """

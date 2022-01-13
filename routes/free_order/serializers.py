@@ -5,7 +5,10 @@ from marshmallow import (
 )
 
 from mbutils.mb_handler import ContextDeserializer
-from utils.base_serializer import ReqBaseDeserializer
+from utils.base_serializer import (
+    ReqBaseDeserializer,
+    BaseSchema,
+)
 from utils.constant.user import UserFreeOrderType
 
 
@@ -17,7 +20,7 @@ class GetUserFreeOrderDeserializer(ReqBaseDeserializer):
     pin = fields.String(required=True, description='用户标识')
 
 
-class UserFreeOrderSerializer(Schema):
+class UserFreeOrderSerializer(BaseSchema):
     """
     用户免单信息序列化
     """

@@ -7,7 +7,10 @@ from mbutils import (
     ARG_DEFAULT,
 )
 from mbutils.mb_handler import ContextDeserializer
-from utils.base_serializer import ReqBaseDeserializer
+from utils.base_serializer import (
+    ReqBaseDeserializer,
+    BaseSchema,
+)
 from utils.ebike_fields import EDateTime
 
 
@@ -37,7 +40,7 @@ class SendDepositCardDeserializer(ReqBaseDeserializer):
     duration = fields.Integer(required=True, description="押金卡时长")
 
 
-class UserDepositCardSerializer(Schema):
+class UserDepositCardSerializer(BaseSchema):
     """
     用户押金卡
     """
@@ -47,7 +50,7 @@ class UserDepositCardSerializer(Schema):
     expired_date = EDateTime(description="过期时间")
 
 
-class UserDepositCardDaysSerializer(Schema):
+class UserDepositCardDaysSerializer(BaseSchema):
     """
     用户押金卡可用天数
     """

@@ -1,6 +1,7 @@
 from marshmallow import (
     Schema,
     fields,
+    INCLUDE,
 )
 
 from mbutils.mb_handler import ContextDeserializer
@@ -18,3 +19,8 @@ class CommandContext(ContextDeserializer):
 class ReqBaseDeserializer(ContextDeserializer):
     # pass
     commandContext = fields.Nested(CommandContext, required=True, description="公共请求信息")
+
+
+class BaseSchema(Schema):
+    class Meta:
+        unknown = INCLUDE

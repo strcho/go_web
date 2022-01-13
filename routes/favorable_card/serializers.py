@@ -5,7 +5,10 @@ from marshmallow import (
 
 from mbutils import DefaultMaker
 from mbutils.mb_handler import ContextDeserializer
-from utils.base_serializer import ReqBaseDeserializer
+from utils.base_serializer import (
+    ReqBaseDeserializer,
+    BaseSchema,
+)
 from utils.ebike_fields import EDateTime
 
 
@@ -45,7 +48,7 @@ class SendFavorableCardDeserializer(ReqBaseDeserializer):
     card_time = fields.Integer(required=True, description="优惠卡天数")
 
 
-class UserFavorableCardSerializer(Schema):
+class UserFavorableCardSerializer(BaseSchema):
     """
     用户优惠卡
     """
@@ -56,7 +59,7 @@ class UserFavorableCardSerializer(Schema):
     end_time = EDateTime(description="结束时间")
 
 
-class UserFavorableCardDaysSerializer(Schema):
+class UserFavorableCardDaysSerializer(BaseSchema):
     """
     用户优惠卡可用天数
     """

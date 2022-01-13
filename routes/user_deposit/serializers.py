@@ -9,7 +9,10 @@ from mbutils import (
     ARG_DEFAULT,
 )
 from mbutils.mb_handler import ContextDeserializer
-from utils.base_serializer import ReqBaseDeserializer
+from utils.base_serializer import (
+    ReqBaseDeserializer,
+    BaseSchema,
+)
 
 
 class GetDepositDeserializer(ReqBaseDeserializer):
@@ -20,7 +23,7 @@ class GetDepositDeserializer(ReqBaseDeserializer):
     pin = fields.String(required=True, description="用户标识")
 
 
-class UserDepositSerializer(Schema):
+class UserDepositSerializer(BaseSchema):
     """
     用户押金序列化器
     """
