@@ -53,6 +53,7 @@ class TRidingCard(CommonField):
     start_time = Column(DateTime, nullable=False, comment="购卡时间")
     card_expired_date = Column(DateTime, nullable=False, comment="截止时间")
     content = Column(String(4096), nullable=False, comment="购卡时候配置信息")
+    service_id = Column(INTEGER(11), nullable=False, comment="服务区")
 
     state = Column(INTEGER(11), nullable=False, default=1, server_default=text("'1'"), comment="1使用中, 2过期, 3删除")
 
@@ -68,6 +69,7 @@ class TDepositCard(CommonField):
     # trade_no = Column(String(64), nullable=False, index=True)
     # service_id = Column(INTEGER(11), comment='服务区ID')
     # content = Column(String(1024), nullable=False, comment='押金卡详情')
+    service_id = Column(INTEGER(11), nullable=False, comment="服务区")
     expired_date = Column(DateTime, comment='到期时间')
 
 
@@ -78,6 +80,7 @@ class TFavorableCard(CommonField):
     pin = Column(String(64), nullable=False, index=True, comment='用户标识')
     begin_time = Column(DateTime, nullable=False, comment='开始时间')  # 使用优惠卡的开始时间
     end_time = Column(DateTime, nullable=False, comment='结束时间')  # 使用优惠卡的结束时间
+    service_id = Column(INTEGER(11), nullable=False, comment="服务区")
     # config_id = Column(INTEGER(11), nullable=False, comment='计费配置的id')  # 计费配置的id
     # service_id = Column(INTEGER(11), nullable=False, index=True, comment='服务区的id')  # 服务区的id
 
