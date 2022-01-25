@@ -10,7 +10,11 @@ from mbutils import (
     MbException,
 )
 from model.all_model import TUserWallet
-from service.kafka import PayKey
+from service.kafka import (
+    PayKey,
+    TransactionType,
+    ChannelType,
+)
 from service.kafka.producer import kafka_client
 from service.wallet_service import WalletService
 from utils.constant.redis_key import USER_WALLET_CACHE
@@ -73,8 +77,40 @@ class UserDepositService(WalletService):
             dao_session.redis_session.r.hset(USER_WALLET_CACHE.format(tenant_id=user_wallet_dict['tenant_id'], pin=pin),
                                              mapping={"content": json.dumps(user_wallet_dict),
                                                       "version": datetime.now().timestamp()})
-
             self.update_one(pin=pin, args=user_wallet_dict)
+
+            # 发送资产流水
+            commandContext = args.get("commandContext")
+            try:
+                user_res = user_apis.internal_get_userinfo_by_id(
+                    {"pin": args.get("pin_id"), 'commandContext': commandContext})
+                user_info = json.loads(user_res).get("data")
+                service_id = user_info.get('serviceId')
+                pin_phone = user_info.get("phone")
+                pin_name = user_info.get("authName")
+
+                wallet_dict = {
+                    "tenant_id": commandContext.get('tenant_id'),
+                    "created_pin": args.get("created_pin"),
+                    "pin_id": args.get("pin_id"),
+                    "service_id": service_id,
+                    "type": args.get("type") or TransactionType.BOUGHT.value,
+                    "channel": args.get("channel") or ChannelType.ALIPAY_LITE.value,
+                    "sys_trade_no": args.get("sys_trade_no"),
+                    "merchant_trade_no": args.get("merchant_trade_no"),
+                    "recharge_amount": args.get("change_recharge", 0),
+                    "present_amount": args.get("change_present", 0),
+                    "pin_phone": pin_phone,
+                    "pin_name": pin_name
+                }
+                logger.info(f"wallet_record send is {wallet_dict}")
+                state = kafka_client.pay_send(wallet_dict, PayKey.WALLET.value)
+                if not state:
+                    return {"suc": False, "data": "kafka send failed"}
+            except Exception as e:
+                logger.info(f"wallet_record send err {e}")
+                return {"suc": False, "data": f"wallet_to_kafka err: {e}"}
+
             return True
 
         except Exception as e:

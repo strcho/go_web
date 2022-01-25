@@ -14,6 +14,7 @@ from routes.wallet.serializers import (
     DeductionBalanceDeserializer,
     WalletToKafkaSerializer,
     BusUpdateWalletDeserializer,
+    CliGetWalletDeserializer,
 )
 from service.wallet_service import WalletService
 
@@ -59,7 +60,7 @@ class EditWalletHandle(MBHandler):
         pin = args['pin']
         valid_data = (pin, args)
         response = yield mb_async(WalletService().set_user_wallet)(*valid_data)
-        mb_async(WalletService().wallet_to_kafka)(args["commandContext"], args)
+        # mb_async(WalletService().wallet_to_kafka)(args["commandContext"], args)
 
         self.success(response)
 
@@ -338,5 +339,53 @@ class BusSetWalletHandle(MBHandler):
         valid_data = (args['pin'], args)
         response = yield mb_async(WalletService().set_user_wallet)(*valid_data)
         mb_async(WalletService().wallet_to_kafka)(args["commandContext"], args)
+
+        self.success(response)
+
+
+class ClientWalletHandle(MBHandler):
+    """
+    用户端获取钱包信息
+    """
+
+    @coroutine
+    @use_args_query(CliGetWalletDeserializer)
+    def post(self, args):
+        """
+        获取用户钱包信息
+        ---
+        tags: [C端-钱包]
+        summary: 获取用户钱包信息
+        description: 获取用户钱包信息
+
+        parameters:
+          - in: body
+            schema:
+                CliGetWalletDeserializer
+        responses:
+            200:
+                schema:
+                    type: object
+                    required:
+                      - success
+                      - code
+                      - msg
+                      - data
+                    properties:
+                        success:
+                            type: boolean
+                        code:
+                            type: str
+                        msg:
+                            type: str
+                        data:
+                            CliUserWalletSerializer
+        """
+
+        args["commandContext"] = self.get_context()
+        pin = args['pin']
+        valid_data = (pin, args)
+        wallet_data = yield mb_async(WalletService().get_user_wallet)(*valid_data)
+        response = yield mb_async(WalletService().wallet_data_format)(wallet_data)
 
         self.success(response)

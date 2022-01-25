@@ -45,7 +45,7 @@ class SendRidingCardDeserializer(ReqBaseDeserializer):
 
     pin = fields.String(required=True, description="用户标识")
     config_id = fields.Integer(required=True, description="骑行卡配置ID（card_id）")
-    content = fields.String(required=True, description="购卡时候配置信息")
+    # content = fields.String(required=False, description="购卡时候配置信息")
 
 
 class RidingCardInfoSerializer(BaseSchema):

@@ -6,6 +6,7 @@ from routes.wallet.view import (
         DeductionBalanceHandle,
         WalletToKafkaHandle,
         BusSetWalletHandle,
+        ClientWalletHandle,
 )
 
 # /account/user
@@ -20,4 +21,5 @@ urls = [
         (r'/business/get_wallet_info', BusGetWalletHandle),
         (r'/business/set_wallet_info', BusSetWalletHandle),
 
+        (r'/client/get_wallet_info', ClientWalletHandle),
 ]

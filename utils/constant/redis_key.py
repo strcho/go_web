@@ -256,3 +256,6 @@ USER_WALLET_CACHE = "user_account_wallet_{tenant_id}_{pin}"
 
 
 EDIT_USER_FAVORABLE_CARD_LOCK = "edit_user_favorable_card_{tenant_id}_{pin}"
+
+
+USER_REFUND_RECHARGE_LOCK = "user_refund_recharge_lock_{pin}"
