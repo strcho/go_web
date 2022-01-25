@@ -223,9 +223,9 @@ class WalletService(MBService):
         tenant_id = args['commandContext']['tenant_id']
 
         try:
-            if args.get("type") == TransactionType.BOUGHT.value:
-                if not lock(USER_REFUND_RECHARGE_LOCK.format({"pin": pin}), 1, 60*60*24*30):
-                    raise MbException("30天内不可多次退款")
+            # if args.get("type") == TransactionType.BOUGHT.value:
+            #     if not lock(USER_REFUND_RECHARGE_LOCK.format({"pin": pin}), 1, 60*60*24*30):
+            #         raise MbException("30天内不可多次退款")
 
             user_wallet = self.get_user_wallet(pin, args)
             dao_session.redis_session.r.delete(USER_WALLET_CACHE.format(tenant_id=tenant_id, pin=pin))
