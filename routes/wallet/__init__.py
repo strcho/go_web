@@ -9,7 +9,7 @@ from routes.wallet.view import (
         ClientWalletHandle,
 )
 
-# /account/user
+# /account/wallet
 urls = [
         (r'/internal/edit_wallet', EditWalletHandle),
         (r'/internal/deduction_balance', DeductionBalanceHandle),

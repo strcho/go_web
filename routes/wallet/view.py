@@ -383,6 +383,8 @@ class ClientWalletHandle(MBHandler):
         """
 
         args["commandContext"] = self.get_context()
+        args['commandContext']["tenant_id"] = args['commandContext']['tenantId']
+
         pin = args['pin']
         valid_data = (pin, args)
         wallet_data = yield mb_async(WalletService().get_user_wallet)(*valid_data)
