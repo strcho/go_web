@@ -106,7 +106,7 @@ class FavorableCardUserService(MBService):
             commandContext = args.get("commandContext")
             favorable_card_dict = {
                 "tenant_id": commandContext.get('tenantId'),
-                "created_pin": args.get("created_pin"),
+                "created_pin": commandContext.get("created_pin"),
                 "pin_id": args.get("pin"),
                 "service_id": args.get("service_id"),
                 "type": args.get("type"),
@@ -205,7 +205,7 @@ class FavorableCardUserService(MBService):
         try:
             favorable_card_dict = {
                 "tenant_id": context.get('tenantId'),
-                "created_pin": args.get("created_pin"),
+                "created_pin": commandContext.get("created_pin"),
                 "pin_id": args.get("pin"),
                 "service_id": service_id,
                 "type": args.get("type"),

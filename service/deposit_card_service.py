@@ -182,7 +182,7 @@ class DepositCardService(MBService):
         try:
             deposit_card_dict = {
                 "tenant_id": context.get('tenantId'),
-                "created_pin": args.get("created_pin"),
+                "created_pin": commandContext.get("created_pin"),
                 "pin_id": args.get("pin"),
                 "service_id": service_id,
                 "type": args.get("type"),
