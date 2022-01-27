@@ -106,6 +106,7 @@ class UpdateWalletDeserializer(ReqBaseDeserializer):
     21  # 云闪付=>微信小程序支付
     22  # 云闪付-二维码支付
     23  # 云闪付-APP支付
+    101 # 波兰支付（欧洲）
     """)
     sys_trade_no = fields.String(load_default=ARG_DEFAULT, description="系统订单号")
     merchant_trade_no = fields.String(load_default=ARG_DEFAULT, description="外部支付渠道订单号")
@@ -144,6 +145,7 @@ class BusUpdateWalletDeserializer(ContextDeserializer):
     21  # 云闪付=>微信小程序支付
     22  # 云闪付-二维码支付
     23  # 云闪付-APP支付
+    101 # 波兰支付（欧洲）
     """)
     sys_trade_no = fields.String(load_default=ARG_DEFAULT, description="系统订单号")
     merchant_trade_no = fields.String(load_default=ARG_DEFAULT, description="外部支付渠道订单号")
@@ -179,6 +181,7 @@ class DeductionBalanceDeserializer(ReqBaseDeserializer):
     21  # 云闪付=>微信小程序支付
     22  # 云闪付-二维码支付
     23  # 云闪付-APP支付
+    101 # 波兰支付（欧洲）
     """)
     sys_trade_no = fields.String(load_default=ARG_DEFAULT, description="系统订单号")
     merchant_trade_no = fields.String(load_default=ARG_DEFAULT, description="外部支付渠道订单号")
