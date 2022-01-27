@@ -15,7 +15,6 @@ from routes.wallet.serializers import (
     WalletToKafkaSerializer,
     BusUpdateWalletDeserializer,
     CliGetWalletDeserializer,
-    UpdateDepositedDeserializer,
 )
 from service.wallet_service import WalletService
 

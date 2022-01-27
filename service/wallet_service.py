@@ -1,12 +1,10 @@
 import json
-from datetime import datetime
 
 from internal import user_apis
 from mbshort.str_and_datetime import orm_to_dict
 from mbutils import (
     dao_session,
     logger,
-    DefaultMaker,
     MbException,
 )
 from model.all_model import TUserWallet
@@ -17,16 +15,10 @@ from service.kafka import (
     ChannelType,
 )
 from service.kafka.producer import KafkaClient
-from utils.constant.account import (
-    PAY_TYPE,
-    STATISTICS_CHANNELS,
-)
 from utils.constant.redis_key import (
     USER_WALLET_CACHE,
     USER_REFUND_RECHARGE_LOCK,
 )
-from utils.constant.user import DepositedState
-from utils.redis_lock import lock
 
 
 class WalletService(MBService):
@@ -68,7 +60,6 @@ class WalletService(MBService):
             logger.exception(e)
             raise MbException("更新用户钱包失败")
 
-
     def insert_one(self, pin: str, args: dict):
 
         commandContext = args['commandContext']
@@ -86,36 +77,13 @@ class WalletService(MBService):
             logger.exception(e)
             return False
 
-    def update_one(self, pin: str, args: dict):
-
-        params = dict(
-            balance=args['balance'],
-            recharge=args['recharge'],
-            present=args['present'],
-            deposited_mount=args['deposited_mount'],
-            deposited_stats=args['deposited_stats'],
-        )
-
-        try:
-            # 更新余额考虑使用 update({"balance": TUserWallet.balance - change})
-            dao_session.session.tenant_db().query(TUserWallet) \
-                .filter(TUserWallet.pin == pin, TUserWallet.tenant_id == args["tenant_id"]) \
-                .update(params)
-            dao_session.session.tenant_db().commit()
-        except Exception as e:
-            dao_session.session.tenant_db().rollback()
-            logger.error("update user wallet is error: {}".format(e))
-            logger.exception(e)
-            raise MbException("更新用户钱包失败")
-
     def query_list(self, valid_data, enable=2):
 
         pin_list, commandContext = valid_data
 
-        print(pin_list, commandContext)
         user_wallets = dao_session.session.tenant_db() \
             .query(TUserWallet) \
-            .filter(TUserWallet.pin.in_(pin_list), TUserWallet.tenant_id == commandContext['tenant_id']) \
+            .filter(TUserWallet.pin.in_(pin_list), TUserWallet.tenant_id == commandContext['tenantId']) \
             .all()
         data_list = []
         try:
@@ -153,37 +121,15 @@ class WalletService(MBService):
         """
         从redis或mysql获取用户钱包信息
         """
+        user_wallet: TUserWallet = self.query_one(args=args)
+        user_wallet_dict = orm_to_dict(user_wallet, TUserWallet)
 
-        # tenant_id = args['commandContext']['tenantId']
-        # find_user_wallet = dao_session.redis_session.r.hgetall(USER_WALLET_CACHE.format(tenant_id=tenant_id, pin=pin))
-        # 暂不使用缓存
-        find_user_wallet = None
-        if find_user_wallet:
-            pass
-            # try:
-            #     user_wallet_dict = json.loads(find_user_wallet['content'])
-            # except Exception:
-            #     print('user_wallet_dict = find_user_wallet["content"]')
-            #     user_wallet_dict = find_user_wallet["content"]
-        else:
-            user_wallet: TUserWallet = self.query_one(args=args)
-            user_wallet_dict = orm_to_dict(user_wallet, TUserWallet)
-
-            # 暂时不用缓存
-            if user_wallet:
-                pass
-                # dao_session.redis_session.r.hset(USER_WALLET_CACHE.format(tenant_id=tenant_id, pin=pin),
-                #                                  mapping={"content": json.dumps(user_wallet_dict),
-                #                                           "version": datetime.now().timestamp()})
         return user_wallet_dict
 
     def set_user_wallet(self, pin: str, args: dict, ):
 
         try:
             user_wallet_dict = self.get_user_wallet(pin=pin, args=args)
-            # dao_session.redis_session.r.delete(
-            #     USER_WALLET_CACHE.format(tenant_id=user_wallet_dict['tenant_id'], pin=pin))
-
             scene_key = PayKey.WALLET.value
 
             if self.exists_param(args['change_recharge']):
@@ -195,15 +141,9 @@ class WalletService(MBService):
                 user_wallet_dict['present'] += args['change_present']
                 user_wallet_dict['recharge'] += args['change_present']
 
-            if self.exists_param(args['change_deposited_mount']):
-                user_wallet_dict['deposited_mount'] += args['change_deposited_mount']
-
-            if self.exists_param(args['deposited_stats']):
-                user_wallet_dict['deposited_stats'] = args['deposited_stats']
-
-            self.update_one(pin=pin, args=user_wallet_dict)
-
             commandContext = args.get("commandContext")
+            self.update_one(pin=pin, tenant_id=commandContext["tenantId"], params=user_wallet_dict)
+
             param = {"pin": args.get("pin"), 'commandContext': commandContext}
             user_res = user_apis.internal_get_userinfo_by_id(param)
             user_res_data = json.loads(user_res)
@@ -248,9 +188,6 @@ class WalletService(MBService):
 
         try:
             user_wallet_dict = self.get_user_wallet(pin=pin, args=args)
-            # dao_session.redis_session.r.delete(
-            #     USER_WALLET_CACHE.format(tenant_id=user_wallet_dict['tenant_id'], pin=pin))
-
             pay_key = PayKey.WALLET.value
 
             if self.exists_param(args['change_recharge']):
@@ -263,16 +200,8 @@ class WalletService(MBService):
                 user_wallet_dict['recharge'] += args['change_present']
                 pay_key = PayKey.WALLET.value
 
-            if self.exists_param(args['change_deposited_mount']):
-                user_wallet_dict['deposited_mount'] += args['change_deposited_mount']
-                pay_key = PayKey.DEPOSIT.value
-
-            if self.exists_param(args['deposited_stats']):
-                user_wallet_dict['deposited_stats'] = args['deposited_stats']
-
-            self.update_one(pin=pin, args=user_wallet_dict)
-
             commandContext = args.get("commandContext")
+            self.update_one(pin=pin, tenant_id=commandContext["tenantId"], params=user_wallet_dict)
 
             param = {"pin": args.get("pin"), 'commandContext': commandContext}
             user_res = user_apis.internal_get_userinfo_by_id(param)
@@ -300,7 +229,7 @@ class WalletService(MBService):
                 "pin_name": pin_name
             }
             logger.info(f"wallet_record send is {wallet_dict}")
-            state = KafkaClient.visual_send(wallet_dict, PayKey.WALLET.value)
+            state = KafkaClient.visual_send(wallet_dict, pay_key)
 
             return True
 

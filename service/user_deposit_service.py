@@ -226,3 +226,5 @@ class UserDepositService(WalletService):
         }
         logger.info(f"wallet_record send is {deposit_dict}")
         state = KafkaClient.visual_send(deposit_dict, PayKey.DEPOSIT.value)
+
+        return {"suc": True, "data": "更新成功"}

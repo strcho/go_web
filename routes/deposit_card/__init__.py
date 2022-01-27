@@ -1,4 +1,4 @@
-# /account/user
+# /ebike_account/user
 from routes.deposit_card.view import (
     GetUserDepositCardHandle,
     GetUserDepositDaysHandle,

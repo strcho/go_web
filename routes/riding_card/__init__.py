@@ -7,7 +7,7 @@ from routes.riding_card.view import (
         BusEditRidingCardHandle, RidingCardToKafkaHandle,
 )
 
-# /account/user
+# /ebike_account/user
 urls = [
         (r'/internal/get_riding_card', GetRidingCardHandle),
         (r"/internal/edit_riding_card", EditRidingCardHandle),

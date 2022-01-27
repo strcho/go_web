@@ -6,7 +6,7 @@ from routes.favorable_card.view import (
     BusModifyUserFavorableCardHandle, FavorableCardToKafkaHandle,
 )
 
-# /account/user
+# /ebike_account/user
 urls = [
     ("/internal/get_user_favorable_card", GetUserFavorableCardHandle),
     ("/internal/get_user_favorable_days", GetUserFavorableDaysHandle),

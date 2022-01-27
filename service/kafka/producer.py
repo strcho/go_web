@@ -18,16 +18,10 @@ class KafkaClient():
         self.producer = KafkaProducer(
             bootstrap_servers=cfg.get("kafka_config", {})["bootstrap_servers"],
             api_version=(2, 5, 1),
-            # sasl_mechanism="PLAIN",
-            # security_protocol='SASL_PLAINTEXT',
-            # sasl_plain_username='producer',
-            # sasl_plain_password='1GyMeXs4X4',
-            # client_id='visual',
             client_id='visual',
             retries=3,
             retry_backoff_ms=1000,
             max_block_ms=3000,
-            # key_serializer=str.encode,
             value_serializer=str.encode
         )
 
@@ -50,12 +44,10 @@ class KafkaClient():
         try:
             if isinstance(msg, dict):
                 msg = json.dumps(msg)
-            print(self.producer.config)
             self.producer.send(f'{cfg["kafka_config"]["name_prefix"]}_visual', value=msg, key=key.encode("utf-8")).add_callback(
                 self.on_send_success).add_errback(
                 self.on_send_error)
             self.producer.flush()
-            print(f'{cfg["kafka_config"]["name_prefix"]}_visual')
             logger.json({
                 "topic": f'{KAFKA_NAME_PREFIX}_visual',
                 "value": str(msg),
@@ -63,5 +55,5 @@ class KafkaClient():
             })
             return True
         except Exception as ex:
-            print("kafka发送支付消息失败", ex)
+            logger.info("kafka发送支付消息失败", ex)
             return False
