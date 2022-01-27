@@ -32,6 +32,8 @@ class ChannelType(MbEnum):
     UNIONPAY_CODE = 22  # 云闪付-二维码支付
     UNIONPAY_APP = 23  # 云闪付-APP支付
 
+    ADYEN = 101  # 波兰支付（欧洲
+
 
 class TransactionType(MbEnum):
     BOUGHT = 1  # 充值（购买）

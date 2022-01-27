@@ -57,7 +57,7 @@ class UpdateDepositDeserializer(ReqBaseDeserializer):
     204  # 营销活动自定义活动赠送
     205  # 兑换券
     206  # 邀请有礼""")
-    channel = fields.String(load_default=None, description="""支付渠道
+    channel = fields.Integer(load_default=None, description="""支付渠道
     0  # 平台 (活动相关，平台修改的都属于平台)
     1  # 支付宝APP支付
     2  # 支付宝小程序支付
@@ -111,7 +111,7 @@ class DepositToKafkaSerializer(ContextDeserializer):
 #     204  # 营销活动自定义活动赠送
 #     205  # 兑换券
 #     206  # 邀请有礼""")
-#     channel = fields.String(load_default=None, description="""支付渠道
+#     channel = fields.Integer(load_default=None, description="""支付渠道
 #     0  # 平台 (活动相关，平台修改的都属于平台)
 #     1  # 支付宝APP支付
 #     2  # 支付宝小程序支付

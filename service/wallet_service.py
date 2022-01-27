@@ -217,7 +217,7 @@ class WalletService(MBService):
 
             wallet_dict = {
                 "tenant_id": commandContext.get('tenantId'),
-                "created_pin": args.get("created_pin"),
+                "created_pin": commandContext.get("created_pin"),
                 "pin_id": args.get("pin"),
                 "service_id": service_id,
                 "type": args.get("type") or TransactionType.BOUGHT.value,
