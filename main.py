@@ -33,7 +33,7 @@ if __name__ == "__main__":
     app = Application()
 
     logger.initialize(debug=cfg['debug'])
-    AppInit(loop, service_name='ebike-account', dataId=['ebike_account.json'])
+    AppInit(loop, service_name='ebike-account', dataId=['ebike_account.json', 'ebike_mb.json'])
     application = tornado.httpserver.HTTPServer(app, xheaders=True)
 
     YearType = ["2020", "2021", "2022"]
