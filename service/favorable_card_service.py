@@ -19,22 +19,23 @@ from utils.redis_lock import (
 )
 from . import MBService
 from .kafka import PayKey
+from .kafka.producer import KafkaClient
 
 
 class FavorableCardUserService(MBService):
     """
-    用户骑行卡
+    用户优惠卡
     """
 
     def query_one(self, args: dict) -> TFavorableCard:
         """
-        获取当前用户的优惠卡
+        获取当前用户在某服务区的优惠卡
         """
         pin = args['pin']
         card_info = None
         try:
             card_info = dao_session.session.tenant_db().query(TFavorableCard). \
-                filter(TFavorableCard.pin == pin).first()
+                filter(TFavorableCard.pin == pin, TFavorableCard.service_id == args['service_id']).first()
         except Exception as e:
             dao_session.session.tenant_db().rollback()
             logger.error("show favorable card days is error: {}".format(e))
@@ -59,7 +60,15 @@ class FavorableCardUserService(MBService):
 
     # 插入一张优惠卡
     def insert_one(self, args):
-        commandContext = args['commandContext']
+
+        commandContext = args.get("commandContext")
+        # params = {"pin": args.get("pin"), 'commandContext': commandContext}
+        # user_res = user_apis.internal_get_userinfo_by_id(params)
+        # user_info = json.loads(user_res).get("data")
+        # service_id = user_info.get('serviceId')
+        # pin_phone = user_info.get("phone")
+        # pin_name = user_info.get("authName")
+
         param = self.get_model_common_field(commandContext)
         param.update({
             "pin": args['pin'],
@@ -93,7 +102,23 @@ class FavorableCardUserService(MBService):
                 else:
                     user_card.end_time += timedelta(days=args["card_time"])
                 dao_session.session.tenant_db().commit()
-                res = True
+
+            commandContext = args.get("commandContext")
+            favorable_card_dict = {
+                "tenant_id": commandContext.get('tenantId'),
+                "created_pin": args.get("created_pin"),
+                "pin_id": args.get("pin_id"),
+                "service_id": args.get("service_id"),
+                "type": args.get("type"),
+                "channel": args.get("channel"),
+                "sys_trade_no": args.get("sys_trade_no"),
+                "merchant_trade_no": args.get("merchant_trade_no"),
+                "name": "deposit",
+                "amount": args.get("amount"),
+            }  # todo
+            logger.info(f"favorable_card_record send is {favorable_card_dict}")
+            state = KafkaClient().visual_send(favorable_card_dict, PayKey.FAVORABLE_CARD.value)
+            res = True
         except Exception as ex:
             dao_session.session.tenant_db().rollback()
             logger.error("send user favorable card is error: {}".format(ex))
@@ -179,7 +204,7 @@ class FavorableCardUserService(MBService):
 
         try:
             favorable_card_dict = {
-                "tenant_id": context.get('tenant_id'),
+                "tenant_id": context.get('tenantId'),
                 "created_pin": args.get("created_pin"),
                 "pin_id": args.get("pin_id"),
                 "service_id": service_id,

@@ -46,6 +46,8 @@ class SendFavorableCardDeserializer(ReqBaseDeserializer):
 
     pin = fields.String(required=True, description="用户标识")
     card_time = fields.Integer(required=True, description="优惠卡天数")
+    service_id = fields.Integer(required=True, description="服务区id")
+    config = fields.Integer(required=True, description="优惠卡配置id")
 
 
 class UserFavorableCardSerializer(BaseSchema):

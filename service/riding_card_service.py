@@ -79,7 +79,7 @@ class RidingCardService(MBService):
         remain_times = args.get('remain_times')
         duration = args.get('duration')
         _args = (card_id,)
-        tenant_id = args.get('tenant_id')
+        tenant_id = args['commandContext']['tenantId']
         if self.exists_param(tenant_id):
             _args = (card_id, tenant_id)
 
@@ -388,7 +388,7 @@ class RidingCardService(MBService):
 
         try:
             riding_card_dict = {
-                "tenant_id": context.get('tenant_id'),
+                "tenant_id": context.get('tenantId'),
                 "created_pin": args.get("created_pin"),
                 "pin_id": args.get("pin_id"),
                 "service_id": service_id,
