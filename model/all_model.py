@@ -62,7 +62,7 @@ class TDepositCard(CommonField):
     __tablename__ = 't_ebike_account_deposit_card' + '_suffix'
 
     pin = Column(String(64), nullable=False, index=True, comment='用户标识')
-    # config_id = Column(INTEGER(32), nullable=False, comment='押金卡配置ID')
+    config_id = Column(INTEGER(32), nullable=False, comment='押金卡配置ID')
     # money = Column(INTEGER(10), comment='押金卡金额')
     # channel = Column(INTEGER(10), comment='获取方式')
     # days = Column(INTEGER(10), comment='有效天数')
@@ -80,9 +80,8 @@ class TFavorableCard(CommonField):
     pin = Column(String(64), nullable=False, index=True, comment='用户标识')
     begin_time = Column(DateTime, nullable=False, comment='开始时间')  # 使用优惠卡的开始时间
     end_time = Column(DateTime, nullable=False, comment='结束时间')  # 使用优惠卡的结束时间
-    service_id = Column(INTEGER(11), nullable=False, comment="服务区")
-    # config_id = Column(INTEGER(11), nullable=False, comment='计费配置的id')  # 计费配置的id
-    # service_id = Column(INTEGER(11), nullable=False, index=True, comment='服务区的id')  # 服务区的id
+    config_id = Column(INTEGER(11), nullable=False, comment='优惠卡配置id')  # 计费配置的id
+    service_id = Column(INTEGER(11), nullable=False, index=True, comment='服务区的id')  # 服务区的id
 
 
 # 用户折扣

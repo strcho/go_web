@@ -275,7 +275,6 @@ class BusEditRidingCardHandle(MBHandler):
         """
 
         args['commandContext'] = self.get_context()
-        # args['commandContext']["tenant_id"] = args['commandContext']['tenantId']
         response = yield mb_async(RidingCardService().modify_time(args))
 
         self.success(response)

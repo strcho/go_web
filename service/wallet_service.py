@@ -156,7 +156,7 @@ class WalletService(MBService):
             pin_name = user_info.get("authName")
 
             wallet_dict = {
-                "tenant_id": commandContext.get('tenant_id'),
+                "tenant_id": commandContext.get('tenantId'),
                 "created_pin": args.get("created_pin"),
                 "pin_id": args.get("pin_id"),
                 "service_id": service_id,
@@ -215,7 +215,7 @@ class WalletService(MBService):
             pin_name = user_info.get("authName")
 
             wallet_dict = {
-                "tenant_id": commandContext.get('tenant_id'),
+                "tenant_id": commandContext.get('tenantId'),
                 "created_pin": args.get("created_pin"),
                 "pin_id": args.get("pin_id"),
                 "service_id": service_id,
@@ -300,7 +300,7 @@ class WalletService(MBService):
             pin_name = ''
         try:
             wallet_dict = {
-                "tenant_id": context.get('tenant_id'),
+                "tenant_id": context.get('tenantId'),
                 "created_pin": args.get("created_pin"),
                 "pin_id": args.get("pin_id"),
                 "service_id": service_id,

@@ -180,7 +180,7 @@ class DepositCardService(MBService):
             # pin_name = ''
         try:
             deposit_card_dict = {
-                "tenant_id": context.get('tenant_id'),
+                "tenant_id": context.get('tenantId'),
                 "created_pin": args.get("created_pin"),
                 "pin_id": args.get("pin_id"),
                 "service_id": service_id,

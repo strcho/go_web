@@ -18,7 +18,7 @@ class KafkaClient():
         self.producer = KafkaProducer(
             bootstrap_servers=cfg.get("kafka_config", {})["bootstrap_servers"],
             api_version=(2, 5, 1),
-            client_id='visual',
+            client_id='account',
             retries=3,
             retry_backoff_ms=1000,
             max_block_ms=3000,
