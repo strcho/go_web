@@ -22,7 +22,7 @@ class UserFreeOrderService(MBService):
 
         user_free_order = None
         try:
-            tenant_id = args['commandContext']['tenant_id']
+            tenant_id = args['commandContext']['tenantId']
             user_free_order = dao_session.session.tenant_db(
             ).query(TFreeOrderUser).filter(
                 TFreeOrderUser.tenant_id == tenant_id,
@@ -43,7 +43,7 @@ class UserFreeOrderService(MBService):
 
         user_free_order_list = []
         try:
-            tenant_id = args['commandContext']['tenant_id']
+            tenant_id = args['commandContext']['tenantId']
             user_free_order_list = dao_session.session.tenant_db(
             ).query(TFreeOrderUser).filter(
                 TFreeOrderUser.tenant_id == tenant_id,
@@ -88,7 +88,7 @@ class UserFreeOrderService(MBService):
             "free_num": TFreeOrderUser.free_num - 1
         }
         try:
-            tenant_id = args['commandContext']['tenant_id']
+            tenant_id = args['commandContext']['tenantId']
             d =  dao_session.session.tenant_db(
             ).query(TFreeOrderUser).filter(
                 TFreeOrderUser.tenant_id == tenant_id,

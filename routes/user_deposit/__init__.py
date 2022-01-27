@@ -1,10 +1,11 @@
 from routes.user_deposit.view import (
         EditDepositHandle,
         GetDepositHandle,
-        BusEditDepositHandle, DepositToKafkaHandle,
+        BusEditDepositHandle,
+        DepositToKafkaHandle,
 )
 
-# /account/user
+# /ebike_account/user
 urls = [
         (r'/internal/edit_deposit', EditDepositHandle),
         (r'/internal/get_deposit_info', GetDepositHandle),

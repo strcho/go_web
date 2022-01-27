@@ -80,7 +80,7 @@ def kafka_deal_data():
                     # 当数据出现异常后，将次消息从新插入队列之中
                     logger.error("KafkaRetry:", msg.value, msg.key)
                     time.sleep(0.5)
-                    kafka_client.pay_send(msg.value, key=msg.key)
+                    KafkaClient.visual_send(msg.value, key=msg.key)
                 except Exception as ex:
                     logger.info("异常消费消息", ex)
         except Exception as ex:

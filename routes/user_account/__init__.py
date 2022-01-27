@@ -4,7 +4,7 @@ from routes.user_account.view import (
         ClientUserAccount,
 )
 
-# /account/user
+# /ebike_account/user
 urls = [
         (r'/internal/user_account', UserAccount),  # 用户资产
 

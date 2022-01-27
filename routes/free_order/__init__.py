@@ -6,7 +6,7 @@ from routes.free_order.view import (
 )
 
 
-# /account/user
+# /ebike_account/user
 urls = [
     ("/internal/get_user_free_order", GetUserFreeOrderHandler),
     ("/internal/get_user_all_free_order", GetUserAllFreeOrderHandler),

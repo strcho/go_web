@@ -15,7 +15,6 @@ from mbutils import (
 from model.all_model import TDepositCard
 from service import MBService
 from service.kafka import PayKey
-from service.kafka.producer import kafka_client
 
 
 class DepositCardService(MBService):
@@ -32,7 +31,7 @@ class DepositCardService(MBService):
             pin = args['pin']
             deposit_card: TDepositCard = (
                 dao_session.session.tenant_db().query(TDepositCard).filter(
-                    TDepositCard.tenant_id == args['commandContext']['tenant_id'],
+                    TDepositCard.tenant_id == args['commandContext']['tenantId'],
                     TDepositCard.pin == pin,
                 ).first()
             )
@@ -165,8 +164,9 @@ class DepositCardService(MBService):
     def deposit_card_to_kafka(context, args: dict):
         # todo 根据用户id查询服务区id，
         try:
-            user_res = user_apis.internal_get_userinfo_by_id(
-                {"pin": args.get("pin_id"), 'commandContext': context})
+            commandContext = args.get("commandContext")
+            param = {"pin": args.get("pin"), 'commandContext': commandContext}
+            user_res = user_apis.internal_get_userinfo_by_id(param)
             user_info = json.loads(user_res).get("data")
             service_id = user_info.get('serviceId')
             pin_phone = user_info.get("phone")
@@ -194,7 +194,7 @@ class DepositCardService(MBService):
                 "pin_name": pin_name
             }
             logger.info(f"deposit_card_record send is {deposit_card_dict}")
-            state = kafka_client.pay_send(deposit_card_dict, PayKey.DEPOSIT_CARD.value)
+            state = KafkaClient.visual_send(deposit_card_dict, PayKey.DEPOSIT_CARD.value)
             if not state:
                 return {"suc": False, "data": "kafka send failed"}
         except Exception as e:

@@ -28,7 +28,7 @@ class TUserWallet(CommonField):
     present = Column(INTEGER(11), server_default=text("'0'"), comment='赠送余额')
 
     deposited_mount = Column(INTEGER(11), server_default=text("'0'"), comment='押金金额')
-    deposited_stats = Column(INTEGER(11), nullable=False, server_default=text("'0'"), comment='押金状态')
+    deposited_stats = Column(INTEGER(11), nullable=False, server_default=text("'0'"), comment='押金状态 0 未缴纳  1已缴纳  2  已退还  3 已冻结')
 
 
 class TRidingCard(CommonField):

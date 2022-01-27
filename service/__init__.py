@@ -153,6 +153,6 @@ class MBService:
         )
 
         if commandContext:
-            fields_dict["tenant_id"] = commandContext['tenant_id']
+            fields_dict["tenant_id"] = commandContext['tenantId']
 
         return fields_dict

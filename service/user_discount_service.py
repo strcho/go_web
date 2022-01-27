@@ -24,7 +24,7 @@ class UserDiscountService(MBService):
 
         user_discount = None
         try:
-            tenant_id = args['commandContext']['tenant_id']
+            tenant_id = args['commandContext']['tenantId']
             user_discount: TDiscountsUser = dao_session.session.tenant_db(
             ).query(TDiscountsUser).filter(
                 TDiscountsUser.tenant_id == tenant_id,
@@ -45,7 +45,7 @@ class UserDiscountService(MBService):
 
         user_discount_list = []
         try:
-            tenant_id = args['commandContext']['tenant_id']
+            tenant_id = args['commandContext']['tenantId']
             user_discount_list = dao_session.session.tenant_db(
             ).query(TDiscountsUser).filter(
                 TDiscountsUser.tenant_id == tenant_id,
