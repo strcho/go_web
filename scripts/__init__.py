@@ -30,7 +30,7 @@ def register_scheduler(loop):
     tt = TimeTask(loop)
 
     # 只运行一次的长脚本
-    tt.scheduler.add_job(kafka_sub_worker_job, 'date', replace_existing=True,
-                         next_run_time=dt.now() + timedelta(seconds=10), max_instances=1, misfire_grace_time=15)
+    # tt.scheduler.add_job(kafka_sub_worker_job, 'date', replace_existing=True,
+    #                      next_run_time=dt.now() + timedelta(seconds=10), max_instances=1, misfire_grace_time=15)
 
     tt.start_tasks()

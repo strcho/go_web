@@ -147,6 +147,7 @@ class WalletService(MBService):
             param = {"pin": args.get("pin"), 'commandContext': commandContext}
             user_res = user_apis.internal_get_userinfo_by_id(param)
             user_res_data = json.loads(user_res)
+            print(user_res_data)
             if not user_res_data.get("success"):
                 raise MbException("用户服务调用失败")
 
@@ -158,7 +159,7 @@ class WalletService(MBService):
             wallet_dict = {
                 "tenant_id": commandContext.get('tenantId'),
                 "created_pin": args.get("created_pin"),
-                "pin_id": args.get("pin_id"),
+                "pin_id": args.get("pin"),
                 "service_id": service_id,
                 "type": args.get("type") or TransactionType.BOUGHT.value,
                 "channel": args.get("channel") or ChannelType.ALIPAY_LITE.value,
@@ -217,7 +218,7 @@ class WalletService(MBService):
             wallet_dict = {
                 "tenant_id": commandContext.get('tenantId'),
                 "created_pin": args.get("created_pin"),
-                "pin_id": args.get("pin_id"),
+                "pin_id": args.get("pin"),
                 "service_id": service_id,
                 "type": args.get("type") or TransactionType.BOUGHT.value,
                 "channel": args.get("channel") or ChannelType.PLATFORM.value,
@@ -229,7 +230,7 @@ class WalletService(MBService):
                 "pin_name": pin_name
             }
             logger.info(f"wallet_record send is {wallet_dict}")
-            state = KafkaClient.visual_send(wallet_dict, pay_key)
+            state = KafkaClient().visual_send(wallet_dict, pay_key)
 
             return True
 
@@ -302,7 +303,7 @@ class WalletService(MBService):
             wallet_dict = {
                 "tenant_id": context.get('tenantId'),
                 "created_pin": args.get("created_pin"),
-                "pin_id": args.get("pin_id"),
+                "pin_id": args.get("pin"),
                 "service_id": service_id,
                 "type": args.get("type") or TransactionType.BOUGHT.value,
                 "channel": args.get("channel") or ChannelType.ALIPAY_LITE.value,
@@ -314,7 +315,7 @@ class WalletService(MBService):
                 "pin_name": pin_name
             }
             logger.info(f"wallet_record send is {wallet_dict}")
-            state = KafkaClient.visual_send(wallet_dict, PayKey.WALLET.value)
+            state = KafkaClient().visual_send(wallet_dict, PayKey.WALLET.value)
             if not state:
                 return {"suc": False, "data": "kafka send failed"}
         except Exception as e:

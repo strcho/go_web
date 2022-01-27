@@ -15,6 +15,7 @@ from mbutils import (
 from model.all_model import TDepositCard
 from service import MBService
 from service.kafka import PayKey
+from service.kafka.producer import KafkaClient
 
 
 class DepositCardService(MBService):
@@ -182,7 +183,7 @@ class DepositCardService(MBService):
             deposit_card_dict = {
                 "tenant_id": context.get('tenantId'),
                 "created_pin": args.get("created_pin"),
-                "pin_id": args.get("pin_id"),
+                "pin_id": args.get("pin"),
                 "service_id": service_id,
                 "type": args.get("type"),
                 "channel": args.get("channel"),
@@ -194,7 +195,7 @@ class DepositCardService(MBService):
                 "pin_name": pin_name
             }
             logger.info(f"deposit_card_record send is {deposit_card_dict}")
-            state = KafkaClient.visual_send(deposit_card_dict, PayKey.DEPOSIT_CARD.value)
+            state = KafkaClient().visual_send(deposit_card_dict, PayKey.DEPOSIT_CARD.value)
             if not state:
                 return {"suc": False, "data": "kafka send failed"}
         except Exception as e:

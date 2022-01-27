@@ -107,7 +107,7 @@ class FavorableCardUserService(MBService):
             favorable_card_dict = {
                 "tenant_id": commandContext.get('tenantId'),
                 "created_pin": args.get("created_pin"),
-                "pin_id": args.get("pin_id"),
+                "pin_id": args.get("pin"),
                 "service_id": args.get("service_id"),
                 "type": args.get("type"),
                 "channel": args.get("channel"),
@@ -206,7 +206,7 @@ class FavorableCardUserService(MBService):
             favorable_card_dict = {
                 "tenant_id": context.get('tenantId'),
                 "created_pin": args.get("created_pin"),
-                "pin_id": args.get("pin_id"),
+                "pin_id": args.get("pin"),
                 "service_id": service_id,
                 "type": args.get("type"),
                 "channel": args.get("channel"),
@@ -216,7 +216,7 @@ class FavorableCardUserService(MBService):
                 "amount": args.get("amount"),
             }
             logger.info(f"deposit_card_record send is {favorable_card_dict}")
-            state = KafkaClient.visual_send(favorable_card_dict, PayKey.FAVORABLE_CARD.value)
+            state = KafkaClient().visual_send(favorable_card_dict, PayKey.FAVORABLE_CARD.value)
             if not state:
                 return {"suc": False, "data": "kafka send failed"}
         except Exception as e:

@@ -6,7 +6,10 @@ from kafka import KafkaConsumer, TopicPartition, OffsetAndMetadata
 
 from service.kafka import KafkaTopic
 from service.kafka import PayKey, KafkaRetry, CONSUMER_GROUP_ID
-from service.kafka.producer import kafka_client
+from service.kafka.producer import (
+    kafka_client,
+    KafkaClient,
+)
 from service.payment.deposit import DepositService
 from service.payment.deposit_card import DepositCardService
 from service.payment.favorable_card import FavorableCardService
@@ -80,7 +83,7 @@ def kafka_deal_data():
                     # 当数据出现异常后，将次消息从新插入队列之中
                     logger.error("KafkaRetry:", msg.value, msg.key)
                     time.sleep(0.5)
-                    KafkaClient.visual_send(msg.value, key=msg.key)
+                    KafkaClient().visual_send(msg.value, key=msg.key)
                 except Exception as ex:
                     logger.info("异常消费消息", ex)
         except Exception as ex:

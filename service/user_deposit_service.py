@@ -104,7 +104,7 @@ class UserDepositService(WalletService):
     #             wallet_dict = {
     #                 "tenant_id": commandContext.get('tenantId'),
     #                 "created_pin": args.get("created_pin"),
-    #                 "pin_id": args.get("pin_id"),
+    #                 "pin_id": args.get("pin"),
     #                 "service_id": service_id,
     #                 "type": args.get("type") or TransactionType.BOUGHT.value,
     #                 "channel": args.get("channel") or ChannelType.ALIPAY_LITE.value,
@@ -152,7 +152,7 @@ class UserDepositService(WalletService):
             deposit_dict = {
                 "tenant_id": context.get('tenantId'),
                 "created_pin": args.get("created_pin"),
-                "pin_id": args.get("pin_id"),
+                "pin_id": args.get("pin"),
                 "service_id": service_id,
                 "type": args.get("type"),
                 "channel": args.get("channel"),
@@ -162,7 +162,7 @@ class UserDepositService(WalletService):
                 "amount": deposit_info.get("amount"),
             }
             logger.info(f"wallet_record send is {deposit_dict}")
-            state = KafkaClient.visual_send(deposit_dict, PayKey.DEPOSIT.value)
+            state = KafkaClient().visual_send(deposit_dict, PayKey.DEPOSIT.value)
             if not state:
                 return {"suc": False, "data": "kafka send failed"}
         except Exception as e:
@@ -215,7 +215,7 @@ class UserDepositService(WalletService):
         deposit_dict = {
             "tenant_id": context.get('tenantId'),
             "created_pin": args.get("created_pin"),
-            "pin_id": args.get("pin_id"),
+            "pin_id": args.get("pin"),
             "service_id": service_id,
             "type": args.get("type"),
             "channel": args.get("channel"),
@@ -225,6 +225,6 @@ class UserDepositService(WalletService):
             "amount": deposited_mount,
         }
         logger.info(f"wallet_record send is {deposit_dict}")
-        state = KafkaClient.visual_send(deposit_dict, PayKey.DEPOSIT.value)
+        state = KafkaClient().visual_send(deposit_dict, PayKey.DEPOSIT.value)
 
         return {"suc": True, "data": "更新成功"}

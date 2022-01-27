@@ -59,7 +59,6 @@ class EditWalletHandle(MBHandler):
       """
         pin = args['pin']
         valid_data = (pin, args)
-        print(args)
         response = yield mb_async(WalletService().set_user_wallet)(*valid_data)
 
         self.success(response)

@@ -19,6 +19,7 @@ from model.all_model import (
 )
 from service import MBService
 from service.kafka import PayKey
+from service.kafka.producer import KafkaClient
 from utils.constant.account import (
     UserRidingCardState,
     SERIAL_TYPE,
@@ -390,7 +391,7 @@ class RidingCardService(MBService):
             riding_card_dict = {
                 "tenant_id": context.get('tenantId'),
                 "created_pin": args.get("created_pin"),
-                "pin_id": args.get("pin_id"),
+                "pin_id": args.get("pin"),
                 "service_id": service_id,
                 "type": args.get("type"),
                 "channel": args.get("channel"),
@@ -400,7 +401,7 @@ class RidingCardService(MBService):
                 "amount": args.get("amount"),
             }
             logger.info(f"deposit_card_record send is {riding_card_dict}")
-            state = KafkaClient.visual_send(riding_card_dict, PayKey.RIDING_CARD.value)
+            state = KafkaClient().visual_send(riding_card_dict, PayKey.RIDING_CARD.value)
             if not state:
                 return {"suc": False, "data": "kafka send failed"}
         except Exception as e:
