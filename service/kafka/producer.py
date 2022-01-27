@@ -14,7 +14,7 @@ from mbutils import (
 class KafkaClient():
     def __init__(self):
         # 参数见: https://shimo.im/docs/m5kv9Jn91WFQ0EqX
-        print(cfg.get("kafka_config"), cfg)
+        # print(cfg.get("kafka_config"), cfg)
         self.producer = KafkaProducer(
             bootstrap_servers=cfg.get("kafka_config", {})["bootstrap_servers"],
             api_version=(2, 5, 1),
@@ -27,11 +27,11 @@ class KafkaClient():
 
     @staticmethod
     def on_send_success(msg):
-        print("msg is send, msg:", msg)
+        logger.info("msg is send, msg:", msg)
 
     @staticmethod
     def on_send_error(excp):
-        print('I am an errback: {}'.format(excp))
+        logger.info('I am an errback: {}'.format(excp))
 
     def visual_send(self, msg: dict, key: str):
         """
