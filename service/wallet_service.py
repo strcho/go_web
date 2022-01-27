@@ -139,7 +139,7 @@ class WalletService(MBService):
 
             if self.exists_param(args['change_present']):
                 user_wallet_dict['present'] += args['change_present']
-                user_wallet_dict['recharge'] += args['change_present']
+                user_wallet_dict['balance'] += args['change_present']
 
             commandContext = args.get("commandContext")
             self.update_one(pin=pin, tenant_id=commandContext["tenantId"], params=user_wallet_dict)
@@ -270,11 +270,9 @@ class WalletService(MBService):
                 balance=balance,
                 recharge=recharge,
                 present=present,
-                deposited_mount=user_wallet["deposited_mount"],
-                deposited_stats=user_wallet["deposited_stats"],
             )
 
-            self.update_one(pin=pin, args=params)
+            self.update_one(pin=pin, tenant_id=tenant_id, params=params)
             return True
         except Exception as ex:
             dao_session.session.tenant_db().rollback()

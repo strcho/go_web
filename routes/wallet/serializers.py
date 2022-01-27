@@ -80,8 +80,6 @@ class UpdateWalletDeserializer(ReqBaseDeserializer):
     pin = fields.String(required=True, description="用户标识")
     change_recharge = fields.Integer(required=False, load_default=ARG_DEFAULT, description="变动的充值金额*100")
     change_present = fields.Integer(required=False, load_default=ARG_DEFAULT, description="变动的赠送金额*100")
-    # change_deposited_mount = fields.Integer(required=False, load_default=ARG_DEFAULT, description="变动的押金金额*100")
-    # deposited_stats = fields.Integer(required=False, load_default=ARG_DEFAULT, description="押金状态 0 未缴纳 1缴纳  2 退还  3 冻结")
 
     type = fields.Integer(load_default=None, description="""支付类型 
     1  # 充值（购买）
