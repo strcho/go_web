@@ -15,6 +15,7 @@ from routes.wallet.serializers import (
     WalletToKafkaSerializer,
     BusUpdateWalletDeserializer,
     CliGetWalletDeserializer,
+    UpdateDepositedDeserializer,
 )
 from service.wallet_service import WalletService
 
@@ -59,8 +60,8 @@ class EditWalletHandle(MBHandler):
       """
         pin = args['pin']
         valid_data = (pin, args)
+        print(args)
         response = yield mb_async(WalletService().set_user_wallet)(*valid_data)
-        # mb_async(WalletService().wallet_to_kafka)(args["commandContext"], args)
 
         self.success(response)
 
@@ -335,7 +336,7 @@ class BusSetWalletHandle(MBHandler):
         """
 
         args['commandContext'] = self.get_context()
-        args['commandContext']["tenant_id"] = args['commandContext']['tenantId']
+        # args['commandContext']["tenant_id"] = args['commandContext']['tenantId']
         valid_data = (args['pin'], args)
         response = yield mb_async(WalletService().set_user_wallet)(*valid_data)
         mb_async(WalletService().wallet_to_kafka)(args["commandContext"], args)
@@ -383,7 +384,6 @@ class ClientWalletHandle(MBHandler):
         """
 
         args["commandContext"] = self.get_context()
-        args['commandContext']["tenant_id"] = args['commandContext']['tenantId']
 
         pin = args['pin']
         valid_data = (pin, args)

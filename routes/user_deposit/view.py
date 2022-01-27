@@ -52,9 +52,8 @@ class EditDepositHandle(MBHandler):
                         data:
                             type: boolean
       """
-        pin = args['pin']
-        valid_data = (pin, args)
-        response = yield mb_async(UserDepositService().set_user_deposit)(*valid_data)
+
+        response = yield mb_async(UserDepositService().edit_user_deposited)(args)
 
         self.success(response)
 
@@ -146,7 +145,7 @@ class BusEditDepositHandle(MBHandler):
       """
 
         args['commandContext'] = self.get_context()
-        args['commandContext']["tenant_id"] = args['commandContext']['tenantId']
+        # args['commandContext']["tenant_id"] = args['commandContext']['tenantId']
         pin = args['pin']
         valid_data = (pin, args)
         response = yield mb_async(UserDepositService().set_user_deposit)(*valid_data)
@@ -197,5 +196,47 @@ class DepositToKafkaHandle(MBHandler):
             self.error(promt=response.get('data'))
         self.success(response.get('data'))
 
-
-
+#
+# class EditDepositedHandle(MBHandler):
+#     """
+#     编辑用户押金
+#     """
+#
+#     @coroutine
+#     @use_args_query(UpdateDepositedDeserializer)
+#     def post(self, args: dict):
+#         """
+#         更新用户钱包信息
+#         ---
+#         tags: [钱包]
+#         summary: 更新用户押金信息
+#         description: 更新用户押金信息
+#
+#         parameters:
+#           - in: body
+#             schema:
+#                 UpdateDepositedDeserializer
+#         responses:
+#             200:
+#                 schema:
+#                     type: object
+#                     required:
+#                       - success
+#                       - code
+#                       - msg
+#                       - data
+#                     properties:
+#                         success:
+#                             type: boolean
+#                         code:
+#                             type: str
+#                         msg:
+#                             type: str
+#                         data:
+#                             type: boolean
+#       """
+#         pin = args['pin']
+#         valid_data = (pin, args)
+#         response = yield mb_async(WalletService().edit_user_deposited)(*valid_data)
+#
+#         self.success(response)

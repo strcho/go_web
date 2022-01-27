@@ -44,23 +44,11 @@ class UserState(MbEnum):
 
 
 class DepositedState(MbEnum):
+    """押金状态"""
     NO_DEPOSITED = 0  # 未缴纳押金
     DEPOSITED = 1  # 押金已缴纳
     REFUNDED = 2  # 押金已退款
     FROZEN = 3  # 押金已冻结
-
-# const XC_EBIKE_DEVICE_STATE = {
-#   READY: '1', // 可使用
-#   RIDING: '2', // 骑行中
-#   BROKEN: '3', // 设备报修
-#   BOOKING: '4', // 设备被预约
-#   OFFLINE: '5', // 设备离线
-#   CHANGING_BATTERY: '6', // 处于工人换电池阶段  【虚拟状态】
-#   DRAG_BACK: '7', // 设备无法现场维修，置为拖回状态
-#   LOW_BATTERY: '8', // 新增低电量类型车辆，和拖回状态分开
-#   MOVE_CAR: '8', // 挪车 【虚拟状态】
-#   // 空。设备login但未上架
-# };
 
 
 class UserFreeOrderType(MbEnum):

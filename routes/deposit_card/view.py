@@ -234,7 +234,7 @@ class BusModifyUserDepositCardHandle(MBHandler):
         """
 
         args['commandContext'] = self.get_context()
-        args['commandContext']["tenant_id"] = args['commandContext']['tenantId']
+        # args['commandContext']["tenant_id"] = args['commandContext']['tenantId']
         response = yield mb_async(DepositCardService().modify_deposit_card_time)(args)
 
         self.success(response)

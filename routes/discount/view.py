@@ -190,7 +190,7 @@ class BusUpdateUserDiscountHandler(MBHandler):
         """
 
         args['commandContext'] = self.get_context()
-        args['commandContext']["tenant_id"] = args['commandContext']['tenantId']
+        # args['commandContext']["tenant_id"] = args['commandContext']['tenantId']
         response = yield mb_async(UserDiscountService().update_user_discount)(args)
 
         self.success(response)

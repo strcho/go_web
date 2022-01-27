@@ -8,7 +8,8 @@ from mbutils.mb_handler import ContextDeserializer
 
 
 class CommandContext(ContextDeserializer):
-    tenant_id = fields.String(required=False, description="租户ID", data_key='tenantId')
+    # tenant_id = fields.String(required=False, description="租户ID", data_key='tenantId')
+    tenantId = fields.String(required=False, description="租户ID")
     traceId = fields.String(required=False, description="链路追踪ID")
     pin = fields.String(required=False, description="用户PIN")
     ip = fields.String(required=False, description="ip地址")

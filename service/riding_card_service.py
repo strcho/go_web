@@ -19,7 +19,6 @@ from model.all_model import (
 )
 from service import MBService
 from service.kafka import PayKey
-from service.kafka.producer import kafka_client
 from utils.constant.account import (
     UserRidingCardState,
     SERIAL_TYPE,
@@ -285,7 +284,7 @@ class RidingCardService(MBService):
 
     def add_count(self, args: dict):
         card_id = args['dict']
-        tenant_id = args['commandContext']['tenant_id']
+        tenant_id = args['commandContext']['tenantId']
         one: TRidingCard = dao_session.session.tenant_db().query(TRidingCard).filter(
             TRidingCard.id == card_id,
             TRidingCard.tenant_id == tenant_id
@@ -401,7 +400,7 @@ class RidingCardService(MBService):
                 "amount": args.get("amount"),
             }
             logger.info(f"deposit_card_record send is {riding_card_dict}")
-            state = kafka_client.pay_send(riding_card_dict, PayKey.RIDING_CARD.value)
+            state = KafkaClient.visual_send(riding_card_dict, PayKey.RIDING_CARD.value)
             if not state:
                 return {"suc": False, "data": "kafka send failed"}
         except Exception as e:

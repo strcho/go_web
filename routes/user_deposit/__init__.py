@@ -1,7 +1,8 @@
 from routes.user_deposit.view import (
         EditDepositHandle,
         GetDepositHandle,
-        BusEditDepositHandle, DepositToKafkaHandle,
+        BusEditDepositHandle,
+        DepositToKafkaHandle,
 )
 
 # /account/user

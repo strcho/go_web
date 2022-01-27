@@ -19,7 +19,6 @@ from utils.redis_lock import (
 )
 from . import MBService
 from .kafka import PayKey
-from .kafka.producer import kafka_client
 
 
 class FavorableCardUserService(MBService):
@@ -109,7 +108,7 @@ class FavorableCardUserService(MBService):
         """
 
         if not lock(EDIT_USER_FAVORABLE_CARD_LOCK.format(
-                {"tenant_id": args['commandContext']['tenant_id'],
+                {"tenant_id": args['commandContext']['tenantId'],
                  "pin": args['commandContext']['pin']}
         )):
             raise MbException("修改用户优惠卡时间中,请2s后重试")
@@ -137,7 +136,7 @@ class FavorableCardUserService(MBService):
             return False
         finally:
             release_lock(EDIT_USER_FAVORABLE_CARD_LOCK.format(
-                {"tenant_id": args['commandContext']['tenant_id'],
+                {"tenant_id": args['commandContext']['tenantId'],
                  "pin": args['commandContext']['pin']}))
 
         return True
@@ -169,7 +168,9 @@ class FavorableCardUserService(MBService):
     def favorable_card_to_kafka(context, args: dict):
         # todo 根据用户id查询服务区id，
         try:
-            user_info = user_apis.internal_get_userinfo_by_id({"user_id": args.get("pin_id")})
+            commandContext = args.get("commandContext")
+            param = {"pin": args.get("pin"), 'commandContext': commandContext}
+            user_info = user_apis.internal_get_userinfo_by_id(param)
             service_id = user_info.get('service_id')
         except Exception as e:
             # service_id获取失败暂不报错
@@ -190,7 +191,7 @@ class FavorableCardUserService(MBService):
                 "amount": args.get("amount"),
             }
             logger.info(f"deposit_card_record send is {favorable_card_dict}")
-            state = kafka_client.pay_send(favorable_card_dict, PayKey.FAVORABLE_CARD.value)
+            state = KafkaClient.visual_send(favorable_card_dict, PayKey.FAVORABLE_CARD.value)
             if not state:
                 return {"suc": False, "data": "kafka send failed"}
         except Exception as e:
