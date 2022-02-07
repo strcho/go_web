@@ -139,7 +139,7 @@ class FavorableCardUserService(MBService):
                 **{"tenant_id": args['commandContext']['tenantId'],
                     "pin": args['pin'],
                     "service_id": args["service_id"]})):
-            print("?/?")
+            raise MbException("修改用户优惠卡时间中,请2s后重试")
 
         self.user_can_modify_favorable_card_duration(args['commandContext'], args['pin'], args['service_id'])
 

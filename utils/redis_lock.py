@@ -18,9 +18,7 @@ def lock(
     """
 
     key = f'lock_{key}'
-    print('111')
     locked = dao_session.redis_session.r.setnx(key, value)
-    print('2222')
     if locked:
         dao_session.redis_session.r.expire(key, timeout)
 
