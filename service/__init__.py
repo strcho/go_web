@@ -153,6 +153,8 @@ class MBService:
         )
 
         if commandContext:
-            fields_dict["tenant_id"] = commandContext['tenantId']
+            fields_dict["tenant_id"] = commandContext.get('tenantId')
+            fields_dict["created_pin"] = commandContext.get('pin')
+            fields_dict["updated_pin"] = commandContext.get('pin')
 
         return fields_dict

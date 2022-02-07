@@ -57,7 +57,7 @@ class GetUserFavorableCardHandle(MBHandler):
 
         data = yield mb_async(FavorableCardUserService().query_one)(args)
 
-        data = None if data.end_time <= datetime.now() else data
+        data = None if data and data.end_time <= datetime.now() else data
 
         response = UserFavorableCardSerializer().dump(data)
 

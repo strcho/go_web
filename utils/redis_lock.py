@@ -1,4 +1,6 @@
-from mbutils import doo_redis
+from mbutils import (
+    dao_session,
+)
 
 
 def lock(
@@ -16,10 +18,11 @@ def lock(
     """
 
     key = f'lock_{key}'
-
-    locked = doo_redis.r.setnx(key, value)
+    print('111')
+    locked = dao_session.redis_session.r.setnx(key, value)
+    print('2222')
     if locked:
-        doo_redis.r.expire(key, timeout)
+        dao_session.redis_session.r.expire(key, timeout)
 
     return bool(locked)
 
@@ -36,5 +39,5 @@ def release_lock(
 
     key = f'lock_{key}'
 
-    deleted = doo_redis.r.delete(key)
+    deleted = dao_session.redis_session.r.delete(key)
     return bool(deleted)

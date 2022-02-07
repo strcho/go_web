@@ -73,6 +73,8 @@ class FavorableCardUserService(MBService):
         param = self.get_model_common_field(commandContext)
         param.update({
             "pin": args['pin'],
+            "config_id": args['config_id'],
+            "service_id": args['service_id'],
             "begin_time": datetime.now(),
             "end_time": datetime.now() + timedelta(days=args["card_time"]),
         })
@@ -114,7 +116,7 @@ class FavorableCardUserService(MBService):
                 "channel": args.get("channel"),
                 "sys_trade_no": args.get("sys_trade_no"),
                 "merchant_trade_no": args.get("merchant_trade_no"),
-                "name": "deposit",
+                "name": "favorable_card",
                 "amount": args.get("amount"),
             }  # todo
             logger.info(f"favorable_card_record send is {favorable_card_dict}")
@@ -133,19 +135,18 @@ class FavorableCardUserService(MBService):
         编辑用户优惠卡时间
         """
 
-        if not lock(EDIT_USER_FAVORABLE_CARD_LOCK.format({
-            "tenant_id": args['commandContext']['tenantId'],
-            "pin": args['pin'],
-            "service_id": args["service_id"]
-        }
-        )):
-            raise MbException("修改用户优惠卡时间中,请2s后重试")
+        if not lock(EDIT_USER_FAVORABLE_CARD_LOCK.format(
+                **{"tenant_id": args['commandContext']['tenantId'],
+                    "pin": args['pin'],
+                    "service_id": args["service_id"]})):
+            print("?/?")
 
         self.user_can_modify_favorable_card_duration(args['commandContext'], args['pin'], args['service_id'])
 
         duration = args['duration']
-
+        print("aaaaaaa", duration)
         favorable_card: TFavorableCard = self.query_one(args)
+        print(favorable_card)
         if not favorable_card:
             raise MbException("未找到优惠卡")
 
@@ -163,7 +164,7 @@ class FavorableCardUserService(MBService):
             logger.exception(ex)
             return False
         finally:
-            release_lock(EDIT_USER_FAVORABLE_CARD_LOCK.format({
+            release_lock(EDIT_USER_FAVORABLE_CARD_LOCK.format(**{
                 "tenant_id": args['commandContext']['tenantId'],
                 "pin": args['commandContext']['pin'],
                 "service_id": args["service_id"]}))
@@ -177,7 +178,6 @@ class FavorableCardUserService(MBService):
         param = {"pin": pin, 'commandContext': command_context}
         user_res = internal_get_userinfo_by_id(param)
         user_res_data = json.loads(user_res)
-        print(user_res_data)
         if not user_res_data.get("success"):
             raise MbException("用户服务调用失败")
 
