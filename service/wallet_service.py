@@ -251,7 +251,6 @@ class WalletService(MBService):
             #         raise MbException("30天内不可多次退款")
 
             user_wallet = self.get_user_wallet(pin, args)
-            dao_session.redis_session.r.delete(USER_WALLET_CACHE.format(tenant_id=tenant_id, pin=pin))
             balance = user_wallet['balance'] - deduction_amount
             # 优先扣减充值余额
             if deduction_amount > user_wallet['recharge']:
