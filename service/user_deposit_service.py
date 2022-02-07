@@ -100,12 +100,11 @@ class UserDepositService(WalletService):
         param = {"pin": args.get("pin"), 'commandContext': commandContext}
         user_res = user_apis.internal_get_userinfo_by_id(param)
         user_res_data = json.loads(user_res)
-        print(user_res_data)
         if not user_res_data.get("success"):
             raise MbException("用户服务调用失败")
 
         user_info = user_res_data.get('data')
-        service_id = user_info.get('service_id')
+        service_id = user_info.get('serviceId')
         context = args['commandContext']
         deposit_dict = {
             "tenant_id": context.get('tenantId'),

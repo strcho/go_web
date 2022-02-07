@@ -49,7 +49,7 @@ class KafkaClient():
                 self.on_send_error)
             self.producer.flush()
             logger.json({
-                "topic": f'{KAFKA_NAME_PREFIX}_visual',
+                "topic": f'{cfg["kafka_config"]["name_prefix"]}_visual',
                 "value": str(msg),
                 "key": key,
             })
