@@ -249,49 +249,49 @@ class DeductionBalanceHandle(MBHandler):
         mb_async(WalletService().wallet_to_kafka)(args["commandContext"], args)
         self.success(response)
 
-
-class WalletToKafkaHandle(MBHandler):
-    """
-    支付钱包调用，向kafka推送数据
-    """
-    @coroutine
-    @use_args_query(WalletToKafkaSerializer)
-    def post(self, args: dict):
-        """
-        支付钱包调用，向kafka推送数据
-        ---
-        tags: [钱包]
-        summary: 支付钱包调用，向kafka推送数据
-        description: 支付钱包调用，向kafka推送数据
-
-        parameters:
-          - in: body
-            schema:
-                WalletToKafkaSerializer
-        responses:
-            200:
-                schema:
-                    type: object
-                    required:
-                      - success
-                      - code
-                      - msg
-                      - data
-                    properties:
-                        success:
-                            type: boolean
-                        code:
-                            type: str
-                        msg:
-                            type: str
-                        data:
-                            type: boolean
-        """
-        command_context = self.get_context()
-        response = yield mb_async(WalletService().wallet_to_kafka)(command_context, args)
-        if not response.get("suc"):
-            self.error(promt=response.get('data'))
-        self.success(response.get('data'))
+#
+# class WalletToKafkaHandle(MBHandler):
+#     """
+#     支付钱包调用，向kafka推送数据
+#     """
+#     @coroutine
+#     @use_args_query(WalletToKafkaSerializer)
+#     def post(self, args: dict):
+#         """
+#         支付钱包调用，向kafka推送数据
+#         ---
+#         tags: [钱包]
+#         summary: 支付钱包调用，向kafka推送数据
+#         description: 支付钱包调用，向kafka推送数据
+#
+#         parameters:
+#           - in: body
+#             schema:
+#                 WalletToKafkaSerializer
+#         responses:
+#             200:
+#                 schema:
+#                     type: object
+#                     required:
+#                       - success
+#                       - code
+#                       - msg
+#                       - data
+#                     properties:
+#                         success:
+#                             type: boolean
+#                         code:
+#                             type: str
+#                         msg:
+#                             type: str
+#                         data:
+#                             type: boolean
+#         """
+#         command_context = self.get_context()
+#         response = yield mb_async(WalletService().wallet_to_kafka)(command_context, args)
+#         if not response.get("suc"):
+#             self.error(promt=response.get('data'))
+#         self.success(response.get('data'))
 
 
 class BusSetWalletHandle(MBHandler):
