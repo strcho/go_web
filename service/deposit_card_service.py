@@ -50,13 +50,13 @@ class DepositCardService(MBService):
             params = self.get_model_common_field(args['commandContext'])
             params.update({
                 "pin": args['pin'],
-                # "config_id": args['config_id'],
+                "config_id": args['config_id'],
                 # "money": args['money'],
                 # "channel": args['channel'],
                 # "days": args['days'],
                 # "trade_no": args['trade_no'],
                 # "content": args['content'],
-                # "service_id": args['service_id'],
+                "service_id": args['service_id'],
                 "expired_date": datetime.now() + timedelta(days=args['duration']),
             })
             deposit_card = TDepositCard(**params)

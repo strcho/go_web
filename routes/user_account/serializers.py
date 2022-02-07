@@ -19,6 +19,7 @@ class UserAccountDeserializer(ReqBaseDeserializer):
     获取用户资产信息
     """
     pin = fields.String(required=True, description="用户标识")
+    service_id = fields.Integer(required=True, description="服务区")
 
 
 class BusUserAccountDeserializer(ContextDeserializer):
@@ -26,6 +27,7 @@ class BusUserAccountDeserializer(ContextDeserializer):
     获取用户资产信息
     """
     pin = fields.String(required=True, description="用户标识")
+    service_id = fields.Integer(required=True, description="服务区")
 
 
 class CliUserAccountDeserializer(ContextDeserializer):
@@ -33,6 +35,7 @@ class CliUserAccountDeserializer(ContextDeserializer):
     获取用户资产信息
     """
     pin = fields.String(required=True, description="用户标识")
+    service_id = fields.Integer(required=True, description="服务区")
 
 
 class UserAccountSerializer(BaseSchema):
