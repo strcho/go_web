@@ -1,3 +1,4 @@
+import json
 from datetime import (
     datetime,
     timedelta,
@@ -132,26 +133,28 @@ class FavorableCardUserService(MBService):
         编辑用户优惠卡时间
         """
 
-        if not lock(EDIT_USER_FAVORABLE_CARD_LOCK.format(
-                {"tenant_id": args['commandContext']['tenantId'],
-                 "pin": args['commandContext']['pin']}
+        if not lock(EDIT_USER_FAVORABLE_CARD_LOCK.format({
+            "tenant_id": args['commandContext']['tenantId'],
+            "pin": args['pin'],
+            "service_id": args["service_id"]
+        }
         )):
             raise MbException("修改用户优惠卡时间中,请2s后重试")
 
-        self.user_can_modify_favorable_card_duration(args['commandContext']['pin'], )
+        self.user_can_modify_favorable_card_duration(args['commandContext'], args['pin'], args['service_id'])
 
         duration = args['duration']
 
-        riding_card: TFavorableCard = self.query_one(args)
-        if not riding_card:
+        favorable_card: TFavorableCard = self.query_one(args)
+        if not favorable_card:
             raise MbException("未找到优惠卡")
 
         try:
             if self.exists_param(duration):
                 if duration == 0:
-                    riding_card.end_time = datetime.now()
+                    favorable_card.end_time = datetime.now()
                 else:
-                    riding_card.end_time = datetime.now() + timedelta(days=duration)
+                    favorable_card.end_time = datetime.now() + timedelta(days=duration)
             dao_session.session.tenant_db().commit()
 
         except Exception as ex:
@@ -160,18 +163,25 @@ class FavorableCardUserService(MBService):
             logger.exception(ex)
             return False
         finally:
-            release_lock(EDIT_USER_FAVORABLE_CARD_LOCK.format(
-                {"tenant_id": args['commandContext']['tenantId'],
-                 "pin": args['commandContext']['pin']}))
+            release_lock(EDIT_USER_FAVORABLE_CARD_LOCK.format({
+                "tenant_id": args['commandContext']['tenantId'],
+                "pin": args['commandContext']['pin'],
+                "service_id": args["service_id"]}))
 
         return True
 
-    def user_can_modify_favorable_card_duration(self, pin: str, service_id: int):
+    def user_can_modify_favorable_card_duration(self, command_context: dict, pin: str, service_id: int):
         """
         判断当前用户能否修改优惠卡时长,用户购卡信息表,非流水表
         """
+        param = {"pin": pin, 'commandContext': command_context}
+        user_res = internal_get_userinfo_by_id(param)
+        user_res_data = json.loads(user_res)
+        print(user_res_data)
+        if not user_res_data.get("success"):
+            raise MbException("用户服务调用失败")
 
-        user_info = internal_get_userinfo_by_id({})  # todo 获取用户信息
+        user_info = user_res_data.get('data')
         user_state = user_info.get('userState')
         if not user_info:
             raise MbException("获取用户信息失败")
@@ -182,9 +192,9 @@ class FavorableCardUserService(MBService):
         if user_state == UserState.TO_PAY.value:
             raise MbException("用户有未完结的订单,完成支付后才能进行退款操作")
 
-        # todo 这边到底要不要记流水啊？!
-        favorable_buy_record = internal_get_userinfo_by_id({})  # 获取用户的购卡记录
-        if not favorable_buy_record:
-            raise MbException("用户没有优惠卡购买记录,无法进行退款")
+        # # todo 这边到底要不要记流水啊？!
+        # favorable_buy_record = internal_get_userinfo_by_id({})  # 获取用户的购卡记录
+        # if not favorable_buy_record:
+        #     raise MbException("用户没有优惠卡购买记录,无法进行退款")
 
         return True

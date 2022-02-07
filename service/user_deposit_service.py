@@ -1,3 +1,5 @@
+import json
+
 from internal import user_apis
 from internal.user_apis import internal_deposited_state_change
 from mbshort.str_and_datetime import orm_to_dict
@@ -66,22 +68,22 @@ class UserDepositService(WalletService):
         if args.get("deposited_stats") == DepositedState.DEPOSITED.value:
             if args.get("deposited_stats") < 0:
                 raise MbException("押金金额有误")
-            deposited_mount = args.get("deposited_mount")
+            deposited_amount = args.get("deposited_mount")
             deposited_stats = DepositedState.DEPOSITED.value
 
         elif args.get("deposited_stats") == DepositedState.REFUNDED.value:
-            deposited_mount = user_wallet.get("deposited_mount")
+            deposited_amount = user_wallet.get("deposited_mount")
             deposited_stats = DepositedState.REFUNDED.value
 
         elif args.get("deposited_stats") == DepositedState.FROZEN.value:
-            deposited_mount = user_wallet.get("deposited_mount")
+            deposited_amount = user_wallet.get("deposited_mount")
             deposited_stats = DepositedState.FROZEN.value
 
         else:
             raise MbException("参数错误")
 
         update_params = {
-            "deposited_mount": deposited_mount,
+            "deposited_mount": deposited_amount if deposited_stats != DepositedState.REFUNDED.value else 0,
             "deposited_stats": deposited_stats,
         }
         self.update_one(pin=args['pin'], tenant_id=args['commandContext']['tenantId'], params=update_params)
@@ -96,7 +98,13 @@ class UserDepositService(WalletService):
         # 发送流水
         commandContext = args.get("commandContext")
         param = {"pin": args.get("pin"), 'commandContext': commandContext}
-        user_info = user_apis.internal_get_userinfo_by_id(param)
+        user_res = user_apis.internal_get_userinfo_by_id(param)
+        user_res_data = json.loads(user_res)
+        print(user_res_data)
+        if not user_res_data.get("success"):
+            raise MbException("用户服务调用失败")
+
+        user_info = user_res_data.get('data')
         service_id = user_info.get('service_id')
         context = args['commandContext']
         deposit_dict = {
@@ -109,7 +117,7 @@ class UserDepositService(WalletService):
             "sys_trade_no": args.get("sys_trade_no"),
             "merchant_trade_no": args.get("merchant_trade_no"),
             "name": "deposit",
-            "amount": deposited_mount,
+            "amount": deposited_amount,
         }
         logger.info(f"wallet_record send is {deposit_dict}")
         state = KafkaClient().visual_send(deposit_dict, PayKey.DEPOSIT.value)

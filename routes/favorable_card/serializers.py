@@ -18,7 +18,7 @@ class GetFavorableDeserializer(ReqBaseDeserializer):
     """
 
     pin = fields.String(required=True, description="用户标识")
-    pass
+    service_id = fields.Integer(required=True, description="服务区id")
 
 
 class ModifyFavorableCardDeserializer(ReqBaseDeserializer):
@@ -27,6 +27,7 @@ class ModifyFavorableCardDeserializer(ReqBaseDeserializer):
     """
 
     pin = fields.String(required=True, description="用户标识")
+    service_id = fields.Integer(required=True, description="服务区id")
     duration = fields.Integer(required=True, description="优惠卡时长")
 
 
@@ -36,6 +37,7 @@ class BusModifyFavorableCardDeserializer(ContextDeserializer):
     """
 
     pin = fields.String(required=True, description="用户标识")
+    service_id = fields.Integer(required=True, description="服务区id")
     duration = fields.Integer(required=True, description="优惠卡时长")
 
 
@@ -67,6 +69,7 @@ class UserFavorableCardDaysSerializer(BaseSchema):
     """
 
     days = fields.Integer(required=True, description='可用天数')
+    service_id = fields.Integer(required=True, description="服务区id")
     expired_date_str = fields.String(required=True, description='到期时间')
 
 
