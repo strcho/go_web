@@ -375,36 +375,3 @@ class RidingCardService(MBService):
                 if str(service_id) in card.effective_service_ids.split(";"):
                     return card
         return card
-
-    @staticmethod
-    def riding_card_to_kafka(context, args: dict):
-        # todo 根据用户id查询服务区id，
-        try:
-            user_info = user_apis.apiTest4({"user_id": args.get("pin_id")})
-            service_id = user_info.get('service_id')
-        except Exception as e:
-            # service_id获取失败暂不报错
-            logger.info(f"user_apis err: {e}")
-            service_id = 61193175763522450
-
-        try:
-            riding_card_dict = {
-                "tenant_id": context.get('tenantId'),
-                "created_pin": commandContext.get("created_pin"),
-                "pin_id": args.get("pin"),
-                "service_id": service_id,
-                "type": args.get("type"),
-                "channel": args.get("channel"),
-                "sys_trade_no": args.get("sys_trade_no"),
-                "merchant_trade_no": args.get("merchant_trade_no"),
-                "name": "deposit",
-                "amount": args.get("amount"),
-            }
-            logger.info(f"deposit_card_record send is {riding_card_dict}")
-            state = KafkaClient().visual_send(riding_card_dict, PayKey.RIDING_CARD.value)
-            if not state:
-                return {"suc": False, "data": "kafka send failed"}
-        except Exception as e:
-            logger.info(f"riding_card_record send err {e}")
-            return {"suc": False, "data": f"riding_card_to_kafka err: {e}"}
-        return {"suc": True, "data": "riding_kafka send success"}

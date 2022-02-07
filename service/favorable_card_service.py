@@ -188,38 +188,3 @@ class FavorableCardUserService(MBService):
             raise MbException("用户没有优惠卡购买记录,无法进行退款")
 
         return True
-
-    @staticmethod
-    def favorable_card_to_kafka(context, args: dict):
-        # todo 根据用户id查询服务区id，
-        try:
-            commandContext = args.get("commandContext")
-            param = {"pin": args.get("pin"), 'commandContext': commandContext}
-            user_info = user_apis.internal_get_userinfo_by_id(param)
-            service_id = user_info.get('service_id')
-        except Exception as e:
-            # service_id获取失败暂不报错
-            logger.info(f"user_apis err: {e}")
-            service_id = 61193175763522450
-
-        try:
-            favorable_card_dict = {
-                "tenant_id": context.get('tenantId'),
-                "created_pin": commandContext.get("created_pin"),
-                "pin_id": args.get("pin"),
-                "service_id": service_id,
-                "type": args.get("type"),
-                "channel": args.get("channel"),
-                "sys_trade_no": args.get("sys_trade_no"),
-                "merchant_trade_no": args.get("merchant_trade_no"),
-                "name": "deposit",
-                "amount": args.get("amount"),
-            }
-            logger.info(f"deposit_card_record send is {favorable_card_dict}")
-            state = KafkaClient().visual_send(favorable_card_dict, PayKey.FAVORABLE_CARD.value)
-            if not state:
-                return {"suc": False, "data": "kafka send failed"}
-        except Exception as e:
-            logger.info(f"favorable_card_record send err {e}")
-            return {"suc": False, "data": f"favorable_card_to_kafka err: {e}"}
-        return {"suc": True, "data": "favorable_kafka send success"}
