@@ -1,3 +1,4 @@
+import datetime
 import json
 
 from internal import user_apis
@@ -46,9 +47,13 @@ class WalletService(MBService):
             logger.exception(e)
         return user_wallet
 
-    def update_one(self, pin: str, tenant_id: str, params: dict):
+    def update_one(self, pin: str, tenant_id: str, params: dict, update_pin: str = None):
 
         try:
+
+            params["updated_at"] = datetime.datetime.now()
+            params["updated_pin"] = update_pin or pin
+
             dao_session.session.tenant_db().query(TUserWallet) \
                 .filter(TUserWallet.pin == pin, TUserWallet.tenant_id == tenant_id) \
                 .update(params)

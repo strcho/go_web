@@ -1,3 +1,4 @@
+import datetime
 import json
 
 from mbutils import (
@@ -79,17 +80,20 @@ class UserFreeOrderService(MBService):
 
         return True
 
-    def update_one(self, args: dict):
+    def update_one(self, args: dict, update_pin: str = None):
         """
-        更新一条
+        更新一条(扣减)
         """
 
-        data = {
-            "free_num": TFreeOrderUser.free_num - 1
+        params = {
+            "free_num": TFreeOrderUser.free_num - 1,
+            "updated_at": datetime.datetime.now(),
+            "updated_pin": update_pin or args["pin"]
         }
+
         try:
             tenant_id = args['commandContext']['tenantId']
-            d =  dao_session.session.tenant_db(
+            d = dao_session.session.tenant_db(
             ).query(TFreeOrderUser).filter(
                 TFreeOrderUser.tenant_id == tenant_id,
                 TFreeOrderUser.pin == args['pin'],
@@ -99,7 +103,7 @@ class UserFreeOrderService(MBService):
             ).query(TFreeOrderUser).filter(
                 TFreeOrderUser.tenant_id == tenant_id,
                 TFreeOrderUser.id == d.id
-            ).update(data)
+            ).update(params)
 
             dao_session.session.tenant_db().commit()
         except Exception as ex:
@@ -124,8 +128,7 @@ class UserFreeOrderService(MBService):
             if not user_free_order:
                 raise MbException("未找到免单优惠")
             try:
-                user_free_order.free_num -= 1
-                dao_session.session.tenant_db().commit()
+                self.update_one(args,)
             except Exception as ex:
 
                 logger.error("update user free order is error: {}".format(ex))

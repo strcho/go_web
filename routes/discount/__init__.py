@@ -6,7 +6,7 @@ from routes.discount.view import (
 )
 
 
-# /ebike_account/user
+# /ebike_account/discount
 urls = [
     ("/internal/get_user_discount", GetUserDiscountHandler),
     ("/internal/get_user_all_discount", GetUserAllDiscountHandler),

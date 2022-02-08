@@ -1,3 +1,4 @@
+import datetime
 import json
 
 from internal import user_apis
@@ -22,7 +23,10 @@ class UserDepositService(WalletService):
     用户押金
     """
 
-    def update_one(self, pin: str, tenant_id: str, params: dict):
+    def update_one(self, pin: str, tenant_id: str, params: dict, update_pin: str = None):
+
+        params["updated_at"] = datetime.datetime.now()
+        params["updated_pin"] = update_pin or pin
 
         try:
             dao_session.session.tenant_db().query(TUserWallet) \

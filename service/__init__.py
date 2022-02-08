@@ -144,7 +144,7 @@ class MBService:
         fields_dict = dict(
             id=ID_Worker(),
             tenant_id=None,
-            # created_at=
+            created_at=datetime.datetime.now(),
             created_pin=None,
             # updated_at=
             updated_pin=None,
