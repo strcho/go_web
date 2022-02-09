@@ -389,3 +389,9 @@ class UserRidingCardState(MbEnum):
     USING = 1
     EXPIRED = 2
     DELETE = 3
+
+
+class UserDepositCardOperate(MbEnum):
+    Buy = 1  # 购买会员卡
+    Cancel = 2  # 取消会员卡
+    ModifyTime = 3  # 修改会员卡到期时间

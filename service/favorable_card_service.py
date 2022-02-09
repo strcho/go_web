@@ -5,7 +5,11 @@ from datetime import (
 )
 
 from internal import user_apis
-from internal.user_apis import internal_get_userinfo_by_id
+from internal.marketing_api import MarketingApi
+from internal.user_apis import (
+    internal_get_userinfo_by_id,
+    UserApi,
+)
 from mbutils import (
     dao_session,
     MbException,
@@ -94,6 +98,8 @@ class FavorableCardUserService(MBService):
         添加用户优惠卡
         """
         try:
+            config_id = args.get("config_id")
+            commandContext = args.get("commandContext")
             user_card: TFavorableCard = self.query_one(args)
             if not user_card:
                 res = self.insert_one(args)
@@ -104,23 +110,42 @@ class FavorableCardUserService(MBService):
                 # 用户优惠卡未过期，累计优惠卡使用时间
                 else:
                     user_card.end_time += timedelta(days=args["card_time"])
+
+                # 更新卡id
+                user_card.config_id = config_id
                 dao_session.session.tenant_db().commit()
 
-            commandContext = args.get("commandContext")
+            user_info = UserApi.get_user_info(pin=args["pin"], command_context=commandContext)
+            service_id = user_info.get('serviceId')
+            pin_phone = user_info.get("phone")
+            pin_name = user_info.get("authName")
+
+            favorable_card_info = MarketingApi.get_favorable_card_info(config_id=config_id, command_context=commandContext)
+            name = favorable_card_info.get("card_name")
+            amount = favorable_card_info.get("present_price")
+            card_time = favorable_card_info.get("card_time")
             favorable_card_dict = {
                 "tenant_id": commandContext.get('tenantId'),
-                "created_pin": commandContext.get("created_pin"),
+                "created_pin": commandContext.get("pin"),
+                "version": commandContext.get("version", ""),
+                "updated_pin": commandContext.get('pin'),
+
                 "pin_id": args.get("pin"),
-                "service_id": args.get("service_id"),
+                "pin_phone": pin_phone,
+                "pin_name": pin_name,
+                "service_id": service_id,
                 "type": args.get("type"),
                 "channel": args.get("channel"),
                 "sys_trade_no": args.get("sys_trade_no"),
                 "merchant_trade_no": args.get("merchant_trade_no"),
-                "name": "favorable_card",
-                "amount": args.get("amount"),
-            }  # todo
+                "amount": amount,
+                "paid_at": args.get("paid_at") or datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+
+                "name": name,
+                "duration": card_time,
+            }
             logger.info(f"favorable_card_record send is {favorable_card_dict}")
-            state = KafkaClient().visual_send(favorable_card_dict, PayKey.FAVORABLE_CARD.value)
+            KafkaClient().visual_send(favorable_card_dict, PayKey.FAVORABLE_CARD.value)
             res = True
         except Exception as ex:
             dao_session.session.tenant_db().rollback()

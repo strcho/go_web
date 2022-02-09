@@ -246,7 +246,6 @@ class DeductionBalanceHandle(MBHandler):
 
         valid_data = args['pin'], args
         response = yield mb_async(WalletService().deduction_balance)(*valid_data)
-        mb_async(WalletService().wallet_to_kafka)(args["commandContext"], args)
         self.success(response)
 
 
@@ -291,7 +290,7 @@ class BusSetWalletHandle(MBHandler):
 
         args['commandContext'] = self.get_context()
         valid_data = (args['pin'], args)
-        response = yield mb_async(WalletService().set_user_wallet)(*valid_data)
+        response = yield mb_async(WalletService().bus_set_user_wallet)(*valid_data)
 
         self.success(response)
 

@@ -7,7 +7,12 @@ from datetime import (
 
 from sqlalchemy import or_
 
-from internal import user_apis
+from internal import (
+    user_apis,
+    marketing_api,
+)
+from internal.marketing_api import MarketingApi
+from internal.user_apis import UserApi
 from mbutils import (
     dao_session,
     logger,
@@ -249,35 +254,80 @@ class RidingCardService(MBService):
         """
         pin = args['pin']
         config_id = args['config_id']
-        content_str = args['content']
+        commandContext = args.get("commandContext")
         if send_time and datetime.now().timestamp() - send_time > 5:
             raise MbException("请求超时", config_id, pin)
 
-        content = json.loads(content_str)
-        iz_total_times = content.get("serialType", "10") == SERIAL_TYPE.RIDING_COUNT_CARD.value  # bool形可以隐式转化0,1
+        user_info = UserApi.get_user_info(pin=args["pin"], command_context=commandContext)
+        service_id = user_info.get('serviceId')
+        pin_phone = user_info.get("phone")
+        pin_name = user_info.get("authName")
+
+        card_info = MarketingApi.get_riding_card_info(config_id=config_id, command_context=commandContext)
+        name = card_info.get("name")
+        valid_day = card_info.get("valid_day")
+        current_cost = card_info.get('current_cost')
+        iz_total_times = card_info.get("iz_total_times")
+        deduction_type = card_info.get("deduction_type")
+        free_time_second = card_info.get("free_time_second")
+        free_distance_meter = card_info.get("free_distance_meter")
+        free_money_cent = card_info.get("free_money_cent")
+        available_times = card_info.get("available_times")
+        effective_service_ids = card_info.get("effective_service_ids")
         params = {
             "pin": pin,
-            "deduction_type": content["deduction_type"],
+            "deduction_type": deduction_type,
             "config_id": config_id,
-            "free_time": content["free_time_seconds"],
-            "free_distance": content["free_distance"],
-            "free_money": content["free_money"],
-            "iz_total_times": content.get("iz_total_times", iz_total_times),
-            "rece_times": content["rece_times"],
-            "effective_service_ids": content.get("effective_service_ids", ""),
-            "remain_times": content["rece_times"],
+            "free_time": free_time_second,
+            "free_distance": free_distance_meter,
+            "free_money": free_money_cent,
+            "iz_total_times": iz_total_times,
+            "rece_times": available_times,
+            "effective_service_ids": effective_service_ids,
+            "remain_times": available_times,
             "last_use_time": None,
-            "start_time": datetime.datetime.now(),
-            "card_expired_date": datetime.now() + timedelta(hours=24 * int(content["expiry_date"])),
-            "content": content_str,
+            "start_time": datetime.now(),
+            "card_expired_date": datetime.now() + timedelta(hours=24 * int(valid_day)),
+            "content": json.dumps(card_info),
             "state": UserRidingCardState.USING.value,
             "created_at": datetime.now(),
-            "updated_at": datetime.now()
+            "updated_at": datetime.now(),
+            "service_id": service_id,
+
+            "tenant_id": commandContext.get('tenantId'),
+            "created_pin": commandContext.get("pin"),
+            "version": commandContext.get("version", ""),
+            "updated_pin": commandContext.get('pin'),
+
         }
         try:
             user_card = TRidingCard(**params)
             dao_session.session.tenant_db().add(user_card)
             dao_session.session.tenant_db().commit()
+
+            riding_card_dict = {
+                "tenant_id": commandContext.get('tenantId'),
+                "created_pin": commandContext.get("pin"),
+                "version": commandContext.get("version", ""),
+                "updated_pin": commandContext.get('pin'),
+
+                "pin_id": args.get("pin"),
+                "pin_phone": pin_phone,
+                "pin_name": pin_name,
+                "service_id": service_id,
+                "type": args.get("type"),
+                "channel": args.get("channel"),
+                "sys_trade_no": args.get("sys_trade_no"),
+                "merchant_trade_no": args.get("merchant_trade_no"),
+                "amount": current_cost,
+                "paid_at": args.get("paid_at") or datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+
+                "name": name,
+                "duration": valid_day,
+            }
+            logger.info(f"wallet_record send is {riding_card_dict}")
+            KafkaClient().visual_send(riding_card_dict, PayKey.RIDING_CARD.value)
+
         except Exception:
             raise MbException("添加超级骑行卡失败")
 

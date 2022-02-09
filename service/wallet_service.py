@@ -1,7 +1,6 @@
 import datetime
-import json
 
-from internal import user_apis
+from internal.user_apis import UserApi
 from mbshort.str_and_datetime import orm_to_dict
 from mbutils import (
     dao_session,
@@ -16,10 +15,6 @@ from service.kafka import (
     ChannelType,
 )
 from service.kafka.producer import KafkaClient
-from utils.constant.redis_key import (
-    USER_WALLET_CACHE,
-    USER_REFUND_RECHARGE_LOCK,
-)
 
 
 class WalletService(MBService):
@@ -135,12 +130,10 @@ class WalletService(MBService):
 
         try:
             user_wallet_dict = self.get_user_wallet(pin=pin, args=args)
-            scene_key = PayKey.WALLET.value
 
             if self.exists_param(args['change_recharge']):
                 user_wallet_dict['balance'] += args['change_recharge']
                 user_wallet_dict['recharge'] += args['change_recharge']
-                scene_key = PayKey.WALLET.value
 
             if self.exists_param(args['change_present']):
                 user_wallet_dict['present'] += args['change_present']
@@ -149,14 +142,7 @@ class WalletService(MBService):
             commandContext = args.get("commandContext")
             self.update_one(pin=pin, tenant_id=commandContext["tenantId"], params=user_wallet_dict)
 
-            param = {"pin": args.get("pin"), 'commandContext': commandContext}
-            user_res = user_apis.internal_get_userinfo_by_id(param)
-            user_res_data = json.loads(user_res)
-            print(user_res_data)
-            if not user_res_data.get("success"):
-                raise MbException("用户服务调用失败")
-
-            user_info = user_res_data.get('data')
+            user_info = UserApi.get_user_info(pin=pin, command_context=commandContext)
             service_id = user_info.get('serviceId')
             pin_phone = user_info.get("phone")
             pin_name = user_info.get("authName")
@@ -164,20 +150,25 @@ class WalletService(MBService):
             wallet_dict = {
                 "tenant_id": commandContext.get('tenantId'),
                 "created_pin": commandContext.get("created_pin"),
+                "version": commandContext.get("version", ""),
+                "updated_pin": commandContext.get("pin"),
+
                 "pin_id": args.get("pin"),
+                "pin_phone": pin_phone,
+                "pin_name": pin_name,
                 "service_id": service_id,
                 "type": args.get("type") or TransactionType.BOUGHT.value,
                 "channel": args.get("channel") or ChannelType.ALIPAY_LITE.value,
                 "sys_trade_no": args.get("sys_trade_no"),
                 "merchant_trade_no": args.get("merchant_trade_no"),
-                "recharge_amount": args.get("change_recharge", 0),
-                "present_amount": args.get("change_present", 0),
-                "pin_phone": pin_phone,
-                "pin_name": pin_name
+                "amount": args.get("change_recharge", 0) + args.get("change_present", 0),
+                "paid_at": args.get("paid_at") or datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "recharge_amount": abs(args.get("change_recharge", 0)),
+                "present_amount": abs(args.get("change_present", 0)),
             }
             wallet_dict_msg = self.remove_empty_param(wallet_dict)
             logger.info(f"wallet_record send is {wallet_dict_msg}")
-            state = KafkaClient().visual_send(wallet_dict_msg, scene_key)
+            KafkaClient().visual_send(wallet_dict_msg, PayKey.WALLET.value)
 
             return True
 
@@ -194,28 +185,19 @@ class WalletService(MBService):
 
         try:
             user_wallet_dict = self.get_user_wallet(pin=pin, args=args)
-            pay_key = PayKey.WALLET.value
 
             if self.exists_param(args['change_recharge']):
                 user_wallet_dict['balance'] += args['change_recharge']
                 user_wallet_dict['recharge'] += args['change_recharge']
-                pay_key = PayKey.WALLET.value
 
             if self.exists_param(args['change_present']):
                 user_wallet_dict['present'] += args['change_present']
                 user_wallet_dict['recharge'] += args['change_present']
-                pay_key = PayKey.WALLET.value
 
             commandContext = args.get("commandContext")
             self.update_one(pin=pin, tenant_id=commandContext["tenantId"], params=user_wallet_dict)
 
-            param = {"pin": args.get("pin"), 'commandContext': commandContext}
-            user_res = user_apis.internal_get_userinfo_by_id(param)
-            user_res_data = json.loads(user_res)
-            if not user_res_data.get("success"):
-                raise MbException("用户服务调用失败")
-
-            user_info = user_res_data.get('data')
+            user_info = UserApi.get_user_info(pin=pin, command_context=commandContext)
             service_id = user_info.get('serviceId')
             pin_phone = user_info.get("phone")
             pin_name = user_info.get("authName")
@@ -223,19 +205,24 @@ class WalletService(MBService):
             wallet_dict = {
                 "tenant_id": commandContext.get('tenantId'),
                 "created_pin": commandContext.get("created_pin"),
+                "version": commandContext.get("version", ""),
+                "updated_pin": commandContext.get("pin"),
+
                 "pin_id": args.get("pin"),
+                "pin_phone": pin_phone,
+                "pin_name": pin_name,
                 "service_id": service_id,
-                "type": args.get("type") or TransactionType.BOUGHT.value,
+                "type": args.get("type") or TransactionType.PLATFORM_BOUGHT.value,
                 "channel": args.get("channel") or ChannelType.PLATFORM.value,
                 "sys_trade_no": args.get("sys_trade_no"),
                 "merchant_trade_no": args.get("merchant_trade_no"),
-                "recharge_amount": args.get("change_recharge", 0),
-                "present_amount": args.get("change_present", 0),
-                "pin_phone": pin_phone,
-                "pin_name": pin_name
+                "amount": args.get("change_recharge", 0) + args.get("change_present", 0),
+                "paid_at": args.get("paid_at") or datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "recharge_amount": abs(args.get("change_recharge", 0)),
+                "present_amount": abs(args.get("change_present", 0)),
             }
             logger.info(f"wallet_record send is {wallet_dict}")
-            state = KafkaClient().visual_send(wallet_dict, pay_key)
+            KafkaClient().visual_send(wallet_dict, PayKey.WALLET.value)
 
             return True
 
@@ -251,17 +238,13 @@ class WalletService(MBService):
         tenant_id = args['commandContext']['tenantId']
 
         try:
-            # if args.get("type") == TransactionType.BOUGHT.value:
-            #     if not lock(USER_REFUND_RECHARGE_LOCK.format({"pin": pin}), 1, 60*60*24*30):
-            #         raise MbException("30天内不可多次退款")
-
             user_wallet = self.get_user_wallet(pin, args)
             balance = user_wallet['balance'] - deduction_amount
             # 优先扣减充值余额
             if deduction_amount > user_wallet['recharge']:
                 if balance < 0:
-                    present = 0
                     recharge = balance
+                    present = 0
                 else:
                     recharge = 0
                     present = balance
@@ -278,62 +261,39 @@ class WalletService(MBService):
             )
 
             self.update_one(pin=pin, tenant_id=tenant_id, params=params)
+
+            commandContext = args.get("commandContext")
+
+            user_info = UserApi.get_user_info(pin=pin, command_context=commandContext)
+            service_id = user_info.get('serviceId')
+            pin_phone = user_info.get("phone")
+            pin_name = user_info.get("authName")
+
+            wallet_dict = {
+                "tenant_id": commandContext.get('tenantId'),
+                "created_pin": commandContext.get("created_pin"),
+                "version": commandContext.get("version", ""),
+                "updated_pin": commandContext.get("pin"),
+
+                "pin_id": args.get("pin"),
+                "pin_phone": pin_phone,
+                "pin_name": pin_name,
+                "service_id": service_id,
+                "type": args.get("type") or TransactionType.PLATFORM_BOUGHT.value,
+                "channel": args.get("channel") or ChannelType.PLATFORM.value,
+                "sys_trade_no": args.get("sys_trade_no"),
+                "merchant_trade_no": args.get("merchant_trade_no"),
+                "amount": args.get("change_recharge", 0) + args.get("change_present", 0),
+                "paid_at": args.get("paid_at") or datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "recharge_amount": abs(args.get("change_recharge", 0)),
+                "present_amount": abs(args.get("change_present", 0)),
+            }
+            logger.info(f"wallet_record send is {wallet_dict}")
+            KafkaClient().visual_send(wallet_dict, PayKey.WALLET.value)
+
             return True
         except Exception as ex:
             dao_session.session.tenant_db().rollback()
             logger.error("update user wallet is error: {}".format(ex))
             logger.exception(ex)
             raise MbException("更新余额失败")
-
-    @staticmethod
-    def wallet_to_kafka(context, args: dict):
-        # todo 根据用户id查询服务区id，
-        try:
-            commandContext = args.get("commandContext")
-            param = {"pin": args.get("pin"), 'commandContext': commandContext}
-            user_res = user_apis.internal_get_userinfo_by_id(param)
-            user_info = json.loads(user_res).get("data")
-            service_id = user_info.get('serviceId')
-            pin_phone = user_info.get("phone")
-            pin_name = user_info.get("authName")
-        except Exception as e:
-            # service_id获取失败暂不报错
-            logger.info(f"user_apis err: {e}")
-            # return {"suc": False, "data": f"用户信息获取失败: err: {e}"}
-            service_id = 0
-            pin_phone = ''
-            pin_name = ''
-        try:
-            wallet_dict = {
-                "tenant_id": context.get('tenantId'),
-                "created_pin": commandContext.get("created_pin"),
-                "pin_id": args.get("pin"),
-                "service_id": service_id,
-                "type": args.get("type") or TransactionType.BOUGHT.value,
-                "channel": args.get("channel") or ChannelType.ALIPAY_LITE.value,
-                "sys_trade_no": args.get("sys_trade_no"),
-                "merchant_trade_no": args.get("merchant_trade_no"),
-                "recharge_amount": args.get("change_recharge", 0),
-                "present_amount": args.get("change_present", 0),
-                "pin_phone": pin_phone,
-                "pin_name": pin_name
-            }
-            logger.info(f"wallet_record send is {wallet_dict}")
-            state = KafkaClient().visual_send(wallet_dict, PayKey.WALLET.value)
-            if not state:
-                return {"suc": False, "data": "kafka send failed"}
-        except Exception as e:
-            logger.info(f"wallet_record send err {e}")
-            return {"suc": False, "data": f"wallet_to_kafka err: {e}"}
-        return {"suc": True, "data": "wallet_kafka send success"}
-
-    def wallet_data_format(self, wallet: dict):
-        """
-        用户钱包信息
-        """
-
-        wallet['can_refund_amount'] = 0
-        if not dao_session.redis_session.r.get(USER_REFUND_RECHARGE_LOCK.format({"pin": wallet.get("pin")})):
-            wallet["can_refund_amount"] = wallet.get("recharge")
-
-        return wallet

@@ -191,7 +191,7 @@ class ModifyUserDepositCardHandle(MBHandler):
 
         response = yield mb_async(DepositCardService().modify_deposit_card_time)(args)
 
-        self.success(response)
+        self.success(bool(response))
 
 
 class BusModifyUserDepositCardHandle(MBHandler):
@@ -236,4 +236,4 @@ class BusModifyUserDepositCardHandle(MBHandler):
         args['commandContext'] = self.get_context()
         response = yield mb_async(DepositCardService().modify_deposit_card_time)(args)
 
-        self.success(response)
+        self.success(bool(response))

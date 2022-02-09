@@ -3,7 +3,11 @@ from datetime import (
     timedelta,
 )
 
-from internal.user_apis import internal_deposited_card_state_change
+from internal.marketing_api import MarketingApi
+from internal.user_apis import (
+    internal_deposited_card_state_change,
+    UserApi,
+)
 from mbshort.str_and_datetime import datetime_filter
 from mbutils import (
     dao_session,
@@ -12,6 +16,9 @@ from mbutils import (
 )
 from model.all_model import TDepositCard
 from service import MBService
+from service.kafka import PayKey
+from service.kafka.producer import KafkaClient
+from utils.constant.account import UserDepositCardOperate
 
 
 class DepositCardService(MBService):
@@ -82,20 +89,58 @@ class DepositCardService(MBService):
         """
 
         try:
+            commandContext = args.get("commandContext")
+            config_id = args.get("config_id")
             deposit_card: TDepositCard = self.query_one(args)
             # 有卡则更新卡过期时间
-            if deposit_card:
-                self.modify_deposit_card_time(args)
-            else:
+            if not deposit_card:
                 deposit_card = self.insert_one(args)
+            else:
+                days = args['duration']
+                expired_date = datetime.now() + timedelta(days=days)
+                deposit_card.expired_date = expired_date
+                dao_session.session.tenant_db().commit()
 
-                # 向用户系统推送押金卡状态
-                internal_deposited_card_state_change({
-                    'pin': args['commandContext']['pin'],
-                    # 'depositCardOperate': ,  # todo
-                    'commandContext': args['commandContext'],
-                    'depositCardExpire': datetime_filter(datetime.now() + timedelta(days=args['duration'])),
-                })
+            # 向用户系统推送押金卡状态
+            internal_deposited_card_state_change({
+                'pin': commandContext['pin'],
+                'commandContext': commandContext,
+                'depositCardOperate': UserDepositCardOperate.Buy.value,
+                'depositCardExpire': datetime_filter(deposit_card.expired_date),
+            })
+
+            user_info = UserApi.get_user_info(pin=args["pin"], command_context=commandContext)
+            # user_service_id = user_info.get('serviceId')
+            pin_phone = user_info.get("phone")
+            pin_name = user_info.get("authName")
+
+            deposit_card_info = MarketingApi.get_deposit_card_info(config_id=config_id, command_context=commandContext)
+            name = deposit_card_info.get("card_name")
+            card_service_id = deposit_card_info.get("service_id")
+            amount = deposit_card_info.get("discount_money")
+            card_time = deposit_card_info.get("card_duration_day")
+            deposit_card_dict = {
+                "tenant_id": commandContext.get('tenantId'),
+                "created_pin": commandContext.get("pin"),
+                "version": commandContext.get("version", ""),
+                "updated_pin": commandContext.get('pin'),
+
+                "pin_id": args.get("pin"),
+                "pin_phone": pin_phone,
+                "pin_name": pin_name,
+                "service_id": card_service_id,
+                "type": args.get("type"),
+                "channel": args.get("channel"),
+                "sys_trade_no": args.get("sys_trade_no"),
+                "merchant_trade_no": args.get("merchant_trade_no"),
+                "amount": amount,
+                "paid_at": args.get("paid_at") or datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+
+                "name": name,
+                "duration": card_time,
+            }
+            logger.info(f"deposit_card_record send is {deposit_card_dict}")
+            KafkaClient().visual_send(deposit_card_dict, PayKey.DEPOSIT_CARD.value)
 
         except Exception as ex:
             dao_session.session.tenant_db().rollback()
@@ -105,14 +150,13 @@ class DepositCardService(MBService):
 
         return True if deposit_card else False
 
-    def modify_deposit_card_time(self, args: dict):
+    def modify_deposit_card_time(self, args: dict) -> TDepositCard:
         """
         更新押金卡时限
         """
 
         try:
             deposit_card: TDepositCard = self.query_one(args)
-
             if not deposit_card:
                 raise MbException('用户没有押金卡')
 
@@ -129,7 +173,7 @@ class DepositCardService(MBService):
             # 向用户系统推送押金卡状态
             internal_deposited_card_state_change({
                 'pin': args['commandContext']['pin'],
-                # 'depositCardOperate': ,  # todo
+                'depositCardOperate': UserDepositCardOperate.ModifyTime.value,
                 'commandContext': args['commandContext'],
                 'depositCardExpire': datetime_filter(expired_date),
             })
@@ -139,6 +183,7 @@ class DepositCardService(MBService):
             logger.error("update user deposit card is error: {}".format(ex))
             logger.exception(ex)
             raise MbException('更新用户押金卡时长失败')
+        return deposit_card
 
     def query_one_day(self, args):
         """
@@ -192,7 +237,7 @@ class DepositCardService(MBService):
     #             "pin_name": pin_name
     #         }
     #         logger.info(f"deposit_card_record send is {deposit_card_dict}")
-    #         state = KafkaClient().visual_send(deposit_card_dict, PayKey.DEPOSIT_CARD.value)
+    #         KafkaClient().visual_send(deposit_card_dict, PayKey.DEPOSIT_CARD.value)
     #         if not state:
     #             return {"suc": False, "data": "kafka send failed"}
     #     except Exception as e:
