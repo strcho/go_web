@@ -188,14 +188,3 @@ class DeductionBalanceDeserializer(ReqBaseDeserializer):
     sys_trade_no = fields.String(load_default=ARG_DEFAULT, description="系统订单号")
     merchant_trade_no = fields.String(load_default=ARG_DEFAULT, description="外部支付渠道订单号")
     paid_at = fields.String(load_default=None, description="交易时间")
-
-
-class WalletToKafkaSerializer(ReqBaseDeserializer):
-    created_pin = fields.String(required=True, description="创建用户标识")
-    pin_id = fields.String(required=True, description="用户标识")
-    type = fields.Integer(required=True, description="支付类型")
-    channel = fields.String(required=True, description="支付渠道")
-    sys_trade_no = fields.String(required=True, description="系统订单号")
-    merchant_trade_no = fields.String(required=True, description="外部支付渠道订单号")
-    recharge_amount = fields.Integer(required=True, description="充值金额")
-    present_amount = fields.Integer(required=True, description="充值赠送金额")

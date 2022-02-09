@@ -12,7 +12,6 @@ from routes.wallet.serializers import (
     GetWalletListDeserializer,
     BusGetWalletDeserializer,
     DeductionBalanceDeserializer,
-    WalletToKafkaSerializer,
     BusUpdateWalletDeserializer,
     CliGetWalletDeserializer,
 )
