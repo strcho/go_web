@@ -1,5 +1,6 @@
 import datetime
 import json
+import time
 
 from internal import user_apis
 from internal.user_apis import internal_deposited_state_change
@@ -128,7 +129,7 @@ class UserDepositService(WalletService):
                 "merchant_trade_no": args.get("merchant_trade_no"),
 
                 "amount": deposited_amount,
-                "paid_at": args.get("paid_at") or datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "paid_at": args.get("paid_at") or int(time.time()),
             }
             logger.info(f"wallet_record send is {deposit_dict}")
             KafkaClient().visual_send(deposit_dict, PayKey.DEPOSIT.value)
@@ -200,7 +201,7 @@ class UserDepositService(WalletService):
                 "merchant_trade_no": args.get("merchant_trade_no"),
 
                 "amount": deposited_amount,
-                "paid_at": args.get("paid_at") or datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "paid_at": args.get("paid_at") or int(time.time()),
             }
             logger.info(f"wallet_record send is {deposit_dict}")
             KafkaClient().visual_send(deposit_dict, PayKey.DEPOSIT.value)

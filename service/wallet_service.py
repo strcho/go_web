@@ -1,4 +1,5 @@
 import datetime
+import time
 
 from internal.user_apis import UserApi
 from mbshort.str_and_datetime import orm_to_dict
@@ -162,7 +163,7 @@ class WalletService(MBService):
                 "sys_trade_no": args.get("sys_trade_no"),
                 "merchant_trade_no": args.get("merchant_trade_no"),
                 "amount": args.get("change_recharge", 0) + args.get("change_present", 0),
-                "paid_at": args.get("paid_at") or datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "paid_at": args.get("paid_at") or int(time.time()),
                 "recharge_amount": abs(args.get("change_recharge", 0)),
                 "present_amount": abs(args.get("change_present", 0)),
             }
@@ -217,7 +218,7 @@ class WalletService(MBService):
                 "sys_trade_no": args.get("sys_trade_no"),
                 "merchant_trade_no": args.get("merchant_trade_no"),
                 "amount": args.get("change_recharge", 0) + args.get("change_present", 0),
-                "paid_at": args.get("paid_at") or datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "paid_at": args.get("paid_at") or int(time.time()),
                 "recharge_amount": abs(args.get("change_recharge", 0)),
                 "present_amount": abs(args.get("change_present", 0)),
             }
@@ -284,7 +285,7 @@ class WalletService(MBService):
                 "sys_trade_no": args.get("sys_trade_no"),
                 "merchant_trade_no": args.get("merchant_trade_no"),
                 "amount": args.get("change_recharge", 0) + args.get("change_present", 0),
-                "paid_at": args.get("paid_at") or datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "paid_at": args.get("paid_at") or int(time.time()),
                 "recharge_amount": abs(args.get("change_recharge", 0)),
                 "present_amount": abs(args.get("change_present", 0)),
             }

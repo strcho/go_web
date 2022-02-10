@@ -1,3 +1,4 @@
+import time
 from datetime import (
     datetime,
     timedelta,
@@ -134,7 +135,7 @@ class DepositCardService(MBService):
                 "sys_trade_no": args.get("sys_trade_no"),
                 "merchant_trade_no": args.get("merchant_trade_no"),
                 "amount": amount,
-                "paid_at": args.get("paid_at") or datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "paid_at": args.get("paid_at") or int(time.time()),
 
                 "name": name,
                 "duration": card_time,

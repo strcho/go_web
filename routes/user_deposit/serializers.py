@@ -71,7 +71,7 @@ class UpdateDepositDeserializer(ReqBaseDeserializer):
     """)
     sys_trade_no = fields.String(load_default=ARG_DEFAULT, description="系统订单号")
     merchant_trade_no = fields.String(load_default=ARG_DEFAULT, description="外部支付渠道订单号")
-    paid_at = fields.String(load_default=None, description="交易时间")
+    paid_at = fields.String(load_default=None, description="交易时间戳")
 
 
 class BusUpdateDepositDeserializer(ContextDeserializer):
@@ -112,7 +112,7 @@ class BusUpdateDepositDeserializer(ContextDeserializer):
     """)
     sys_trade_no = fields.String(load_default=ARG_DEFAULT, description="系统订单号")
     merchant_trade_no = fields.String(load_default=ARG_DEFAULT, description="外部支付渠道订单号")
-    paid_at = fields.String(load_default=None, description="交易时间")
+    paid_at = fields.String(load_default=None, description="交易时间戳")
 
 class DepositToKafkaSerializer(ContextDeserializer):
 
@@ -156,4 +156,4 @@ class DepositToKafkaSerializer(ContextDeserializer):
 #     """)
 #     sys_trade_no = fields.String(load_default=ARG_DEFAULT, description="系统订单号")
 #     merchant_trade_no = fields.String(load_default=ARG_DEFAULT, description="外部支付渠道订单号")
-    paid_at = fields.String(load_default=None, description="交易时间")
+    paid_at = fields.String(load_default=None, description="交易时间戳")
