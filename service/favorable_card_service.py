@@ -11,6 +11,7 @@ from internal.user_apis import (
     internal_get_userinfo_by_id,
     UserApi,
 )
+from mbshort.str_and_datetime import datetime_filter
 from mbutils import (
     dao_session,
     MbException,
@@ -75,11 +76,14 @@ class FavorableCardUserService(MBService):
         # pin_phone = user_info.get("phone")
         # pin_name = user_info.get("authName")
 
+        card_content = MarketingApi.get_favorable_card_info(config_id=args["config_id"], command_context=commandContext)
+
         param = self.get_model_common_field(commandContext)
         param.update({
             "pin": args['pin'],
             "config_id": args['config_id'],
             "service_id": args['service_id'],
+            "content": json.dumps(card_content),
             "begin_time": datetime.now(),
             "end_time": datetime.now() + timedelta(days=args["card_time"]),
         })
@@ -112,8 +116,11 @@ class FavorableCardUserService(MBService):
                 else:
                     user_card.end_time += timedelta(days=args["card_time"])
 
-                # 更新卡id
+                # 更新卡
                 user_card.config_id = config_id
+                card_content = MarketingApi.get_favorable_card_info(config_id=args["config_id"],
+                                                                    command_context=commandContext)
+                user_card.content = json.dumps(card_content)
                 dao_session.session.tenant_db().commit()
 
             user_info = UserApi.get_user_info(pin=args["pin"], command_context=commandContext)
@@ -224,3 +231,44 @@ class FavorableCardUserService(MBService):
         #     raise MbException("用户没有优惠卡购买记录,无法进行退款")
 
         return True
+
+    def get_user_card_list(self, args,):
+
+        pin = args['pin']
+        card_data = {"used": [], "expired": []}
+        try:
+            card_list = dao_session.session.tenant_db().query(TFavorableCard). \
+                filter(TFavorableCard.pin == pin).all()
+            for card in card_list:
+                card: TFavorableCard = card
+
+                card_dict = dict(
+                    id=card.id,
+                    pin=card.pin,
+                    config_id=card.config_id,
+                    service_id=card.service_id,
+                    begin_time=datetime_filter(card.begin_time),
+                    end_time=datetime_filter(card.end_time),
+                    content=json.loads(card.content),
+                )
+
+                if card.end_time > datetime.now():
+
+                    card_data["used"].append(card_dict)
+                else:
+                    card_data["expired"].append(card_dict)
+
+        except Exception as e:
+            dao_session.session.tenant_db().rollback()
+            logger.error("show favorable card days is error: {}".format(e))
+            logger.exception(e)
+        return card_data
+
+    def get_card_info(self, config_id: int, args):
+        """
+        获取卡的详细信息
+        """
+
+        card_info = MarketingApi.get_favorable_card_info(config_id=config_id, command_context=args.get("commandContext"))
+        return card_info
+

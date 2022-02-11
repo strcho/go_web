@@ -1,3 +1,4 @@
+import json
 import time
 from datetime import (
     datetime,
@@ -54,6 +55,8 @@ class DepositCardService(MBService):
         插入一张押金卡
         """
 
+        card_content = MarketingApi.get_deposit_card_info(args['config_id'], command_context=args['commandContext'])
+
         try:
             params = self.get_model_common_field(args['commandContext'])
             params.update({
@@ -63,7 +66,7 @@ class DepositCardService(MBService):
                 # "channel": args['channel'],
                 # "days": args['days'],
                 # "trade_no": args['trade_no'],
-                # "content": args['content'],
+                "content": json.dumps(card_content),
                 "service_id": args['service_id'],
                 "expired_date": datetime.now() + timedelta(days=args['duration']),
             })

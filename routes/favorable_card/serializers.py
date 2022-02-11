@@ -102,8 +102,33 @@ class UserFavorableCardSerializer(BaseSchema):
 
     id = fields.Integer(required=True, description="优惠卡id")
     pin = fields.String(description="用户标识")
+    config_id = fields.Integer(description="卡的配置ID")
+    service_id = fields.Integer(description="服务区ID")
     begin_time = EDateTime(description="开始时间")
     end_time = EDateTime(description="结束时间")
+
+
+class ClientUserFavorableCardSerializer(BaseSchema):
+    """
+    C端 用户优惠卡
+    """
+
+    id = fields.Integer(required=True, description="优惠卡id")
+    pin = fields.String(description="用户标识")
+    config_id = fields.Integer(description="卡的配置ID")
+    service_id = fields.Integer(description="服务区ID")
+    begin_time = EDateTime(description="开始时间")
+    end_time = EDateTime(description="结束时间")
+    content = fields.Dict(description="卡详情")
+
+
+class ClientUserFavorableCardListSerializer(BaseSchema):
+    """
+    C端 用户优惠卡list
+    """
+
+    used = fields.Nested(ClientUserFavorableCardSerializer, many=True)
+    expired = fields.Nested(ClientUserFavorableCardSerializer, many=True)
 
 
 class UserFavorableCardDaysSerializer(BaseSchema):

@@ -68,7 +68,7 @@ class TDepositCard(CommonField):
     # days = Column(INTEGER(10), comment='有效天数')
     # trade_no = Column(String(64), nullable=False, index=True)
     # service_id = Column(INTEGER(11), comment='服务区ID')
-    # content = Column(String(1024), nullable=False, comment='押金卡详情')
+    content = Column(String(1024), nullable=False, comment='押金卡详情')
     service_id = Column(INTEGER(11), nullable=False, comment="服务区")
     expired_date = Column(DateTime, comment='到期时间')
 
@@ -81,6 +81,7 @@ class TFavorableCard(CommonField):
     begin_time = Column(DateTime, nullable=False, comment='开始时间')  # 使用优惠卡的开始时间
     end_time = Column(DateTime, nullable=False, comment='结束时间')  # 使用优惠卡的结束时间
     config_id = Column(INTEGER(11), nullable=False, comment='优惠卡配置id')  # 计费配置的id
+    content = Column(String(1024), nullable=False, comment='优惠卡详情')
     service_id = Column(INTEGER(11), nullable=False, index=True, comment='服务区的id')  # 服务区的id
 
 

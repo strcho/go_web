@@ -27,7 +27,7 @@ class WalletService(MBService):
         user_wallet = {}
         try:
             pin = args['pin']
-            tenant_id = args['commandContext']['tenantId']
+            tenant_id = str(args['commandContext']['tenantId'])
             user_wallet = dao_session.session.tenant_db().query(TUserWallet) \
                 .filter(TUserWallet.pin == pin,
                         TUserWallet.tenant_id == tenant_id).first()

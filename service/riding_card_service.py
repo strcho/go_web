@@ -121,7 +121,6 @@ class RidingCardService(MBService):
             pass
         user_info = UserApi.get_user_info(pin=pin, command_context=args.get("commandContext"))
         service_id = user_info.get('serviceId')
-        print(service_id)
         return self.query_my_list_in_platform(service_id, pin)
 
     def get_user_card_list(self, args):
@@ -183,7 +182,7 @@ class RidingCardService(MBService):
                     "累计" if one.iz_total_times else "每日",
                     content["available_times"], int(float(content["free_time_second"]))).encode("utf-8")),
                 "utf-8")
-            car_info["cardExpiredDate"] = self.datetime2num(one.card_expired_date)
+            car_info["card_expired_date"] = one.card_expired_date
             car_info["remain_times"] = one.remain_times
             car_info["iz_total_times"] = one.iz_total_times
             car_info["rece_times"] = one.rece_times
@@ -192,6 +191,8 @@ class RidingCardService(MBService):
             car_info["free_money_cent"] = one.free_money
             car_info["promotion_tag"] = content.get("promotion_tag", "人气优选")
             car_info["deductionType"] = one.deduction_type
+            car_info["effective_service_ids"] = content.get("effective_service_ids")
+            car_info["effective_service_names"] = content.get("effective_service_names")
             if one.state != UserRidingCardState.EXPIRED.value:
                 res_dict["used"].append(car_info)
             else:

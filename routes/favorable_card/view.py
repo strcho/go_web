@@ -5,6 +5,7 @@ from tornado.gen import coroutine
 from mbutils import mb_async
 from mbutils.autodoc import use_args_query
 from mbutils.mb_handler import MBHandler
+from model.all_model import TFavorableCard
 from routes.favorable_card.serializers import (
     GetFavorableDeserializer,
     UserFavorableCardSerializer,
@@ -14,6 +15,8 @@ from routes.favorable_card.serializers import (
     BusModifyFavorableCardDeserializer,
     FavorableCardToKafkaSerializer,
     ClientGetFavorableDeserializer,
+    ClientUserFavorableCardSerializer,
+    ClientUserFavorableCardListSerializer,
 )
 from service.favorable_card_service import FavorableCardUserService
 
@@ -240,7 +243,6 @@ class BusModifyUserFavorableCardHandle(MBHandler):
         """
 
         args['commandContext'] = self.get_context()
-        # args['commandContext']["tenant_id"] = args['commandContext']['tenantId']
         response = yield mb_async(FavorableCardUserService().modify_time)(args)
 
         self.success(response)
@@ -282,13 +284,12 @@ class ClientGetUserFavorableCardHandle(MBHandler):
                         msg:
                             type: str
                         data:
-                            UserFavorableCardSerializer
+                            ClientUserFavorableCardListSerializer
         """
 
-        data = yield mb_async(FavorableCardUserService().query_one)(args)
+        args['commandContext'] = self.get_context()
+        data: TFavorableCard = yield mb_async(FavorableCardUserService().get_user_card_list)(args)
 
-        data = None if data and data.end_time <= datetime.now() else data
-
-        response = UserFavorableCardSerializer().dump(data)
-
+        # response = ClientUserFavorableCardListSerializer().dump(data)
+        response = data
         self.success(response)

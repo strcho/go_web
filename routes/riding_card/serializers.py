@@ -107,6 +107,8 @@ class RidingCardInfoSerializer(BaseSchema):
     promotion_tag = fields.String(description='促销标签')
     rece_times = fields.Integer(description='次卡类, 表示总累计次数; 非次卡类, 表示每日最大次数')
     remain_times = fields.Integer(description='骑行卡剩余使用次数')
+    effective_service_ids = fields.String(description="可用服务区")
+    effective_service_names = fields.String(description="可用服务区名称")
 
 
 class RidingCardSerializer(BaseSchema):

@@ -58,7 +58,6 @@ class GetRidingCardHandle(MBHandler):
         """
 
         data = yield mb_async(RidingCardService().user_card_info)(args)
-        print(data)
         response = RidingCardSerializer().dump(data)
 
         self.success(response)

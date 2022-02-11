@@ -338,6 +338,6 @@ class ClientWalletHandle(MBHandler):
         pin = args['pin']
         valid_data = (pin, args)
         wallet_data = yield mb_async(WalletService().get_user_wallet)(*valid_data)
-        wallet_data["can_refund_amount"] = wallet_data.get("recharge")  # todo
+        # wallet_data["can_refund_amount"] = wallet_data.get("recharge")  # todo
 
         self.success(wallet_data)
