@@ -44,10 +44,8 @@ class MarketingApi:
     @staticmethod
     def get_favorable_card_info(config_id: int, command_context: dict):
         param = {"card_id": config_id, 'commandContext': command_context}
-        print(param)
         card_res = favorable_card_info(param)
         card_res_data = json.loads(card_res)
-        print(card_res_data)
         if not card_res_data.get("success"):
             raise MbException("营销活动服务调用失败")
 
@@ -58,7 +56,6 @@ class MarketingApi:
         param = {"deposit_card_id": str(config_id), 'commandContext': command_context}
         card_res = deposit_card_info(param)
         card_res_data = json.loads(card_res)
-        print(card_res_data)
         if not card_res_data.get("success"):
             raise MbException("营销活动服务调用失败")
 
