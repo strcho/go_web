@@ -5,7 +5,6 @@ from tornado.gen import coroutine
 from mbutils import mb_async
 from mbutils.autodoc import use_args_query
 from mbutils.mb_handler import MBHandler
-from model.all_model import TFavorableCard
 from routes.favorable_card.serializers import (
     GetFavorableDeserializer,
     UserFavorableCardSerializer,
@@ -288,7 +287,7 @@ class ClientGetUserFavorableCardHandle(MBHandler):
         """
 
         args['commandContext'] = self.get_context()
-        data: TFavorableCard = yield mb_async(FavorableCardUserService().get_user_card_list)(args)
+        data = yield mb_async(FavorableCardUserService().get_user_card_list)(args)
 
         # response = ClientUserFavorableCardListSerializer().dump(data)
         response = data
