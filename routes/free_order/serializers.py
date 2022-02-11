@@ -20,6 +20,14 @@ class GetUserFreeOrderDeserializer(ReqBaseDeserializer):
     pin = fields.String(required=True, description='用户标识')
 
 
+class ClientGetUserFreeOrderDeserializer(ContextDeserializer):
+    """
+    获取用户免单信息
+    """
+
+    pin = fields.String(required=True, description='用户标识')
+
+
 class UserFreeOrderSerializer(BaseSchema):
     """
     用户免单信息序列化

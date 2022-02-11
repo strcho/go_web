@@ -10,6 +10,7 @@ from routes.free_order.serializers import (
     UserFreeOrderSerializer,
     UpdateUserFreeOrderDeserializer,
     BusUpdateUserFreeOrderDeserializer,
+    ClientGetUserFreeOrderDeserializer,
 )
 from service.free_order_service import UserFreeOrderService
 
@@ -106,6 +107,53 @@ class GetUserAllFreeOrderHandler(MBHandler):
         self.success(response)
 
 
+class ClientGetUserAllFreeOrderHandler(MBHandler):
+    """
+    C端用户全部免单优惠
+    """
+
+    @coroutine
+    @use_args_query(ClientGetUserFreeOrderDeserializer)
+    def post(self, args):
+        """
+        获取用户的全部免单优惠
+        ---
+        tags: [C端-免单]
+        summary: 获取用户的全部免单优惠
+        description: 获取用户的全部免单优惠
+
+        parameters:
+          - in: body
+            schema:
+                ClientGetUserFreeOrderDeserializer
+        responses:
+            200:
+                schema:
+                    type: object
+                    required:
+                      - success
+                      - code
+                      - msg
+                      - data
+                    properties:
+                        success:
+                            type: boolean
+                        code:
+                            type: str
+                        msg:
+                            type: str
+                        data:
+                            UserFreeOrderSerializer
+        """
+
+        args['commandContext'] = self.get_context()
+        data = yield mb_async(UserFreeOrderService().query_all)(args)
+
+        response = UserFreeOrderSerializer(many=True).dump(data)
+
+        self.success(response)
+
+
 class UpdateUserFreeOrderHandler(MBHandler):
     """
     更新用户的免单优惠
@@ -190,7 +238,6 @@ class BusUpdateUserFreeOrderHandler(MBHandler):
         """
 
         args['commandContext'] = self.get_context()
-        # args['commandContext']["tenant_id"] = args['commandContext']['tenantId']
         response = yield mb_async(UserFreeOrderService().update_user_free_order)(args)
 
         self.success(response)

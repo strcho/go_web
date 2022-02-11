@@ -22,6 +22,14 @@ class GetUserDiscountDeserializer(ReqBaseDeserializer):
     pin = fields.String(required=True, description='用户标识')
 
 
+class ClientGetUserDiscountDeserializer(ContextDeserializer):
+    """
+    获取用户折扣信息
+    """
+
+    pin = fields.String(required=True, description='用户标识')
+
+
 class UserDiscountSerializer(BaseSchema):
     """
     用户折扣信息序列化

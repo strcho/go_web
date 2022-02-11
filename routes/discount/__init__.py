@@ -3,6 +3,7 @@ from routes.discount.view import (
     GetUserAllDiscountHandler,
     UpdateUserDiscountHandler,
     BusUpdateUserDiscountHandler,
+    ClientGetUserAllDiscountHandler,
 )
 
 
@@ -14,4 +15,8 @@ urls = [
 
     # B端网关
     ("/business/update_user_discount", BusUpdateUserDiscountHandler),
+
+    # C端
+    ("/client/get_user_all_discount", ClientGetUserAllDiscountHandler),
+
 ]

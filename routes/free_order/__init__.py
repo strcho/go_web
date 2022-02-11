@@ -3,6 +3,7 @@ from routes.free_order.view import (
     GetUserAllFreeOrderHandler,
     UpdateUserFreeOrderHandler,
     BusUpdateUserFreeOrderHandler,
+    ClientGetUserAllFreeOrderHandler,
 )
 
 
@@ -14,4 +15,8 @@ urls = [
 
     # B端
     ("/business/update_user_free_order", BusUpdateUserFreeOrderHandler),
+
+    # C端
+    ("/client/get_user_all_free_order", ClientGetUserAllFreeOrderHandler),
+
 ]

@@ -10,6 +10,7 @@ from routes.discount.serializers import (
     UserDiscountSerializer,
     UpdateUserDiscountDeserializer,
     BusUpdateUserDiscountDeserializer,
+    ClientGetUserDiscountDeserializer,
 )
 from service.user_discount_service import UserDiscountService
 
@@ -106,6 +107,52 @@ class GetUserAllDiscountHandler(MBHandler):
         self.success(response)
 
 
+class ClientGetUserAllDiscountHandler(MBHandler):
+    """
+    用户全部折扣优惠
+    """
+
+    @coroutine
+    @use_args_query(ClientGetUserDiscountDeserializer)
+    def post(self, args):
+        """
+        获取用户的全部折扣优惠
+        ---
+        tags: [C端-折扣]
+        summary: 获取用户的全部折扣优惠
+        description: 获取用户的全部折扣优惠
+
+        parameters:
+          - in: body
+            schema:
+                ClientGetUserDiscountDeserializer
+        responses:
+            200:
+                schema:
+                    type: object
+                    required:
+                      - success
+                      - code
+                      - msg
+                      - data
+                    properties:
+                        success:
+                            type: boolean
+                        code:
+                            type: str
+                        msg:
+                            type: str
+                        data:
+                            UserDiscountSerializer
+        """
+        args['commandContext'] = self.get_context()
+        data = yield mb_async(UserDiscountService().query_all)(args)
+
+        response = UserDiscountSerializer(many=True).dump(data)
+
+        self.success(response)
+
+
 class UpdateUserDiscountHandler(MBHandler):
     """
     更新用户的折扣优惠
@@ -190,7 +237,6 @@ class BusUpdateUserDiscountHandler(MBHandler):
         """
 
         args['commandContext'] = self.get_context()
-        # args['commandContext']["tenant_id"] = args['commandContext']['tenantId']
         response = yield mb_async(UserDiscountService().update_user_discount)(args)
 
         self.success(response)
