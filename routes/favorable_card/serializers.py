@@ -24,7 +24,7 @@ class GetFavorableDeserializer(ReqBaseDeserializer):
     service_id = fields.Integer(required=True, description="服务区id")
 
 
-class ClientGetFavorableDeserializer(ReqBaseDeserializer):
+class ClientGetFavorableDeserializer(ContextDeserializer):
     """
     用户信息
     """
