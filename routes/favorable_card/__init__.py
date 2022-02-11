@@ -4,6 +4,7 @@ from routes.favorable_card.view import (
     SendUserFavorableCardHandle,
     ModifyUserFavorableCardHandle,
     BusModifyUserFavorableCardHandle,
+    ClientGetUserFavorableCardHandle,
 )
 
 # /ebike_account/favorable_card
@@ -15,4 +16,7 @@ urls = [
 
     # B端网关
     ("/business/modify_user_favorable_card", BusModifyUserFavorableCardHandle),
+
+    # C端网关
+    ("/client/get_user_favorable_card", ClientGetUserFavorableCardHandle),
 ]

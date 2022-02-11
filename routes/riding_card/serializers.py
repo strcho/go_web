@@ -19,6 +19,14 @@ class GetRidingCardDeserializer(ReqBaseDeserializer):
     pin = fields.String(required=True, description="用户标识")
 
 
+class ClientGetRidingCardDeserializer(ContextDeserializer):
+    """
+    C端 获取用户骑行卡
+    """
+
+    pin = fields.String(required=True, description="用户标识")
+
+
 class EditRidingCardDeserializer(ReqBaseDeserializer):
     """
     编辑用户骑行卡
@@ -88,7 +96,7 @@ class RidingCardInfoSerializer(BaseSchema):
     card_expired_date = fields.String(description='骑行卡到期时间')
     card_id = fields.Integer(description='母卡信息')
     deduction_type = fields.Integer(description='抵扣类型, 1时长卡, 2里程卡, 3减免卡, 4次卡')
-    description_tag = fields.Integer(description='说明标签')
+    description_tag = fields.String(description='说明标签')
     detail_info = fields.String(description='详情')
     free_distance_meter = fields.Integer(description='免里程, 单位米')
     free_money_cent = fields.Integer(description="免金额, 单位分")

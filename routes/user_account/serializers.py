@@ -49,3 +49,16 @@ class UserAccountSerializer(BaseSchema):
     user_favorable_card = fields.Nested(UserFavorableCardSerializer(), description='用户优惠卡')
     user_free_order = fields.Nested(UserFreeOrderSerializer(), description='用户免单')
     user_discount = fields.Nested(UserDiscountSerializer(), description='用户折扣')
+
+
+class CliUserAccountSerializer(BaseSchema):
+    """
+    C端用户资产信息序列化
+    """
+
+    user_wallet = fields.Nested(UserWalletSerializer(), description='用户钱包')
+    user_riding_card = fields.Nested(RidingCardInfoSerializer(), description='用户骑行卡')
+    user_deposit_card = fields.Nested(UserDepositCardSerializer(), description='用户押金卡')
+    user_favorable_card = fields.Nested(UserFavorableCardSerializer(), description='用户优惠卡')
+    user_free_order = fields.Nested(UserFreeOrderSerializer(), description='用户免单')
+    user_discount = fields.Nested(UserDiscountSerializer(), description='用户折扣')

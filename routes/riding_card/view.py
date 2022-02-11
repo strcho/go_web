@@ -11,7 +11,9 @@ from routes.riding_card.serializers import (
     CurrentDuringTimeDeserializer,
     AddCountHandlerDeserializer,
     CurrentDuringTimeSerializer,
-    BusEditRidingCardDeserializer, RidingCardInfoSerializer,
+    BusEditRidingCardDeserializer,
+    RidingCardInfoSerializer,
+    ClientGetRidingCardDeserializer,
 )
 from service.riding_card_service import RidingCardService
 
@@ -34,7 +36,7 @@ class GetRidingCardHandle(MBHandler):
         parameters:
           - in: body
             schema:
-                UpdateWalletDeserializer
+                GetRidingCardDeserializer
         responses:
             200:
                 schema:
@@ -56,6 +58,7 @@ class GetRidingCardHandle(MBHandler):
         """
 
         data = yield mb_async(RidingCardService().user_card_info)(args)
+        print(data)
         response = RidingCardSerializer().dump(data)
 
         self.success(response)
@@ -276,5 +279,51 @@ class BusEditRidingCardHandle(MBHandler):
 
         args['commandContext'] = self.get_context()
         response = yield mb_async(RidingCardService().modify_time(args))
+
+        self.success(response)
+
+
+class ClientGetRidingCardHandle(MBHandler):
+    """
+    骑行卡
+    """
+
+    @coroutine
+    @use_args_query(ClientGetRidingCardDeserializer)
+    def post(self, args: dict):
+        """
+        获取用户骑行卡
+        ---
+        tags: [C端-骑行卡]
+        summary: 获取用户骑行卡
+        description: 获取用户骑行卡
+
+        parameters:
+          - in: body
+            schema:
+                ClientGetRidingCardDeserializer
+        responses:
+            200:
+                schema:
+                    type: object
+                    required:
+                      - success
+                      - code
+                      - msg
+                      - data
+                    properties:
+                        success:
+                            type: boolean
+                        code:
+                            type: str
+                        msg:
+                            type: str
+                        data:
+                            RidingCardSerializer
+        """
+
+        args['commandContext'] = self.get_context()
+        data = yield mb_async(RidingCardService().user_card_info)(args)
+        response = RidingCardSerializer().dump(data)
 
         self.success(response)

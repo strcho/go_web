@@ -72,7 +72,7 @@ class RidingCardService(MBService):
         try:
             print('insert one')
             dao_session.session.tenant_db().commit()
-            return True
+            return user_riding_card
 
         except Exception as e:
             dao_session.session.tenant_db().rollback()
@@ -119,10 +119,30 @@ class RidingCardService(MBService):
             dao_session.session.tenant_db().commit()
         except Exception:
             pass
-        service_id = dao_session.redis_session.r.hget(ALL_USER_LAST_SERVICE_ID, pin) or 0
-        return self.query_my_list_in_platform((service_id,), pin)
+        user_info = UserApi.get_user_info(pin=pin, command_context=args.get("commandContext"))
+        service_id = user_info.get('serviceId')
+        print(service_id)
+        return self.query_my_list_in_platform(service_id, pin)
 
-    def query_my_list_in_platform(self, valid_data: tuple, pin: str) -> dict:
+    def get_user_card_list(self, args):
+        """
+        获取用户骑行卡列表
+        """
+        pin = args['pin']
+        try:
+            # 更新骑行卡过期时间
+            dao_session.session.tenant_db().query(TRidingCard).filter(
+                TRidingCard.state == UserRidingCardState.USING.value,
+                TRidingCard.pin == pin,
+                TRidingCard.card_expired_date <= datetime.now()).update(
+                {"state": UserRidingCardState.EXPIRED.value})
+            dao_session.session.tenant_db().commit()
+        except Exception:
+            pass
+        service_id = dao_session.redis_session.r.hget(ALL_USER_LAST_SERVICE_ID, pin) or 0
+        return self.query_my_list_in_platform(service_id, pin)
+
+    def query_my_list_in_platform(self, service_id: int, pin: str) -> dict:
         """
         :return:
     {
@@ -141,8 +161,7 @@ class RidingCardService(MBService):
         "cost_use":10001
     }
         """
-        service_id, = valid_data
-        dao_session.redis_session.r.hset(ALL_USER_LAST_SERVICE_ID, pin, service_id)
+        # dao_session.redis_session.r.hset(ALL_USER_LAST_SERVICE_ID, pin, service_id)
 
         first_id = self.get_current_card_id(service_id, pin)
         res_dict = {"used": [], "expired": [], "rule_info": "", "cost_use": first_id}
@@ -155,14 +174,14 @@ class RidingCardService(MBService):
             one: TRidingCard = one
             car_info = {"card_id": one.id}
             content = json.loads(one.content)
-            car_info["name"] = content["ridingCardName"]
-            car_info["image_url"] = content["backOfCardUrl"]
-            car_info["description_tag"] = content.get("descriptionTag", "限全国")
-            car_info["detail_info"] = content.get("detailInfo", "") or str(
+            car_info["name"] = content["name"]
+            car_info["image_url"] = content["image_url"]
+            car_info["description_tag"] = content.get("description_tag", "限全国")
+            car_info["detail_info"] = content.get("detail_info", "") or str(
                 base64.b64encode("限制使用区域:全国\n限制使用天数:{}\n{}使用次数:{}次\n每次抵扣时长:{}分钟".format(
-                    content["expiryDate"],
+                    content["valid_day"],
                     "累计" if one.iz_total_times else "每日",
-                    content["receTimes"], int(float(content["freeTime"]) * 60)).encode("utf-8")),
+                    content["available_times"], int(float(content["free_time_second"]))).encode("utf-8")),
                 "utf-8")
             car_info["cardExpiredDate"] = self.datetime2num(one.card_expired_date)
             car_info["remain_times"] = one.remain_times
@@ -171,7 +190,7 @@ class RidingCardService(MBService):
             car_info["free_time_second"] = one.free_time
             car_info["free_distance_meter"] = one.free_distance
             car_info["free_money_cent"] = one.free_money
-            car_info["promotion_tag"] = content.get("promotionTag", "人气优选")
+            car_info["promotion_tag"] = content.get("promotion_tag", "人气优选")
             car_info["deductionType"] = one.deduction_type
             if one.state != UserRidingCardState.EXPIRED.value:
                 res_dict["used"].append(car_info)
@@ -215,13 +234,17 @@ class RidingCardService(MBService):
             }
         )
         # 过期当日将非次卡的可用次数置零
+        now = datetime.now()
+        zeroToday = now - timedelta(hours=now.hour, minutes=now.minute, seconds=now.second, microseconds=now.microsecond)
+        lastToday = zeroToday + timedelta(hours=23, minutes=59, seconds=59)
         dao_session.session.tenant_db().query(
             TRidingCard
         ).filter(
             TRidingCard.pin == pin,
             TRidingCard.state == UserRidingCardState.USING.value,
             TRidingCard.iz_total_times == 0,
-            TRidingCard.card_expired_date.date() == datetime.now().date(),
+            TRidingCard.card_expired_date >= zeroToday,
+            TRidingCard.card_expired_date <= lastToday,
         ).update(
             {
                 "remain_times": 0,
@@ -249,15 +272,13 @@ class RidingCardService(MBService):
                     return _id
         return None
 
-    def send_riding_card(self, args, send_time: datetime = datetime.now()) -> str:
+    def send_riding_card(self, args,) -> str:
         """
         添加骑行卡
         """
         pin = args['pin']
         config_id = args['config_id']
         commandContext = args.get("commandContext")
-        if send_time and datetime.now().timestamp() - send_time > 5:
-            raise MbException("请求超时", config_id, pin)
 
         user_info = UserApi.get_user_info(pin=args["pin"], command_context=commandContext)
         service_id = user_info.get('serviceId')
@@ -275,7 +296,10 @@ class RidingCardService(MBService):
         free_money_cent = card_info.get("free_money_cent")
         available_times = card_info.get("available_times")
         effective_service_ids = card_info.get("effective_service_ids")
-        params = {
+
+        params = self.get_model_common_field(commandContext)
+
+        params.update({
             "pin": pin,
             "deduction_type": deduction_type,
             "config_id": config_id,
@@ -294,16 +318,10 @@ class RidingCardService(MBService):
             "created_at": datetime.now(),
             "updated_at": datetime.now(),
             "service_id": service_id,
-
-            "tenant_id": commandContext.get('tenantId'),
-            "created_pin": commandContext.get("pin"),
-            "version": commandContext.get("version", ""),
-            "updated_pin": commandContext.get('pin'),
-
-        }
+        })
         try:
-            user_card = TRidingCard(**params)
-            dao_session.session.tenant_db().add(user_card)
+            riding_card = TRidingCard(**params)
+            dao_session.session.tenant_db().add(riding_card)
             dao_session.session.tenant_db().commit()
 
             riding_card_dict = {
@@ -329,7 +347,8 @@ class RidingCardService(MBService):
             logger.info(f"wallet_record send is {riding_card_dict}")
             KafkaClient().visual_send(riding_card_dict, PayKey.RIDING_CARD.value)
 
-        except Exception:
+        except Exception as ex:
+            print(ex)
             raise MbException("添加超级骑行卡失败")
 
         return "添加骑行卡成功"

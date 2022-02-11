@@ -11,7 +11,9 @@ from routes.favorable_card.serializers import (
     SendFavorableCardDeserializer,
     ModifyFavorableCardDeserializer,
     UserFavorableCardDaysSerializer,
-    BusModifyFavorableCardDeserializer, FavorableCardToKafkaSerializer,
+    BusModifyFavorableCardDeserializer,
+    FavorableCardToKafkaSerializer,
+    ClientGetFavorableDeserializer,
 )
 from service.favorable_card_service import FavorableCardUserService
 
@@ -240,5 +242,53 @@ class BusModifyUserFavorableCardHandle(MBHandler):
         args['commandContext'] = self.get_context()
         # args['commandContext']["tenant_id"] = args['commandContext']['tenantId']
         response = yield mb_async(FavorableCardUserService().modify_time)(args)
+
+        self.success(response)
+
+
+class ClientGetUserFavorableCardHandle(MBHandler):
+    """
+    用户优惠卡
+    """
+
+    @coroutine
+    @use_args_query(ClientGetFavorableDeserializer)
+    def post(self, args):
+        """
+        获取用户优惠卡信息
+        ---
+        tags: [C端-优惠卡]
+        summary: 获取用户优惠卡信息
+        description: 获取用户优惠卡信息
+
+        parameters:
+          - in: body
+            schema:
+                ClientGetFavorableDeserializer
+        responses:
+            200:
+                schema:
+                    type: object
+                    required:
+                      - success
+                      - code
+                      - msg
+                      - data
+                    properties:
+                        success:
+                            type: boolean
+                        code:
+                            type: str
+                        msg:
+                            type: str
+                        data:
+                            UserFavorableCardSerializer
+        """
+
+        data = yield mb_async(FavorableCardUserService().query_one)(args)
+
+        data = None if data and data.end_time <= datetime.now() else data
+
+        response = UserFavorableCardSerializer().dump(data)
 
         self.success(response)

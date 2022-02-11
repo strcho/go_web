@@ -24,6 +24,15 @@ class GetFavorableDeserializer(ReqBaseDeserializer):
     service_id = fields.Integer(required=True, description="服务区id")
 
 
+class ClientGetFavorableDeserializer(ReqBaseDeserializer):
+    """
+    用户信息
+    """
+
+    pin = fields.String(required=True, description="用户标识")
+    service_id = fields.Integer(required=True, description="服务区id")
+
+
 class ModifyFavorableCardDeserializer(ReqBaseDeserializer):
     """
     修改用户优惠卡信息
