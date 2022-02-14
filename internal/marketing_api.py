@@ -6,22 +6,22 @@ from mbutils import (
 )
 
 # 营销服务
-nacosClient = nacos.nacosBalanceClient(
+marketingNacosClient = nacos.nacosBalanceClient(
     serviceName="ebike-marketing",
     timeout=3)
 
 
-@nacosClient.customRequestClient(method="POST", url="/ebike_marketing/riding_config/platform/riding_card", )
+@marketingNacosClient.customRequestClient(method="POST", url="/ebike_marketing/riding_config/platform/riding_card", )
 def riding_card_info(jsonData):
     pass
 
 
-@nacosClient.customRequestClient(method="POST", url="/ebike_marketing/favorable_config/platform/favorable_card", )
+@marketingNacosClient.customRequestClient(method="POST", url="/ebike_marketing/favorable_config/platform/favorable_card", )
 def favorable_card_info(jsonData):
     pass
 
 
-@nacosClient.customRequestClient(method="POST", url="/ebike_marketing/deposit_config/platform/deposit_card", )
+@marketingNacosClient.customRequestClient(method="POST", url="/ebike_marketing/deposit_config/platform/deposit_card", )
 def deposit_card_info(jsonData):
     pass
 

@@ -3,32 +3,32 @@ from mbutils import (
 )
 
 # 大屏服务
-nacosClient = nacos.nacosBalanceClient(
+visualNacosClient = nacos.nacosBalanceClient(
     serviceName="ebike-visual",
     timeout=3,
 )
 
 
-@nacosClient.customRequestClient(method="GET", url="/api/test1")
+@visualNacosClient.customRequestClient(method="GET", url="/api/test1")
 def apiTest1():
     pass
 
 
-@nacosClient.customRequestClient(method="GET", url="/api/test2")
+@visualNacosClient.customRequestClient(method="GET", url="/api/test2")
 def apiTest2(id1: int, id2: int):
     pass
 
 
-@nacosClient.customRequestClient(method="POST", url="/ebike/user/hello")
+@visualNacosClient.customRequestClient(method="POST", url="/ebike/user/hello")
 def apiTest3(formData):
     pass
 
 
-@nacosClient.customRequestClient(method="POST", url="/ebike/user/hello", )
+@visualNacosClient.customRequestClient(method="POST", url="/ebike/user/hello", )
 def apiTest4(jsonData):
     pass
 
 
-@nacosClient.customRequestClient(method="GET", url="/api/test5")
+@visualNacosClient.customRequestClient(method="GET", url="/api/test5")
 def apiTest5(*args, **kwargs):
     pass

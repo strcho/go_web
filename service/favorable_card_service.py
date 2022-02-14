@@ -5,7 +5,6 @@ from datetime import (
     timedelta,
 )
 
-from internal import user_apis
 from internal.marketing_api import MarketingApi
 from internal.user_apis import (
     internal_get_userinfo_by_id,

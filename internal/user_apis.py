@@ -6,23 +6,23 @@ from mbutils import (
 )
 
 # 用户服务
-nacosClient = nacos.nacosBalanceClient(
+userNacosClient = nacos.nacosBalanceClient(
     serviceName="ebike-user",
     timeout=3,
 )
 
 
-@nacosClient.customRequestClient(method="POST", url="/user/detail",)
+@userNacosClient.customRequestClient(method="POST", url="/user/detail",)
 def internal_get_userinfo_by_id(jsonData):
     pass
 
 
-@nacosClient.customRequestClient(method="POST", url="/userState/depositedStateChange",)
+@userNacosClient.customRequestClient(method="POST", url="/userState/depositedStateChange",)
 def internal_deposited_state_change(jsonData):
     pass
 
 
-@nacosClient.customRequestClient(method="POST", url="/userState/depositCardStateChange",)
+@userNacosClient.customRequestClient(method="POST", url="/userState/depositCardStateChange",)
 def internal_deposited_card_state_change(jsonData):
     pass
 
