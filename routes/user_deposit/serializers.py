@@ -64,6 +64,7 @@ class UpdateDepositDeserializer(ReqBaseDeserializer):
     11  # 微信APP支付
     12  # 微信小程序支付
     13  # 微信H5支付
+    14  # 微信，信用分 
     21  # 云闪付=>微信小程序支付
     22  # 云闪付-二维码支付
     23  # 云闪付-APP支付
@@ -105,6 +106,7 @@ class BusUpdateDepositDeserializer(ContextDeserializer):
     11  # 微信APP支付
     12  # 微信小程序支付
     13  # 微信H5支付
+    14  # 微信，信用分 
     21  # 云闪付=>微信小程序支付
     22  # 云闪付-二维码支付
     23  # 云闪付-APP支付

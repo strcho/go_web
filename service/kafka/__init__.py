@@ -27,6 +27,7 @@ class ChannelType(MbEnum):
     WEPAY = 11  # 微信APP支付
     WXLITE = 12  # 微信小程序支付
     WEPAY_H5 = 13  # 微信H5支付
+    WEPAY_SCORE = 14  # 微信，信用分
 
     UNIONPAY_WXLITE = 21  # 云闪付=>微信小程序支付
     UNIONPAY_CODE = 22  # 云闪付-二维码支付
