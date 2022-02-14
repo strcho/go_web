@@ -14,7 +14,6 @@ class GetLogHandler(MBHandler):
     def get(self):
         valid_data = self.valid_data_all([
             ("tp", ValidType.STR, {"default": "biz"}),
-            ("is_node", ValidType.BOOL, {"default": False}),
             ("row_num", ValidType.INT, {"default": 50}),
         ])
         data = yield mb_async(GetLogService().get_log)(valid_data)

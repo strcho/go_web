@@ -4,7 +4,7 @@ from service import MBService
 
 
 class GetLogService(MBService):
-    def get_log(self,valid_data):
+    def get_log(self, valid_data):
         _type, row_num = valid_data
         if _type == "info":
             res = subprocess.getoutput("tail -n {} /logs/ebike/*.log".format(row_num))
