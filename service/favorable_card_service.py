@@ -176,9 +176,7 @@ class FavorableCardUserService(MBService):
         self.user_can_modify_favorable_card_duration(args['commandContext'], args['pin'], args['service_id'])
 
         duration = args['duration']
-        print("aaaaaaa", duration)
         favorable_card: TFavorableCard = self.query_one(args)
-        print(favorable_card)
         if not favorable_card:
             raise MbException("未找到优惠卡")
 

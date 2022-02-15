@@ -66,7 +66,6 @@ class RidingCardService(MBService):
         data = self.get_model_common_field(commandContext)
 
         data['pin'] = pin
-        print(data)
         user_riding_card = TRidingCard(**data)
         dao_session.session.tenant_db().add(user_riding_card)
         try:
@@ -349,7 +348,6 @@ class RidingCardService(MBService):
             KafkaClient().visual_send(riding_card_dict, PayKey.RIDING_CARD.value)
 
         except Exception as ex:
-            print(ex)
             raise MbException("添加超级骑行卡失败")
 
         return "添加骑行卡成功"

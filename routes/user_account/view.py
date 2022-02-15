@@ -75,7 +75,6 @@ class UserAccount(MBHandler):
             "user_free_order": user_free_order,
             "user_discount": user_discount,
         }
-        print(data)
         response = UserAccountSerializer().dump(data)
 
         self.success(response)
@@ -137,7 +136,6 @@ class BusUserAccount(MBHandler):
             "user_free_order": user_free_order,
             "user_discount": user_discount,
         }
-        print(data)
         response = UserAccountSerializer().dump(data)
 
         self.success(response)
