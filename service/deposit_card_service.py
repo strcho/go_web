@@ -35,11 +35,15 @@ class DepositCardService(MBService):
 
         try:
             pin = args['pin']
+            filter_param = [
+                TDepositCard.tenant_id == args['commandContext']['tenantId'],
+                TDepositCard.pin == pin,
+            ]
+            if "service_id" in args:
+                filter_param.append(TDepositCard.service_id == args['service_id'])
             deposit_card: TDepositCard = (
                 dao_session.session.tenant_db().query(TDepositCard).filter(
-                    TDepositCard.tenant_id == args['commandContext']['tenantId'],
-                    TDepositCard.service_id == args['service_id'],
-                    TDepositCard.pin == pin,
+                    *filter_param
                 ).first()
             )
         except Exception as ex:

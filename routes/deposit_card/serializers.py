@@ -101,7 +101,7 @@ class BusModifyDepositCardDeserializer(ContextDeserializer):
     """
 
     pin = fields.String(required=True, description="用户标识")
-    service_id = fields.Integer(required=True, description="服务区")
+    # service_id = fields.Integer(required=True, description="服务区")
     duration = fields.Integer(required=True, description="押金卡时长")
 
 
