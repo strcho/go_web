@@ -39,8 +39,8 @@ class DepositCardService(MBService):
                 TDepositCard.tenant_id == args['commandContext']['tenantId'],
                 TDepositCard.pin == pin,
             ]
-            if "service_id" in args:
-                filter_param.append(TDepositCard.service_id == args['service_id'])
+            # if "service_id" in args:
+            #     filter_param.append(TDepositCard.service_id == args['service_id'])
             deposit_card: TDepositCard = (
                 dao_session.session.tenant_db().query(TDepositCard).filter(
                     *filter_param
