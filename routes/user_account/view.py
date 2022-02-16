@@ -69,7 +69,7 @@ class UserAccount(MBHandler):
 
         data = {
             "user_wallet": user_wallet,
-            "user_riding_card": user_riding_card,
+            "user_riding_card": user_riding_card.get("used")[0] if user_riding_card.get("used") else {},
             "user_deposit_card": user_deposit_card,
             "user_favorable_card": None if user_favorable_card and user_favorable_card.end_time <= datetime.now() else user_favorable_card,
             "user_free_order": user_free_order,
@@ -119,7 +119,6 @@ class BusUserAccount(MBHandler):
                           UserAccountSerializer
         """
         args['commandContext'] = self.get_context()
-        # args['commandContext']["tenant_id"] = args['commandContext']['tenantId']
 
         user_wallet = yield mb_async(WalletService().query_one)(args)
         user_riding_card = yield mb_async(RidingCardService().user_card_info)(args)
@@ -128,9 +127,10 @@ class BusUserAccount(MBHandler):
         user_free_order = yield mb_async(UserFreeOrderService().query_one)(args)
         user_discount = yield mb_async(UserDiscountService().query_one)(args)
 
+        print(user_riding_card)
         data = {
             "user_wallet": user_wallet,
-            "user_riding_card": user_riding_card,
+            "user_riding_card": user_riding_card.get("used")[0] if user_riding_card.get("used") else {},
             "user_deposit_card": user_deposit_card,
             "user_favorable_card": None if user_favorable_card and user_favorable_card.end_time <= datetime.now() else user_favorable_card,
             "user_free_order": user_free_order,
@@ -190,7 +190,7 @@ class ClientUserAccount(MBHandler):
 
         data = {
             "user_wallet": user_wallet,
-            "user_riding_card": user_riding_card,
+            "user_riding_card": user_riding_card.get("used")[0] if user_riding_card.get("used") else {},
             "user_deposit_card": user_deposit_card,
             "user_favorable_card": None if user_favorable_card and user_favorable_card.end_time <= datetime.now() else user_favorable_card,
             "user_free_order": user_free_order,
