@@ -186,14 +186,18 @@ class WalletService(MBService):
 
         try:
             user_wallet_dict = self.get_user_wallet(pin=pin, args=args)
-
+            args["channel"] = ChannelType.PLATFORM.value
             if args['change_recharge']:
                 user_wallet_dict['balance'] += args['change_recharge']
                 user_wallet_dict['recharge'] += args['change_recharge']
+                args["type"] = TransactionType.PLATFORM_BOUGHT.value if args['change_recharge'] > 0 else TransactionType.PLATFORM_REFUND.value
 
-            if args['change_present']:
+            elif args['change_present']:
                 user_wallet_dict['present'] += args['change_present']
                 user_wallet_dict['balance'] += args['change_present']
+                args["type"] = TransactionType.PLATFORM_BOUGHT.value if args['change_recharge'] > 0 else TransactionType.PLATFORM_REFUND.value
+            else:
+                MbException("参数错误")
 
             commandContext = args.get("commandContext")
             self.update_one(pin=pin, tenant_id=commandContext["tenantId"], params=user_wallet_dict)
