@@ -66,7 +66,6 @@ class RidingCardService(MBService):
         data = self.get_model_common_field(commandContext)
 
         data['pin'] = pin
-        print(data)
         user_riding_card = TRidingCard(**data)
         dao_session.session.tenant_db().add(user_riding_card)
         try:
@@ -117,8 +116,8 @@ class RidingCardService(MBService):
                 TRidingCard.card_expired_date <= datetime.now()).update(
                 {"state": UserRidingCardState.EXPIRED.value})
             dao_session.session.tenant_db().commit()
-        except Exception:
-            pass
+        except Exception as ex:
+            print(ex)
         user_info = UserApi.get_user_info(pin=pin, command_context=args.get("commandContext"))
         service_id = user_info.get('serviceId')
         return self.query_my_list_in_platform(service_id, pin)
@@ -226,7 +225,7 @@ class RidingCardService(MBService):
             TRidingCard.pin == pin,
             TRidingCard.state == UserRidingCardState.USING.value,
             TRidingCard.iz_total_times == 0,
-            or_(TRidingCard.last_use_time < datetime.now().date(),
+            or_(TRidingCard.last_use_time < datetime.now(),
                 TRidingCard.last_use_time is None),
         ).update(
             {
@@ -349,7 +348,6 @@ class RidingCardService(MBService):
             KafkaClient().visual_send(riding_card_dict, PayKey.RIDING_CARD.value)
 
         except Exception as ex:
-            print(ex)
             raise MbException("添加超级骑行卡失败")
 
         return "添加骑行卡成功"

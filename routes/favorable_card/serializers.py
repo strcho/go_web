@@ -107,6 +107,7 @@ class UserFavorableCardSerializer(BaseSchema):
     service_id = fields.Integer(description="服务区ID")
     begin_time = EDateTime(description="开始时间")
     end_time = EDateTime(description="结束时间")
+    content = fields.Dict(required=False, load_default={}, description="卡详情")
 
 
 class ClientUserFavorableCardSerializer(BaseSchema):

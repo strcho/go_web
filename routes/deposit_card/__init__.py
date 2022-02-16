@@ -1,12 +1,13 @@
-# /ebike_account/user
 from routes.deposit_card.view import (
     GetUserDepositCardHandle,
     GetUserDepositDaysHandle,
     SendUserDepositCardHandle,
     ModifyUserDepositCardHandle,
     BusModifyUserDepositCardHandle,
+    ClientGetUserDepositCardHandle,
 )
 
+# /ebike_account/deposit_card
 urls = [
     ("/internal/get_user_deposit_card", GetUserDepositCardHandle),
     ("/internal/get_user_deposit_days", GetUserDepositDaysHandle),
@@ -17,4 +18,6 @@ urls = [
     # B端网关
     ("/business/modify_user_deposit_card", BusModifyUserDepositCardHandle),
 
+    # C端网关
+    ("/client/get_user_deposit_card", ClientGetUserDepositCardHandle),
 ]
