@@ -137,7 +137,8 @@ class RidingCardService(MBService):
             dao_session.session.tenant_db().commit()
         except Exception:
             pass
-        service_id = dao_session.redis_session.r.hget(ALL_USER_LAST_SERVICE_ID, pin) or 0
+        user_info = UserApi.get_user_info(pin=pin, command_context=args.get("commandContext"))
+        service_id = user_info.get('serviceId')
         return self.query_my_list_in_platform(service_id, pin)
 
     def query_my_list_in_platform(self, service_id: int, pin: str) -> dict:
