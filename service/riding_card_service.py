@@ -399,7 +399,9 @@ class RidingCardService(MBService):
     def current_duriong_card(self, args: dict):
 
         pin = args['pin']
-        service_id = dao_session.redis_session.r.hget(ALL_USER_LAST_SERVICE_ID, pin) or 0
+        commandContext = args.get("commandContext")
+        user_info = UserApi.get_user_info(pin=args["pin"], command_context=commandContext)
+        service_id = user_info.get('serviceId')
 
         # 1.骑行卡过期判定
         dao_session.session.tenant_db().query(
