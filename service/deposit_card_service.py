@@ -55,12 +55,11 @@ class DepositCardService(MBService):
 
         return deposit_card
 
-    def insert_one(self, args: dict):
+    def insert_one(self, args: dict, card_content):
         """
         插入一张押金卡
         """
 
-        card_content = MarketingApi.get_deposit_card_info(args['config_id'], command_context=args['commandContext'])
         try:
             params = self.get_model_common_field(args['commandContext'])
             params.update({
@@ -99,14 +98,22 @@ class DepositCardService(MBService):
         try:
             commandContext = args.get("commandContext")
             config_id = args.get("config_id")
+
+            deposit_card_info = MarketingApi.get_deposit_card_info(config_id=config_id, command_context=commandContext)
+            name = deposit_card_info.get("card_name")
+            card_service_id = deposit_card_info.get("service_id")
+            amount = deposit_card_info.get("discount_money")
+            card_time = deposit_card_info.get("card_duration_day")
+
             deposit_card: TDepositCard = self.query_one(args)
             # 有卡则更新卡过期时间
             if not deposit_card:
-                deposit_card = self.insert_one(args)
+                deposit_card = self.insert_one(args, deposit_card_info)
             else:
                 days = args['duration']
                 expired_date = datetime.now() + timedelta(days=days)
                 deposit_card.expired_date = expired_date
+                deposit_card.content = json.dumps(deposit_card_info),
                 dao_session.session.tenant_db().commit()
 
             # 向用户系统推送押金卡状态
@@ -122,11 +129,6 @@ class DepositCardService(MBService):
             pin_phone = user_info.get("phone")
             pin_name = user_info.get("authName")
 
-            deposit_card_info = MarketingApi.get_deposit_card_info(config_id=config_id, command_context=commandContext)
-            name = deposit_card_info.get("card_name")
-            card_service_id = deposit_card_info.get("service_id")
-            amount = deposit_card_info.get("discount_money")
-            card_time = deposit_card_info.get("card_duration_day")
             deposit_card_dict = {
                 "tenant_id": commandContext.get('tenantId'),
                 "created_pin": commandContext.get("pin"),
