@@ -193,7 +193,7 @@ class WalletService(MBService):
 
             if args['change_present']:
                 user_wallet_dict['present'] += args['change_present']
-                user_wallet_dict['recharge'] += args['change_present']
+                user_wallet_dict['balance'] += args['change_present']
 
             commandContext = args.get("commandContext")
             self.update_one(pin=pin, tenant_id=commandContext["tenantId"], params=user_wallet_dict)
