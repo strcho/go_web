@@ -187,11 +187,11 @@ class WalletService(MBService):
         try:
             user_wallet_dict = self.get_user_wallet(pin=pin, args=args)
 
-            if self.exists_param(args['change_recharge']):
+            if args['change_recharge']:
                 user_wallet_dict['balance'] += args['change_recharge']
                 user_wallet_dict['recharge'] += args['change_recharge']
 
-            if self.exists_param(args['change_present']):
+            if args['change_present']:
                 user_wallet_dict['present'] += args['change_present']
                 user_wallet_dict['recharge'] += args['change_present']
 

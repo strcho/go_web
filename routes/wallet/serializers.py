@@ -120,15 +120,18 @@ class BusUpdateWalletDeserializer(ContextDeserializer):
     """
 
     pin = fields.String(required=True, description="用户标识")
-    change_recharge = fields.Integer(required=False, load_default=ARG_DEFAULT, description="变动的充值金额*100")
-    change_present = fields.Integer(required=False, load_default=ARG_DEFAULT, description="变动的赠送金额*100")
-    change_deposited_mount = fields.Integer(required=False, load_default=ARG_DEFAULT, description="变动的押金金额*100")
-    deposited_stats = fields.Integer(required=False, load_default=ARG_DEFAULT, description="押金状态")
+    change_recharge = fields.Integer(required=False, load_default=0, description="变动的充值金额*100")
+    change_present = fields.Integer(required=False, load_default=0, description="变动的赠送金额*100")
+    # change_deposited_mount = fields.Integer(required=False, load_default=ARG_DEFAULT, description="变动的押金金额*100")
+    # deposited_stats = fields.Integer(required=False, load_default=ARG_DEFAULT, description="押金状态")
 
     type = fields.Integer(load_default=None, description="""支付类型 
     1  # 充值（购买）
     2  # 退款 
-    3  # 平台充值 4  # 平台退款 101  # 行程支付 102  # 行程退款
+    3  # 平台充值 
+    4  # 平台退款 
+    101  # 行程支付 
+    102  # 行程退款
     103  # 举报罚金
     104  # 还车申请免罚罚金
     201  # 固定活动赠送
