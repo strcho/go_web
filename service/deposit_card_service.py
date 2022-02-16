@@ -46,6 +46,7 @@ class DepositCardService(MBService):
                     *filter_param
                 ).first()
             )
+            deposit_card.content = json.loads(deposit_card.content) if deposit_card.content else {}
         except Exception as ex:
             dao_session.session.tenant_db().rollback()
             logger.error("query user deposit card is error: {}".format(ex))
@@ -60,7 +61,6 @@ class DepositCardService(MBService):
         """
 
         card_content = MarketingApi.get_deposit_card_info(args['config_id'], command_context=args['commandContext'])
-
         try:
             params = self.get_model_common_field(args['commandContext'])
             params.update({

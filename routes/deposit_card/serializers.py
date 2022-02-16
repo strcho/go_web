@@ -23,6 +23,15 @@ class GetDepositCardDeserializer(ReqBaseDeserializer):
     # service_id = fields.Integer(required=True, description="服务区")
 
 
+class ClientGetDepositCardDeserializer(ContextDeserializer):
+    """
+    用户信息
+    """
+
+    pin = fields.String(required=True, description="用户标识")
+    # service_id = fields.Integer(required=True, description="服务区")
+
+
 class ModifyDepositCardDeserializer(ReqBaseDeserializer):
     """
     修改用户押金卡信息
@@ -84,6 +93,7 @@ class UserDepositCardSerializer(BaseSchema):
     id = fields.Integer(required=True, description="押金卡id")
     pin = fields.String(required=False, load_default=ARG_DEFAULT, description="用户标识")
     expired_date = EDateTime(description="过期时间")
+    content = fields.Dict(required=False, load_default={}, description="卡详情")
 
 
 class UserDepositCardDaysSerializer(BaseSchema):
