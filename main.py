@@ -3,6 +3,9 @@ import os.path
 import sys
 
 # 将ebike-mb-tools目录加入环境变量
+import threading
+import time
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../ebike-mb-tools/")))
 
 from mbutils.app_start_init import AppInit
@@ -51,6 +54,18 @@ if __name__ == "__main__":
         "tenant_type": TenantType
     }
     dao_session.initialize(app, split_info)
+
+    def check_tenant_type(cfg, TenantType, app, split_info):
+
+        while True:
+            if len(cfg.get("TenantType")) > len(TenantType):
+                TenantType = cfg.get("TenantType")
+                split_info["tenant_type"] = TenantType
+                dao_session.initialize(app, split_info)
+            time.sleep(5)
+
+    testset = threading.Thread(target=check_tenant_type, args=(cfg, TenantType, app, split_info))
+    testset.start()
 
     app.listen(cfg['port'])
     logger.debug('listen to {} port,env: {}'.format(cfg['port'], cfg['is_test_env']))

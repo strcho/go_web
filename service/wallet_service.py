@@ -7,6 +7,7 @@ from mbutils import (
     dao_session,
     logger,
     MbException,
+    cfg,
 )
 from model.all_model import TUserWallet
 from service import MBService
@@ -28,6 +29,7 @@ class WalletService(MBService):
         try:
             pin = args['pin']
             tenant_id = str(args['commandContext']['tenantId'])
+            dao_session.session.tenant_db.chooser.tenant_type = cfg["TenantType"]
             user_wallet = dao_session.session.tenant_db().query(TUserWallet) \
                 .filter(TUserWallet.pin == pin,
                         TUserWallet.tenant_id == tenant_id).first()
