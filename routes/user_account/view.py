@@ -69,30 +69,33 @@ class UserAccount(MBHandler):
             mb_async(UserDiscountService().query_one)(args)
         ]
 
-        one = user_riding_card
-        car_info = {"id": one.id}
-        car_info["card_id"] = one.config_id
-        content = json.loads(one.content)
-        car_info["name"] = content["name"]
-        car_info["image_url"] = content["image_url"]
-        car_info["description_tag"] = content.get("description_tag", "限全国")
-        car_info["detail_info"] = content.get("detail_info", "") or str(
-            base64.b64encode("限制使用区域:全国\n限制使用天数:{}\n{}使用次数:{}次\n每次抵扣时长:{}分钟".format(
-                content["valid_day"],
-                "累计" if one.iz_total_times else "每日",
-                content["available_times"], int(float(content["free_time_second"]))).encode("utf-8")),
-            "utf-8")
-        car_info["card_expired_date"] = one.card_expired_date
-        car_info["remain_times"] = one.remain_times
-        car_info["iz_total_times"] = one.iz_total_times
-        car_info["rece_times"] = one.rece_times
-        car_info["free_time_second"] = one.free_time
-        car_info["free_distance_meter"] = one.free_distance
-        car_info["free_money_cent"] = one.free_money
-        car_info["promotion_tag"] = content.get("promotion_tag", "人气优选")
-        car_info["deductionType"] = one.deduction_type
-        car_info["effective_service_ids"] = content.get("effective_service_ids")
-        car_info["effective_service_names"] = content.get("effective_service_names")
+        if user_riding_card:
+            one = user_riding_card
+            car_info = {"id": one.id}
+            car_info["card_id"] = one.config_id
+            content = json.loads(one.content)
+            car_info["name"] = content["name"]
+            car_info["image_url"] = content["image_url"]
+            car_info["description_tag"] = content.get("description_tag", "限全国")
+            car_info["detail_info"] = content.get("detail_info", "") or str(
+                base64.b64encode("限制使用区域:全国\n限制使用天数:{}\n{}使用次数:{}次\n每次抵扣时长:{}分钟".format(
+                    content["valid_day"],
+                    "累计" if one.iz_total_times else "每日",
+                    content["available_times"], int(float(content["free_time_second"]))).encode("utf-8")),
+                "utf-8")
+            car_info["card_expired_date"] = one.card_expired_date
+            car_info["remain_times"] = one.remain_times
+            car_info["iz_total_times"] = one.iz_total_times
+            car_info["rece_times"] = one.rece_times
+            car_info["free_time_second"] = one.free_time
+            car_info["free_distance_meter"] = one.free_distance
+            car_info["free_money_cent"] = one.free_money
+            car_info["promotion_tag"] = content.get("promotion_tag", "人气优选")
+            car_info["deductionType"] = one.deduction_type
+            car_info["effective_service_ids"] = content.get("effective_service_ids")
+            car_info["effective_service_names"] = content.get("effective_service_names")
+        else:
+            car_info = {}
 
         data = {
             "user_wallet": user_wallet,
@@ -154,30 +157,33 @@ class BusUserAccount(MBHandler):
         user_free_order = yield mb_async(UserFreeOrderService().query_one)(args)
         user_discount = yield mb_async(UserDiscountService().query_one)(args)
 
-        one = user_riding_card
-        car_info = {"id": one.id}
-        car_info["card_id"] = one.config_id
-        content = json.loads(one.content)
-        car_info["name"] = content["name"]
-        car_info["image_url"] = content["image_url"]
-        car_info["description_tag"] = content.get("description_tag", "限全国")
-        car_info["detail_info"] = content.get("detail_info", "") or str(
-            base64.b64encode("限制使用区域:全国\n限制使用天数:{}\n{}使用次数:{}次\n每次抵扣时长:{}分钟".format(
-                content["valid_day"],
-                "累计" if one.iz_total_times else "每日",
-                content["available_times"], int(float(content["free_time_second"]))).encode("utf-8")),
-            "utf-8")
-        car_info["card_expired_date"] = one.card_expired_date
-        car_info["remain_times"] = one.remain_times
-        car_info["iz_total_times"] = one.iz_total_times
-        car_info["rece_times"] = one.rece_times
-        car_info["free_time_second"] = one.free_time
-        car_info["free_distance_meter"] = one.free_distance
-        car_info["free_money_cent"] = one.free_money
-        car_info["promotion_tag"] = content.get("promotion_tag", "人气优选")
-        car_info["deductionType"] = one.deduction_type
-        car_info["effective_service_ids"] = content.get("effective_service_ids")
-        car_info["effective_service_names"] = content.get("effective_service_names")
+        if user_riding_card:
+            one = user_riding_card
+            car_info = {"id": one.id}
+            car_info["card_id"] = one.config_id
+            content = json.loads(one.content)
+            car_info["name"] = content["name"]
+            car_info["image_url"] = content["image_url"]
+            car_info["description_tag"] = content.get("description_tag", "限全国")
+            car_info["detail_info"] = content.get("detail_info", "") or str(
+                base64.b64encode("限制使用区域:全国\n限制使用天数:{}\n{}使用次数:{}次\n每次抵扣时长:{}分钟".format(
+                    content["valid_day"],
+                    "累计" if one.iz_total_times else "每日",
+                    content["available_times"], int(float(content["free_time_second"]))).encode("utf-8")),
+                "utf-8")
+            car_info["card_expired_date"] = one.card_expired_date
+            car_info["remain_times"] = one.remain_times
+            car_info["iz_total_times"] = one.iz_total_times
+            car_info["rece_times"] = one.rece_times
+            car_info["free_time_second"] = one.free_time
+            car_info["free_distance_meter"] = one.free_distance
+            car_info["free_money_cent"] = one.free_money
+            car_info["promotion_tag"] = content.get("promotion_tag", "人气优选")
+            car_info["deductionType"] = one.deduction_type
+            car_info["effective_service_ids"] = content.get("effective_service_ids")
+            car_info["effective_service_names"] = content.get("effective_service_names")
+        else:
+            car_info = {}
 
         data = {
             "user_wallet": user_wallet,
@@ -239,30 +245,34 @@ class ClientUserAccount(MBHandler):
         user_free_order = yield mb_async(UserFreeOrderService().query_one)(args)
         user_discount = yield mb_async(UserDiscountService().query_one)(args)
 
-        one = user_riding_card
-        car_info = {"id": one.id}
-        car_info["card_id"] = one.config_id
-        content = json.loads(one.content)
-        car_info["name"] = content["name"]
-        car_info["image_url"] = content["image_url"]
-        car_info["description_tag"] = content.get("description_tag", "限全国")
-        car_info["detail_info"] = content.get("detail_info", "") or str(
-            base64.b64encode("限制使用区域:全国\n限制使用天数:{}\n{}使用次数:{}次\n每次抵扣时长:{}分钟".format(
-                content["valid_day"],
-                "累计" if one.iz_total_times else "每日",
-                content["available_times"], int(float(content["free_time_second"]))).encode("utf-8")),
-            "utf-8")
-        car_info["card_expired_date"] = one.card_expired_date
-        car_info["remain_times"] = one.remain_times
-        car_info["iz_total_times"] = one.iz_total_times
-        car_info["rece_times"] = one.rece_times
-        car_info["free_time_second"] = one.free_time
-        car_info["free_distance_meter"] = one.free_distance
-        car_info["free_money_cent"] = one.free_money
-        car_info["promotion_tag"] = content.get("promotion_tag", "人气优选")
-        car_info["deductionType"] = one.deduction_type
-        car_info["effective_service_ids"] = content.get("effective_service_ids")
-        car_info["effective_service_names"] = content.get("effective_service_names")
+        if user_riding_card:
+            one = user_riding_card
+            car_info = {"id": one.id}
+            car_info["card_id"] = one.config_id
+            content = json.loads(one.content)
+            car_info["name"] = content["name"]
+            car_info["image_url"] = content["image_url"]
+            car_info["description_tag"] = content.get("description_tag", "限全国")
+            car_info["detail_info"] = content.get("detail_info", "") or str(
+                base64.b64encode("限制使用区域:全国\n限制使用天数:{}\n{}使用次数:{}次\n每次抵扣时长:{}分钟".format(
+                    content["valid_day"],
+                    "累计" if one.iz_total_times else "每日",
+                    content["available_times"], int(float(content["free_time_second"]))).encode("utf-8")),
+                "utf-8")
+            car_info["card_expired_date"] = one.card_expired_date
+            car_info["remain_times"] = one.remain_times
+            car_info["iz_total_times"] = one.iz_total_times
+            car_info["rece_times"] = one.rece_times
+            car_info["free_time_second"] = one.free_time
+            car_info["free_distance_meter"] = one.free_distance
+            car_info["free_money_cent"] = one.free_money
+            car_info["promotion_tag"] = content.get("promotion_tag", "人气优选")
+            car_info["deductionType"] = one.deduction_type
+            car_info["effective_service_ids"] = content.get("effective_service_ids")
+            car_info["effective_service_names"] = content.get("effective_service_names")
+        else:
+            car_info = {}
+
 
         data = {
             "user_wallet": user_wallet,
