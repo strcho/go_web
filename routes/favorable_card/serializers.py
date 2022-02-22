@@ -59,8 +59,6 @@ class SendFavorableCardDeserializer(ReqBaseDeserializer):
     """
 
     pin = fields.String(required=True, description="用户标识")
-    card_time = fields.Integer(required=True, description="优惠卡天数")
-    service_id = fields.Integer(required=True, description="服务区id")
     config_id = fields.Integer(required=True, description="优惠卡配置id")
 
     type = fields.Integer(load_default=None, description="""支付类型 
