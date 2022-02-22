@@ -196,7 +196,7 @@ class WalletService(MBService):
             elif args['change_present']:
                 user_wallet_dict['present'] += args['change_present']
                 user_wallet_dict['balance'] += args['change_present']
-                args["type"] = TransactionType.PLATFORM_BOUGHT.value if args['change_recharge'] > 0 else TransactionType.PLATFORM_REFUND.value
+                args["type"] = TransactionType.PLATFORM_BOUGHT.value if args['change_present'] > 0 else TransactionType.PLATFORM_REFUND.value
             else:
                 MbException("参数错误")
 
