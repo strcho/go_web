@@ -227,6 +227,7 @@ class WalletService(MBService):
                 "recharge_amount": abs(args.get("change_recharge", 0)),
                 "present_amount": abs(args.get("change_present", 0)),
             }
+            wallet_dict = self.remove_empty_param(wallet_dict)
             logger.info(f"wallet_record send is {wallet_dict}")
             KafkaClient().visual_send(wallet_dict, PayKey.WALLET.value)
 
@@ -294,6 +295,7 @@ class WalletService(MBService):
                 "recharge_amount": abs(args.get("change_recharge", 0)),
                 "present_amount": abs(args.get("change_present", 0)),
             }
+            wallet_dict = self.remove_empty_param(wallet_dict)
             logger.info(f"wallet_record send is {wallet_dict}")
             KafkaClient().visual_send(wallet_dict, PayKey.WALLET.value)
 

@@ -154,6 +154,7 @@ class FavorableCardUserService(MBService):
                 "name": name,
                 "duration": card_time,
             }
+            favorable_card_dict = self.remove_empty_param(favorable_card_dict)
             logger.info(f"favorable_card_record send is {favorable_card_dict}")
             KafkaClient().visual_send(favorable_card_dict, PayKey.FAVORABLE_CARD.value)
             res = True

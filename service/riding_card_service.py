@@ -345,7 +345,8 @@ class RidingCardService(MBService):
                 "name": name,
                 "duration": valid_day,
             }
-            logger.info(f"wallet_record send is {riding_card_dict}")
+            riding_card_dict = self.remove_empty_param(riding_card_dict)
+            logger.info(f"riding_card_record send is {riding_card_dict}")
             KafkaClient().visual_send(riding_card_dict, PayKey.RIDING_CARD.value)
 
         except Exception as ex:
