@@ -159,7 +159,7 @@ class WalletService(MBService):
                 "pin_name": pin_name,
                 "service_id": service_id,
                 "type": args.get("type") or TransactionType.BOUGHT.value,
-                "channel": args.get("channel") or ChannelType.ALIPAY_LITE.value,
+                "channel": args.get("channel") if args.get("channel") is not None else ChannelType.ALIPAY_LITE.value,
                 "sys_trade_no": args.get("sys_trade_no"),
                 "merchant_trade_no": args.get("merchant_trade_no"),
                 "amount": args.get("change_recharge", 0) + args.get("change_present", 0),
@@ -167,6 +167,7 @@ class WalletService(MBService):
                 "recharge_amount": abs(args.get("change_recharge", 0)),
                 "present_amount": abs(args.get("change_present", 0)),
             }
+
             wallet_dict_msg = self.remove_empty_param(wallet_dict)
             logger.info(f"wallet_record send is {wallet_dict_msg}")
             KafkaClient().visual_send(wallet_dict_msg, PayKey.WALLET.value)

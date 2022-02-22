@@ -58,7 +58,7 @@ if __name__ == "__main__":
     def check_tenant_type(cfg, TenantType, app, split_info):
 
         while True:
-            if len(cfg.get("TenantType"), []) > len(TenantType):
+            if len(cfg.get("TenantType", [])) > len(TenantType):
                 TenantType = cfg.get("TenantType", [])
                 split_info["tenant_type"] = TenantType
                 dao_session.initialize(app, split_info)
