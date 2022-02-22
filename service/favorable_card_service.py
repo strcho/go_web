@@ -107,6 +107,14 @@ class FavorableCardUserService(MBService):
         try:
             config_id = args.get("config_id")
             commandContext = args.get("commandContext")
+
+            user_info = UserApi.get_user_info(pin=args["pin"], command_context=commandContext)
+            service_id = user_info.get('serviceId')
+            pin_phone = user_info.get("phone")
+            pin_name = user_info.get("authName")
+
+            args["service_id"] = service_id
+
             user_card: TFavorableCard = self.query_one(args)
             if not user_card:
                 res = self.insert_one(args)
@@ -124,11 +132,6 @@ class FavorableCardUserService(MBService):
                                                                     command_context=commandContext)
                 user_card.content = json.dumps(card_content)
                 dao_session.session.tenant_db().commit()
-
-            user_info = UserApi.get_user_info(pin=args["pin"], command_context=commandContext)
-            service_id = user_info.get('serviceId')
-            pin_phone = user_info.get("phone")
-            pin_name = user_info.get("authName")
 
             favorable_card_info = MarketingApi.get_favorable_card_info(config_id=config_id, command_context=commandContext)
             name = favorable_card_info.get("card_name")
