@@ -131,7 +131,8 @@ class UserDepositService(WalletService):
                 "amount": deposited_amount,
                 "paid_at": args.get("paid_at") or int(time.time()),
             }
-            logger.info(f"wallet_record send is {deposit_dict}")
+            deposit_dict = self.remove_empty_param(deposit_dict)
+            logger.info(f"deposit_dict_record send is {deposit_dict}")
             KafkaClient().visual_send(deposit_dict, PayKey.DEPOSIT.value)
 
         return {"suc": True, "data": "更新成功"}
@@ -203,7 +204,8 @@ class UserDepositService(WalletService):
                 "amount": deposited_amount,
                 "paid_at": args.get("paid_at") or int(time.time()),
             }
-            logger.info(f"wallet_record send is {deposit_dict}")
+            deposit_dict = self.remove_empty_param(deposit_dict)
+            logger.info(f"deposit_dict_record send is {deposit_dict}")
             KafkaClient().visual_send(deposit_dict, PayKey.DEPOSIT.value)
 
         return {"suc": True, "data": "更新成功"}

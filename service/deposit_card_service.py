@@ -150,6 +150,7 @@ class DepositCardService(MBService):
                 "name": name,
                 "duration": card_time,
             }
+            deposit_card_dict = self.remove_empty_param(deposit_card_dict)
             logger.info(f"deposit_card_record send is {deposit_card_dict}")
             KafkaClient().visual_send(deposit_card_dict, PayKey.DEPOSIT_CARD.value)
 
