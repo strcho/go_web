@@ -162,7 +162,7 @@ class WalletService(MBService):
                 "channel": args.get("channel") if args.get("channel") is not None else ChannelType.ALIPAY_LITE.value,
                 "sys_trade_no": args.get("sys_trade_no"),
                 "merchant_trade_no": args.get("merchant_trade_no"),
-                "amount": args.get("change_recharge", 0) + args.get("change_present", 0),
+                "amount": abs(args.get("change_recharge", 0) + args.get("change_present", 0)),
                 "paid_at": args.get("paid_at") or int(time.time()),
                 "recharge_amount": abs(args.get("change_recharge", 0)),
                 "present_amount": abs(args.get("change_present", 0)),
@@ -189,11 +189,15 @@ class WalletService(MBService):
             user_wallet_dict = self.get_user_wallet(pin=pin, args=args)
             args["channel"] = ChannelType.PLATFORM.value
             if args['change_recharge']:
+                if -1000000000 >= args['change_recharge'] >= 1000000000:
+                    MbException("参数越界")
                 user_wallet_dict['balance'] += args['change_recharge']
                 user_wallet_dict['recharge'] += args['change_recharge']
                 args["type"] = TransactionType.PLATFORM_BOUGHT.value if args['change_recharge'] > 0 else TransactionType.PLATFORM_REFUND.value
 
             elif args['change_present']:
+                if -1000000000 >= args['change_recharge'] >= 1000000000:
+                    MbException("参数越界")
                 user_wallet_dict['present'] += args['change_present']
                 user_wallet_dict['balance'] += args['change_present']
                 args["type"] = TransactionType.PLATFORM_BOUGHT.value if args['change_present'] > 0 else TransactionType.PLATFORM_REFUND.value
@@ -222,7 +226,7 @@ class WalletService(MBService):
                 "channel": args.get("channel") or ChannelType.PLATFORM.value,
                 "sys_trade_no": args.get("sys_trade_no"),
                 "merchant_trade_no": args.get("merchant_trade_no"),
-                "amount": args.get("change_recharge", 0) + args.get("change_present", 0),
+                "amount": abs(args.get("change_recharge", 0) + args.get("change_present", 0)),
                 "paid_at": args.get("paid_at") or int(time.time()),
                 "recharge_amount": abs(args.get("change_recharge", 0)),
                 "present_amount": abs(args.get("change_present", 0)),
@@ -290,7 +294,7 @@ class WalletService(MBService):
                 "channel": args.get("channel") or ChannelType.PLATFORM.value,
                 "sys_trade_no": args.get("sys_trade_no"),
                 "merchant_trade_no": args.get("merchant_trade_no"),
-                "amount": args.get("change_recharge", 0) + args.get("change_present", 0),
+                "amount": abs(args.get("change_recharge", 0) + args.get("change_present", 0)),
                 "paid_at": args.get("paid_at") or int(time.time()),
                 "recharge_amount": abs(args.get("change_recharge", 0)),
                 "present_amount": abs(args.get("change_present", 0)),
