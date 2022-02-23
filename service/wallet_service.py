@@ -241,6 +241,9 @@ class WalletService(MBService):
 
             return True
 
+        except MbException as mb:
+            raise mb
+
         except Exception as e:
             dao_session.session.tenant_db().rollback()
             logger.error("update user wallet is error: {}".format(e))
