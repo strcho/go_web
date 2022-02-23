@@ -197,7 +197,7 @@ class WalletService(MBService):
                 # args["type"] = TransactionType.PLATFORM_BOUGHT.value if args['change_recharge'] > 0 else TransactionType.PLATFORM_REFUND.value
 
             elif args['change_present']:
-                if -10000000 < args['change_recharge'] < 10000000:
+                if -10000000 < args['change_present'] < 10000000:
                     user_wallet_dict['present'] += args['change_present']
                     user_wallet_dict['balance'] += args['change_present']
                     args["type"] = TransactionType.PLATFORM_BOUGHT.value if args['change_present'] > 0 else TransactionType.PLATFORM_REFUND.value
