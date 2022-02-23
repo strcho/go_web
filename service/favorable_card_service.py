@@ -87,7 +87,7 @@ class FavorableCardUserService(MBService):
             "service_id": args['service_id'],
             "content": json.dumps(card_content),
             "begin_time": datetime.now(),
-            "end_time": datetime.now() + timedelta(days=args["card_time"]),
+            "end_time": datetime.now() + timedelta(days=card_content.get("card_time")),
         })
         try:
             user_card = TFavorableCard(**param)
@@ -115,16 +115,22 @@ class FavorableCardUserService(MBService):
 
             args["service_id"] = service_id
 
+            favorable_card_info = MarketingApi.get_favorable_card_info(config_id=config_id,
+                                                                       command_context=commandContext)
+            name = favorable_card_info.get("card_name")
+            amount = favorable_card_info.get("present_price")
+            card_time = favorable_card_info.get("card_time")
+
             user_card: TFavorableCard = self.query_one(args)
             if not user_card:
                 res = self.insert_one(args)
             else:
                 # 用户优惠卡已过期，则从当前时间开始计算过期时间
                 if user_card.end_time < datetime.now():
-                    user_card.end_time = datetime.now() + timedelta(days=args["card_time"])
+                    user_card.end_time = datetime.now() + timedelta(days=card_time)
                 # 用户优惠卡未过期，累计优惠卡使用时间
                 else:
-                    user_card.end_time += timedelta(days=args["card_time"])
+                    user_card.end_time += timedelta(days=card_time)
 
                 # 更新卡
                 user_card.config_id = config_id
@@ -133,10 +139,6 @@ class FavorableCardUserService(MBService):
                 user_card.content = json.dumps(card_content)
                 dao_session.session.tenant_db().commit()
 
-            favorable_card_info = MarketingApi.get_favorable_card_info(config_id=config_id, command_context=commandContext)
-            name = favorable_card_info.get("card_name")
-            amount = favorable_card_info.get("present_price")
-            card_time = favorable_card_info.get("card_time")
             favorable_card_dict = {
                 "tenant_id": commandContext.get('tenantId'),
                 "created_pin": commandContext.get("pin"),
@@ -162,6 +164,7 @@ class FavorableCardUserService(MBService):
             KafkaClient().visual_send(favorable_card_dict, PayKey.FAVORABLE_CARD.value)
             res = True
         except Exception as ex:
+            print(ex)
             dao_session.session.tenant_db().rollback()
             logger.error("send user favorable card is error: {}".format(ex))
             logger.exception(ex)
