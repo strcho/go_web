@@ -197,13 +197,14 @@ class WalletService(MBService):
                 # args["type"] = TransactionType.PLATFORM_BOUGHT.value if args['change_recharge'] > 0 else TransactionType.PLATFORM_REFUND.value
 
             elif args['change_present']:
-                if -1000000 > args['change_recharge'] > 1000000:
-                    MbException("参数越界")
-                user_wallet_dict['present'] += args['change_present']
-                user_wallet_dict['balance'] += args['change_present']
-                args["type"] = TransactionType.PLATFORM_BOUGHT.value if args['change_present'] > 0 else TransactionType.PLATFORM_REFUND.value
+                if -1000000 < args['change_recharge'] < 1000000:
+                    user_wallet_dict['present'] += args['change_present']
+                    user_wallet_dict['balance'] += args['change_present']
+                    args["type"] = TransactionType.PLATFORM_BOUGHT.value if args['change_present'] > 0 else TransactionType.PLATFORM_REFUND.value
+                else:
+                    raise MbException("参数越界")
             else:
-                MbException("参数错误")
+                raise MbException("参数错误")
 
             commandContext = args.get("commandContext")
             self.update_one(pin=pin, tenant_id=commandContext["tenantId"], params=user_wallet_dict)
