@@ -204,7 +204,7 @@ class WalletService(MBService):
                 else:
                     raise MbException("参数越界")
             else:
-                MbException("参数错误")
+                raise MbException("参数错误")
 
             commandContext = args.get("commandContext")
             self.update_one(pin=pin, tenant_id=commandContext["tenantId"], params=user_wallet_dict)
@@ -240,6 +240,9 @@ class WalletService(MBService):
             KafkaClient().visual_send(wallet_dict, PayKey.WALLET.value)
 
             return True
+
+        except MbException as mb:
+            raise mb
 
         except Exception as e:
             dao_session.session.tenant_db().rollback()
