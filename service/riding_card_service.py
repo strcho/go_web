@@ -355,7 +355,7 @@ class RidingCardService(MBService):
         return "添加骑行卡成功"
 
     def add_count(self, args: dict):
-        card_id = args['dict']
+        card_id = args['card_id']
         tenant_id = args['commandContext']['tenantId']
         one: TRidingCard = dao_session.session.tenant_db().query(TRidingCard).filter(
             TRidingCard.id == card_id,
