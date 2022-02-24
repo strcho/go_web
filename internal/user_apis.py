@@ -39,6 +39,6 @@ class UserApi:
         user_res = internal_get_userinfo_by_id(param)
         user_res_data = json.loads(user_res)
         if not user_res_data.get("success"):
-            raise MbException("用户服务调用失败")
+            raise MbException(f"用户服务调用失败: {user_res_data.get('msg')}")
 
         return user_res_data.get('data')

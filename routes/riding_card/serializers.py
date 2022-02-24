@@ -37,6 +37,14 @@ class EditRidingCardDeserializer(ReqBaseDeserializer):
     remain_times = fields.Integer(required=False, description='今日剩余免费次数')
 
 
+class BusGetRidingCardDeserializer(ContextDeserializer):
+    """
+    获取用户骑行卡
+    """
+
+    pin = fields.String(required=True, description="用户标识")
+
+
 class BusEditRidingCardDeserializer(ContextDeserializer):
     """
     编辑用户骑行卡

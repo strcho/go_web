@@ -6,6 +6,7 @@ from routes.riding_card.view import (
         EditRidingCardHandle,
         BusEditRidingCardHandle,
         ClientGetRidingCardHandle,
+        BusGetRidingCardHandle,
 )
 
 # /ebike_account/riding_card
@@ -17,6 +18,7 @@ urls = [
         (r'/internal/add_count', AddCountHandler),
 
         # B端
+        (r'/business/get_riding_card', BusGetRidingCardHandle),
         (r"/business/edit_riding_card", BusEditRidingCardHandle),
 
         # C端
