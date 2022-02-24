@@ -37,7 +37,7 @@ class MarketingApi:
         card_res = riding_card_info(param)
         card_res_data = json.loads(card_res)
         if not card_res_data.get("success"):
-            raise MbException("营销活动服务调用失败")
+            raise MbException(f"营销活动服务调用失败: {card_res_data.get('msg')}")
 
         return card_res_data.get("data")
 
@@ -47,7 +47,7 @@ class MarketingApi:
         card_res = favorable_card_info(param)
         card_res_data = json.loads(card_res)
         if not card_res_data.get("success"):
-            raise MbException("营销活动服务调用失败")
+            raise MbException(f"营销活动服务调用失败: {card_res_data.get('msg')}")
 
         return card_res_data.get("data")
 
@@ -57,6 +57,6 @@ class MarketingApi:
         card_res = deposit_card_info(param)
         card_res_data = json.loads(card_res)
         if not card_res_data.get("success"):
-            raise MbException("营销活动服务调用失败")
+            raise MbException(f"营销活动服务调用失败: {card_res_data.get('msg')}")
 
         return card_res_data.get("data")
