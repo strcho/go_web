@@ -65,8 +65,6 @@ if __name__ == "__main__":
                 new_month_type = cfg.get("MonthType", [])
                 new_tenant_type = cfg.get("TenantType", [])
 
-                print(new_year_type, new_month_type, new_tenant_type)
-
                 year_add = set(new_year_type) - set(split_info.get("year_type"))
                 if year_add:
                     is_changed = True
@@ -85,7 +83,6 @@ if __name__ == "__main__":
                 if is_changed:
                     dao_session.initialize(app, split_info)
             except Exception as e:
-                print(e)
                 pass
             finally:
                 is_changed = False
