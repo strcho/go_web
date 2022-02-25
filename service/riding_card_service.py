@@ -171,8 +171,9 @@ class RidingCardService(MBService):
             TRidingCard.created_at.desc()).all()
         for one in result:
             one: TRidingCard = one
-            car_info = {"card_id": one.id}
+            car_info = {"card_id": one.config_id}
             content = json.loads(one.content)
+            car_info["id"] = one.id
             car_info["name"] = content["name"]
             car_info["image_url"] = content["image_url"]
             car_info["description_tag"] = content.get("description_tag", "限全国")
