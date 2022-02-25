@@ -41,7 +41,7 @@ if __name__ == "__main__":
 
     YearType = ["2020", "2021", "2022"]
     MonthType = ["2021_11", "2021_12", "2022_01"]
-    TenantType = ["3"]
+    TenantType = ["1"]
     from model.all_model import *
 
     split_info = {
