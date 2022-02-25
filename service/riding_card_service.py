@@ -342,6 +342,7 @@ class RidingCardService(MBService):
                 "amount": current_cost,
                 "paid_at": args.get("paid_at") or int(time.time()),
 
+                "config_id": config_id,
                 "name": name,
                 "duration": valid_day,
             }
@@ -482,9 +483,10 @@ class RidingCardService(MBService):
                 "channel": args.get("channel"),
                 "sys_trade_no": args.get("sys_trade_no"),
                 "merchant_trade_no": args.get("merchant_trade_no"),
-                "amount": current_cost,
+                "amount": args.get("amount") if args.get("amount") is not None else current_cost,
                 "paid_at": args.get("paid_at") or int(time.time()),
 
+                "config_id": config_id,
                 "name": name,
                 "duration": valid_day,
             }

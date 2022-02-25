@@ -155,7 +155,7 @@ class FavorableCardUserService(MBService):
                 "merchant_trade_no": args.get("merchant_trade_no"),
                 "amount": amount,
                 "paid_at": args.get("paid_at") or int(time.time()),
-
+                "config_id": args.get("config_id"),
                 "name": name,
                 "duration": card_time,
             }
@@ -312,9 +312,9 @@ class FavorableCardUserService(MBService):
                 "channel": args.get("channel"),
                 "sys_trade_no": args.get("sys_trade_no"),
                 "merchant_trade_no": args.get("merchant_trade_no"),
-                "amount": amount,
+                "amount": args.get("amount") if args.get("amount") is not None else amount,
                 "paid_at": args.get("paid_at") or int(time.time()),
-
+                "config_id": config_id,
                 "name": name,
                 "duration": card_time,
             }
