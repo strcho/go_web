@@ -257,6 +257,10 @@ class WalletService(MBService):
 
         try:
             user_wallet = self.get_user_wallet(pin, args)
+
+            old_recharge_amount = user_wallet["recharge"]
+            old_present_amount = user_wallet["present"]
+
             balance = user_wallet['balance'] - deduction_amount
             # 优先扣减充值余额
             if deduction_amount > user_wallet['recharge']:
@@ -280,6 +284,9 @@ class WalletService(MBService):
 
             self.update_one(pin=pin, tenant_id=tenant_id, params=params)
 
+            recharge_amount = old_recharge_amount - recharge
+            present_amount = old_present_amount - present
+
             commandContext = args.get("commandContext")
 
             user_info = UserApi.get_user_info(pin=pin, command_context=commandContext)
@@ -301,10 +308,10 @@ class WalletService(MBService):
                 "channel": args.get("channel") or ChannelType.PLATFORM.value,
                 "sys_trade_no": args.get("sys_trade_no"),
                 "merchant_trade_no": args.get("merchant_trade_no"),
-                "amount": abs(args.get("change_recharge", 0) + args.get("change_present", 0)),
+                "amount": deduction_amount,
                 "paid_at": args.get("paid_at") or int(time.time()),
-                "recharge_amount": abs(args.get("change_recharge", 0)),
-                "present_amount": abs(args.get("change_present", 0)),
+                "recharge_amount": recharge_amount,
+                "present_amount": present_amount,
             }
             wallet_dict = self.remove_empty_param(wallet_dict)
             logger.info(f"wallet_record send is {wallet_dict}")
