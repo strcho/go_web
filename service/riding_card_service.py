@@ -448,3 +448,52 @@ class RidingCardService(MBService):
                 if str(service_id) in card.effective_service_ids.split(";"):
                     return card
         return card
+
+    def refund_riding_card(self, args):
+        """
+        骑行卡退款
+        """
+        pin = args['pin']
+        config_id = args['config_id']
+        commandContext = args.get("commandContext")
+
+        user_info = UserApi.get_user_info(pin=pin, command_context=commandContext)
+        service_id = user_info.get('serviceId')
+        pin_phone = user_info.get("phone")
+        pin_name = user_info.get("authName")
+
+        card_info = MarketingApi.get_riding_card_info(config_id=config_id, command_context=commandContext)
+        name = card_info.get("name")
+        valid_day = card_info.get("valid_day")
+        current_cost = card_info.get('current_cost')
+
+        try:
+            riding_card_dict = {
+                "tenant_id": commandContext.get('tenantId'),
+                "created_pin": commandContext.get("pin"),
+                "version": commandContext.get("version", ""),
+                "updated_pin": commandContext.get('pin'),
+
+                "pin_id": args.get("pin"),
+                "pin_phone": pin_phone,
+                "pin_name": pin_name,
+                "service_id": service_id,
+                "type": args.get("type"),
+                "channel": args.get("channel"),
+                "sys_trade_no": args.get("sys_trade_no"),
+                "merchant_trade_no": args.get("merchant_trade_no"),
+                "amount": current_cost,
+                "paid_at": args.get("paid_at") or int(time.time()),
+
+                "name": name,
+                "duration": valid_day,
+            }
+            riding_card_dict = self.remove_empty_param(riding_card_dict)
+            logger.info(f"riding_card_record send is {riding_card_dict}")
+            KafkaClient().visual_send(riding_card_dict, PayKey.RIDING_CARD.value)
+        except Exception:
+            dao_session.session.tenant_db().rollback()
+            logger.error("骑行卡退款失败")
+            return False
+
+        return True

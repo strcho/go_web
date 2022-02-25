@@ -279,3 +279,51 @@ class FavorableCardUserService(MBService):
         card_info = MarketingApi.get_favorable_card_info(config_id=config_id, command_context=args.get("commandContext"))
         return card_info
 
+
+    def refund_favorable_card(self, args):
+        """
+        优惠卡退款
+        """
+        config_id = args.get("config_id")
+        commandContext = args.get("commandContext")
+
+        user_info = UserApi.get_user_info(pin=args["pin"], command_context=commandContext)
+        service_id = user_info.get('serviceId')
+        pin_phone = user_info.get("phone")
+        pin_name = user_info.get("authName")
+
+        favorable_card_info = MarketingApi.get_favorable_card_info(config_id=config_id,
+                                                                   command_context=commandContext)
+        name = favorable_card_info.get("card_name")
+        amount = favorable_card_info.get("present_price")
+        card_time = favorable_card_info.get("card_time")
+        try:
+            favorable_card_dict = {
+                "tenant_id": commandContext.get('tenantId'),
+                "created_pin": commandContext.get("pin"),
+                "version": commandContext.get("version", ""),
+                "updated_pin": commandContext.get('pin'),
+
+                "pin_id": args.get("pin"),
+                "pin_phone": pin_phone,
+                "pin_name": pin_name,
+                "service_id": service_id,
+                "type": args.get("type"),
+                "channel": args.get("channel"),
+                "sys_trade_no": args.get("sys_trade_no"),
+                "merchant_trade_no": args.get("merchant_trade_no"),
+                "amount": amount,
+                "paid_at": args.get("paid_at") or int(time.time()),
+
+                "name": name,
+                "duration": card_time,
+            }
+            favorable_card_dict = self.remove_empty_param(favorable_card_dict)
+            logger.info(f"favorable_card_record send is {favorable_card_dict}")
+            KafkaClient().visual_send(favorable_card_dict, PayKey.FAVORABLE_CARD.value)
+
+        except Exception as e:
+            dao_session.session.tenant_db().rollback()
+            logger.error("show favorable card days is error: {}".format(e))
+            logger.exception(e)
+        return True

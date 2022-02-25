@@ -16,6 +16,7 @@ from routes.favorable_card.serializers import (
     ClientGetFavorableDeserializer,
     ClientUserFavorableCardSerializer,
     ClientUserFavorableCardListSerializer,
+    RefundFavorableCardDeserializer,
 )
 from service.favorable_card_service import FavorableCardUserService
 
@@ -198,6 +199,50 @@ class ModifyUserFavorableCardHandle(MBHandler):
         """
 
         response = yield mb_async(FavorableCardUserService().modify_time)(args)
+
+        self.success(response)
+
+
+class RefundFavorableCardHandle(MBHandler):
+    """
+    用户优惠卡退款
+    """
+
+    @coroutine
+    @use_args_query(RefundFavorableCardDeserializer)
+    def post(self, args):
+        """
+        用户优惠卡退款
+        ---
+        tags: [优惠卡]
+        summary: 用户优惠卡退款
+        description: 用户优惠卡退款
+
+        parameters:
+          - in: body
+            schema:
+                RefundFavorableCardDeserializer
+        responses:
+            200:
+                schema:
+                    type: object
+                    required:
+                      - success
+                      - code
+                      - msg
+                      - data
+                    properties:
+                        success:
+                            type: boolean
+                        code:
+                            type: str
+                        msg:
+                            type: str
+                        data:
+                            type: boolean
+        """
+
+        response = yield mb_async(FavorableCardUserService().refund_favorable_card)(args)
 
         self.success(response)
 

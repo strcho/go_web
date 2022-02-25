@@ -12,6 +12,7 @@ from routes.deposit_card.serializers import (
     BusModifyDepositCardDeserializer,
     DepositCardToKafkaSerializer,
     ClientGetDepositCardDeserializer,
+    RefundDepositCardDeserializer,
 )
 from service.deposit_card_service import DepositCardService
 
@@ -192,6 +193,50 @@ class ModifyUserDepositCardHandle(MBHandler):
         """
 
         response = yield mb_async(DepositCardService().modify_deposit_card_time)(args)
+
+        self.success(bool(response))
+
+
+class RefundDepositCardHandle(MBHandler):
+    """
+    用户押金卡退款
+    """
+
+    @coroutine
+    @use_args_query(RefundDepositCardDeserializer)
+    def post(self, args):
+        """
+        用户押金卡退款
+        ---
+        tags: [押金卡]
+        summary: 用户押金卡退款
+        description: 用户押金卡退款
+
+        parameters:
+          - in: body
+            schema:
+                RefundDepositCardDeserializer
+        responses:
+            200:
+                schema:
+                    type: object
+                    required:
+                      - success
+                      - code
+                      - msg
+                      - data
+                    properties:
+                        success:
+                            type: boolean
+                        code:
+                            type: str
+                        msg:
+                            type: str
+                        data:
+                            type: boolean
+        """
+
+        response = yield mb_async(DepositCardService().refund_deposit_card)(args)
 
         self.success(bool(response))
 

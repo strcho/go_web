@@ -15,6 +15,7 @@ from routes.riding_card.serializers import (
     RidingCardInfoSerializer,
     ClientGetRidingCardDeserializer,
     BusGetRidingCardDeserializer,
+    RefundRidingCardDeserializer,
 )
 from service.riding_card_service import RidingCardService
 
@@ -234,6 +235,49 @@ class AddCountHandler(MBHandler):
                             type: str
         """
         response = yield mb_async(RidingCardService().add_count)(args)
+
+        self.success(response)
+
+
+class RefundRidingCardHandle(MBHandler):
+    """
+    骑行卡退款
+    """
+
+    @coroutine
+    @use_args_query(RefundRidingCardDeserializer)
+    def post(self, args: dict):
+        """
+        骑行卡退款
+        ---
+        tags: [骑行卡]
+        summary: 骑行卡退款
+        description: 骑行卡退款
+
+        parameters:
+          - in: body
+            schema:
+                RefundRidingCardDeserializer
+        responses:
+            200:
+                schema:
+                    type: object
+                    required:
+                      - success
+                      - code
+                      - msg
+                      - data
+                    properties:
+                        success:
+                            type: boolean
+                        code:
+                            type: str
+                        msg:
+                            type: str
+                        data:
+                            type: str
+        """
+        response = yield mb_async(RidingCardService().refund_riding_card)(args)
 
         self.success(response)
 
