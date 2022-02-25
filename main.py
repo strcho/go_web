@@ -39,10 +39,11 @@ if __name__ == "__main__":
     AppInit(loop, service_name='ebike-account', dataId=['ebike_account.json', 'ebike_mb.json'])
     application = tornado.httpserver.HTTPServer(app, xheaders=True)
 
-    YearType = ["2020", "2021", "2022"]
-    MonthType = ["2021_11", "2021_12", "2022_01"]
-    TenantType = ["1"]
     from model.all_model import *
+
+    YearType = []
+    MonthType = []
+    TenantType = []
 
     split_info = {
         "tenant_models": [TRidingCard, TDepositCard, TFavorableCard, TDiscountsUser, TFreeOrderUser, TUserWallet],
@@ -55,17 +56,43 @@ if __name__ == "__main__":
     }
     dao_session.initialize(app, split_info)
 
-    def check_tenant_type(cfg, TenantType, app, split_info):
+    def check_segmentation_type(app, split_info):
 
         while True:
-            if len(cfg.get("TenantType", [])) > len(TenantType):
-                TenantType = cfg.get("TenantType", [])
-                split_info["tenant_type"] = TenantType
-                dao_session.initialize(app, split_info)
+            try:
+                is_changed = False
+                new_year_type = cfg.get("YearType", [])
+                new_month_type = cfg.get("MonthType", [])
+                new_tenant_type = cfg.get("TenantType", [])
+
+                print(new_year_type, new_month_type, new_tenant_type)
+
+                year_add = set(new_year_type) - set(split_info.get("year_type"))
+                if year_add:
+                    is_changed = True
+                    split_info.get("year_type").extend(year_add)
+
+                month_add = set(new_month_type) - set(split_info.get("month_type"))
+                if month_add:
+                    is_changed = True
+                    split_info.get("month_type").extend(month_add)
+
+                tenant_add = set(new_tenant_type) - set(split_info.get("tenant_type"))
+                if tenant_add:
+                    is_changed = True
+                    split_info.get("tenant_type").extend(tenant_add)
+
+                if is_changed:
+                    dao_session.initialize(app, split_info)
+            except Exception as e:
+                print(e)
+                pass
+            finally:
+                is_changed = False
             time.sleep(5)
 
-    testset = threading.Thread(target=check_tenant_type, args=(cfg, TenantType, app, split_info))
-    testset.start()
+    t_check_segmentation = threading.Thread(target=check_segmentation_type, args=(app, split_info))
+    t_check_segmentation.start()
 
     app.listen(cfg['port'])
     logger.debug('listen to {} port,env: {}'.format(cfg['port'], cfg['is_test_env']))
