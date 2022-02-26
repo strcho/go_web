@@ -87,10 +87,10 @@ class SendDepositCardDeserializer(ReqBaseDeserializer):
     """
 
     pin = fields.String(required=True, description="用户标识")
-    duration = fields.Integer(required=True, description="押金卡时长")
+    # duration = fields.Integer(required=True, description="押金卡时长")
 
     config_id = fields.Integer(required=True, description='押金卡ID')
-    service_id = fields.Integer(required=True, description="服务区")
+    # service_id = fields.Integer(required=True, description="服务区")
     type = fields.Integer(load_default=None, description="""支付类型 
     1  # 充值（购买）
     2  # 退款 

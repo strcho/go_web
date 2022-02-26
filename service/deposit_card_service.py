@@ -105,7 +105,8 @@ class DepositCardService(MBService):
             card_service_id = deposit_card_info.get("service_id")
             amount = deposit_card_info.get("discount_money")
             card_time = deposit_card_info.get("card_duration_day")
-
+            args["service_id"] = card_service_id
+            args["duration"] = card_time
             deposit_card: TDepositCard = self.query_one(args)
             # 有卡则更新卡过期时间
             if not deposit_card:
