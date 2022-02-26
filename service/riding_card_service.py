@@ -5,6 +5,7 @@ from datetime import (
     datetime,
     timedelta,
 )
+from operator import and_
 
 from sqlalchemy import or_
 
@@ -221,13 +222,18 @@ class RidingCardService(MBService):
         ).update({"state": UserRidingCardState.EXPIRED.value})
 
         # 2.骑行卡次数重置, 如果上次使用时间不是今天的, 则把非次卡的, 时间和剩余次数重置到最多再计算
+        now = datetime.now()
+        zeroToday = now - timedelta(hours=now.hour, minutes=now.minute, seconds=now.second,
+                                    microseconds=now.microsecond)
+        lastToday = zeroToday + timedelta(hours=23, minutes=59, seconds=59)
         dao_session.session.tenant_db().query(
             TRidingCard
         ).filter(
             TRidingCard.pin == pin,
             TRidingCard.state == UserRidingCardState.USING.value,
             TRidingCard.iz_total_times == 0,
-            or_(TRidingCard.last_use_time < datetime.now(),
+            or_(and_(TRidingCard.last_use_time < zeroToday,
+                     TRidingCard.last_use_time > lastToday),
                 TRidingCard.last_use_time is None),
         ).update(
             {
@@ -417,13 +423,18 @@ class RidingCardService(MBService):
         ).update({"state": UserRidingCardState.EXPIRED.value})
 
         # 2.骑行卡次数重置, 如果上次使用时间不是今天的, 则把非次卡的, 时间和剩余次数重置到最多再计算
+        now = datetime.now()
+        zeroToday = now - timedelta(hours=now.hour, minutes=now.minute, seconds=now.second,
+                                    microseconds=now.microsecond)
+        lastToday = zeroToday + timedelta(hours=23, minutes=59, seconds=59)
         dao_session.session.tenant_db().query(
             TRidingCard
         ).filter(
             TRidingCard.pin == pin,
             TRidingCard.state == UserRidingCardState.USING.value,
             TRidingCard.iz_total_times == 0,
-            or_(TRidingCard.last_use_time < datetime.now().date(),
+            or_(and_(TRidingCard.last_use_time < zeroToday,
+                     TRidingCard.last_use_time > lastToday),
                 TRidingCard.last_use_time is None),
         ).update(
             {
