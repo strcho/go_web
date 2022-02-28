@@ -16,6 +16,7 @@ from routes.riding_card.serializers import (
     ClientGetRidingCardDeserializer,
     BusGetRidingCardDeserializer,
     RefundRidingCardDeserializer,
+    ClientRidingCardSerializer,
 )
 from service.riding_card_service import RidingCardService
 
@@ -318,14 +319,13 @@ class BusGetRidingCardHandle(MBHandler):
                         msg:
                             type: str
                         data:
-                            RidingCardSerializer
+                            ClientRidingCardSerializer
         """
         args['commandContext'] = self.get_context()
         data = yield mb_async(RidingCardService().user_card_info)(args)
-        response = RidingCardSerializer().dump(data)
+        response = ClientRidingCardSerializer().dump(data)
 
         self.success(response)
-
 
 
 class BusEditRidingCardHandle(MBHandler):
@@ -409,11 +409,11 @@ class ClientGetRidingCardHandle(MBHandler):
                         msg:
                             type: str
                         data:
-                            RidingCardSerializer
+                            ClientRidingCardSerializer
         """
 
         args['commandContext'] = self.get_context()
         data = yield mb_async(RidingCardService().user_card_info)(args)
-        response = RidingCardSerializer().dump(data)
+        response = ClientRidingCardSerializer().dump(data)
 
         self.success(response)

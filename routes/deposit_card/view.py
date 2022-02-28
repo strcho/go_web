@@ -333,7 +333,7 @@ class ClientGetUserDepositCardHandle(MBHandler):
 
         if data:
             data = {
-                "id": data.id,
+                "id": str(data.id),
                 "pin": data.pin,
                 "expired_date": data.expired_date.strftime("%Y-%m-%d %H:%M:%S"),
                 "content": json.loads(data.content) if data.content else {},

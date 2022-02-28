@@ -217,8 +217,8 @@ class BusUserAccount(MBHandler):
 
         if user_riding_card:
             one = user_riding_card
-            car_info = {"id": one.id}
-            car_info["card_id"] = one.config_id
+            car_info = {"id": str(one.id)}
+            car_info["card_id"] = str(one.config_id)
             content = json.loads(one.content)
             car_info["name"] = content["name"]
             car_info["image_url"] = content["image_url"]
@@ -245,7 +245,7 @@ class BusUserAccount(MBHandler):
 
         if user_deposit_card:
             user_deposit_card = {
-                "id": user_deposit_card.id,
+                "id": str(user_deposit_card.id),
                 "pin": user_deposit_card.pin,
                 "expired_date": user_deposit_card.expired_date.strftime("%Y-%m-%d %H:%M:%S"),
                 "content": json.loads(user_deposit_card.content) if user_deposit_card.content else {},
@@ -258,9 +258,9 @@ class BusUserAccount(MBHandler):
                 user_favorable_card = None
             else:
                 user_favorable_card = {
-                    "id": user_favorable_card.id,
+                    "id": str(user_favorable_card.id),
                     "pin": user_favorable_card.pin,
-                    "config_id": user_favorable_card.config_id,
+                    "config_id": str(user_favorable_card.config_id),
                     "service_id": user_favorable_card.service_id,
                     "begin_time": user_favorable_card.begin_time.strftime("%Y-%m-%d %H:%M:%S"),
                     "end_time": user_favorable_card.end_time.strftime("%Y-%m-%d %H:%M:%S"),
@@ -269,7 +269,7 @@ class BusUserAccount(MBHandler):
 
         if user_free_order:
             user_free_order = {
-                "id": user_free_order.id,
+                "id": str(user_free_order.id),
                 "pin": user_free_order.pin,
                 "free_second": user_free_order.free_second,
                 "free_num": user_free_order.free_num,
@@ -277,7 +277,7 @@ class BusUserAccount(MBHandler):
 
         if user_discount:
             user_discount = {
-                "id": user_discount.id,
+                "id": str(user_discount.id),
                 "pin": user_discount.pin,
                 "discount_rate": user_discount.discount_rate,
             }
@@ -354,8 +354,8 @@ class ClientUserAccount(MBHandler):
 
         if user_riding_card:
             one = user_riding_card
-            car_info = {"id": one.id}
-            car_info["card_id"] = one.config_id
+            car_info = {"id": str(one.id)}
+            car_info["card_id"] = str(one.config_id)
             content = json.loads(one.content)
             car_info["name"] = content["name"]
             car_info["image_url"] = content["image_url"]
@@ -382,7 +382,7 @@ class ClientUserAccount(MBHandler):
 
         if user_deposit_card:
             user_deposit_card = {
-                "id": user_deposit_card.id,
+                "id": str(user_deposit_card.id),
                 "pin": user_deposit_card.pin,
                 "expired_date": user_deposit_card.expired_date.strftime("%Y-%m-%d %H:%M:%S"),
                 "content": json.loads(user_deposit_card.content) if user_deposit_card.content else {},
@@ -395,17 +395,18 @@ class ClientUserAccount(MBHandler):
                 user_favorable_card = None
             else:
                 user_favorable_card = {
-                    "id": user_favorable_card.id,
+                    "id": str(user_favorable_card.id),
                     "pin": user_favorable_card.pin,
-                    "config_id": user_favorable_card.config_id,
+                    "config_id": str(user_favorable_card.config_id),
                     "service_id": user_favorable_card.service_id,
                     "begin_time": user_favorable_card.begin_time.strftime("%Y-%m-%d %H:%M:%S"),
                     "end_time": user_favorable_card.end_time.strftime("%Y-%m-%d %H:%M:%S"),
                     "content": json.loads(user_favorable_card.content) if user_favorable_card.content else {},
                 }
+
         if user_free_order:
             user_free_order = {
-                "id": user_free_order.id,
+                "id": str(user_free_order.id),
                 "pin": user_free_order.pin,
                 "free_second": user_free_order.free_second,
                 "free_num": user_free_order.free_num,
@@ -413,7 +414,7 @@ class ClientUserAccount(MBHandler):
 
         if user_discount:
             user_discount = {
-                "id": user_discount.id,
+                "id": str(user_discount.id),
                 "pin": user_discount.pin,
                 "discount_rate": user_discount.discount_rate,
             }

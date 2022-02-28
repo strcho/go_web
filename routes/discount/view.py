@@ -11,6 +11,7 @@ from routes.discount.serializers import (
     UpdateUserDiscountDeserializer,
     BusUpdateUserDiscountDeserializer,
     ClientGetUserDiscountDeserializer,
+    ClientUserDiscountSerializer,
 )
 from service.user_discount_service import UserDiscountService
 
@@ -148,7 +149,7 @@ class ClientGetUserAllDiscountHandler(MBHandler):
         args['commandContext'] = self.get_context()
         data = yield mb_async(UserDiscountService().query_all)(args)
 
-        response = UserDiscountSerializer(many=True).dump(data)
+        response = ClientUserDiscountSerializer(many=True).dump(data)
 
         self.success(response)
 

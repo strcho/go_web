@@ -252,10 +252,10 @@ class FavorableCardUserService(MBService):
                 card: TFavorableCard = card
 
                 card_dict = dict(
-                    id=card.id,
+                    id=str(card.id),
                     pin=card.pin,
-                    config_id=card.config_id,
-                    service_id=card.service_id,
+                    config_id=str(card.config_id),
+                    service_id=str(card.service_id),
                     begin_time=datetime_filter(card.begin_time),
                     end_time=datetime_filter(card.end_time),
                     content=json.loads(card.content),

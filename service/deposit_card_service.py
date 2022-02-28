@@ -268,3 +268,5 @@ class DepositCardService(MBService):
         logger.info(f"deposit_card_record send is {deposit_card_dict}")
         KafkaClient().visual_send(deposit_card_dict, PayKey.DEPOSIT_CARD.value)
 
+        return True
+

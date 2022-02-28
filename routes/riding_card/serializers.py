@@ -96,6 +96,30 @@ class SendRidingCardDeserializer(ReqBaseDeserializer):
     paid_at = fields.String(load_default=None, description="交易时间戳")
 
 
+class ClientRidingCardInfoSerializer(BaseSchema):
+    """
+    骑行卡详情
+    """
+
+    id = fields.String(description='用户骑行卡id')
+    card_expired_date = fields.String(description='骑行卡到期时间')
+    card_id = fields.String(description='母卡信息')
+    deduction_type = fields.Integer(description='抵扣类型, 1时长卡, 2里程卡, 3减免卡, 4次卡')
+    description_tag = fields.String(description='说明标签')
+    detail_info = fields.String(description='详情')
+    free_distance_meter = fields.Integer(description='免里程, 单位米')
+    free_money_cent = fields.Integer(description="免金额, 单位分")
+    free_time_second = fields.Integer(description='免时长, 单位秒')
+    image_url = fields.String(description='卡图片')
+    iz_total_times = fields.Integer(description='是否次卡类')
+    name = fields.String(description='卡名')
+    promotion_tag = fields.String(description='促销标签')
+    rece_times = fields.Integer(description='次卡类, 表示总累计次数; 非次卡类, 表示每日最大次数')
+    remain_times = fields.Integer(description='骑行卡剩余使用次数')
+    effective_service_ids = fields.String(description="可用服务区")
+    effective_service_names = fields.String(description="可用服务区名称")
+
+
 class RidingCardInfoSerializer(BaseSchema):
     """
     骑行卡详情
@@ -128,6 +152,17 @@ class RidingCardSerializer(BaseSchema):
     cost_use = fields.Integer(description="选中的骑行卡")
     used = fields.Nested(RidingCardInfoSerializer, many=True)
     expired = fields.Nested(RidingCardInfoSerializer, many=True)
+    rule_info = fields.String()  # todo
+
+
+class ClientRidingCardSerializer(BaseSchema):
+    """
+    用户骑行卡序列化器
+    """
+
+    cost_use = fields.String(description="选中的骑行卡")
+    used = fields.Nested(ClientRidingCardInfoSerializer, many=True)
+    expired = fields.Nested(ClientRidingCardInfoSerializer, many=True)
     rule_info = fields.String()  # todo
 
 

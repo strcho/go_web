@@ -40,6 +40,16 @@ class UserDiscountSerializer(BaseSchema):
     discount_rate = fields.Integer(required=True, description='折扣信息 10 表示 1折')
 
 
+class ClientUserDiscountSerializer(BaseSchema):
+    """
+    用户折扣信息序列化
+    """
+
+    id = fields.String(required=True, description="折扣卡id")
+    pin = fields.String(required=True, description='用户标识')
+    discount_rate = fields.Integer(required=True, description='折扣信息 10 表示 1折')
+
+
 class UpdateUserDiscountDeserializer(ReqBaseDeserializer):
     """
     更新用户折扣优惠
