@@ -101,7 +101,7 @@ class DepositCardService(MBService):
             config_id = args.get("config_id")
 
             deposit_card_info = MarketingApi.get_deposit_card_info(config_id=config_id, command_context=commandContext)
-            name = deposit_card_info.get("card_name")
+            name = deposit_card_info.get("name")
             card_service_id = deposit_card_info.get("service_id")
             amount = deposit_card_info.get("discount_money")
             card_time = deposit_card_info.get("card_duration_day")
@@ -227,7 +227,7 @@ class DepositCardService(MBService):
         pin_name = user_info.get("authName")
 
         deposit_card_info = MarketingApi.get_deposit_card_info(config_id=config_id, command_context=commandContext)
-        name = deposit_card_info.get("card_name")
+        name = deposit_card_info.get("name")
         card_service_id = deposit_card_info.get("service_id")
         amount = deposit_card_info.get("discount_money")
         card_time = deposit_card_info.get("card_duration_day")
