@@ -114,18 +114,22 @@ class UserAccount(MBHandler):
                 "content": json.loads(user_deposit_card.content) if user_deposit_card.content else {},
             }
 
-        if user_favorable_card and user_favorable_card.end_time <= datetime.now():
+        if not user_favorable_card:
             user_favorable_card = None
         else:
-            user_favorable_card = {
-                "id": user_favorable_card.id,
-                "pin": user_favorable_card.pin,
-                "config_id": user_favorable_card.config_id,
-                "service_id": user_favorable_card.service_id,
-                "begin_time": user_favorable_card.begin_time.strftime("%Y-%m-%d %H:%M:%S"),
-                "end_time": user_favorable_card.end_time.strftime("%Y-%m-%d %H:%M:%S"),
-                "content": json.loads(user_favorable_card.content) if user_favorable_card.content else {},
-            }
+            if user_favorable_card.end_time <= datetime.now():
+                user_favorable_card = None
+            else:
+                user_favorable_card = {
+                    "id": user_favorable_card.id,
+                    "pin": user_favorable_card.pin,
+                    "config_id": user_favorable_card.config_id,
+                    "service_id": user_favorable_card.service_id,
+                    "begin_time": user_favorable_card.begin_time.strftime("%Y-%m-%d %H:%M:%S"),
+                    "end_time": user_favorable_card.end_time.strftime("%Y-%m-%d %H:%M:%S"),
+                    "content": json.loads(user_favorable_card.content) if user_favorable_card.content else {},
+                }
+
         if user_free_order:
             user_free_order = {
                 "id": user_free_order.id,
@@ -247,18 +251,22 @@ class BusUserAccount(MBHandler):
                 "content": json.loads(user_deposit_card.content) if user_deposit_card.content else {},
             }
 
-        if user_favorable_card and user_favorable_card.end_time <= datetime.now():
+        if not user_favorable_card:
             user_favorable_card = None
         else:
-            user_favorable_card = {
-                "id": user_favorable_card.id,
-                "pin": user_favorable_card.pin,
-                "config_id": user_favorable_card.config_id,
-                "service_id": user_favorable_card.service_id,
-                "begin_time": user_favorable_card.begin_time.strftime("%Y-%m-%d %H:%M:%S"),
-                "end_time": user_favorable_card.end_time.strftime("%Y-%m-%d %H:%M:%S"),
-                "content": json.loads(user_favorable_card.content) if user_favorable_card.content else {},
-            }
+            if user_favorable_card.end_time <= datetime.now():
+                user_favorable_card = None
+            else:
+                user_favorable_card = {
+                    "id": user_favorable_card.id,
+                    "pin": user_favorable_card.pin,
+                    "config_id": user_favorable_card.config_id,
+                    "service_id": user_favorable_card.service_id,
+                    "begin_time": user_favorable_card.begin_time.strftime("%Y-%m-%d %H:%M:%S"),
+                    "end_time": user_favorable_card.end_time.strftime("%Y-%m-%d %H:%M:%S"),
+                    "content": json.loads(user_favorable_card.content) if user_favorable_card.content else {},
+                }
+
         if user_free_order:
             user_free_order = {
                 "id": user_free_order.id,
@@ -380,18 +388,21 @@ class ClientUserAccount(MBHandler):
                 "content": json.loads(user_deposit_card.content) if user_deposit_card.content else {},
             }
 
-        if user_favorable_card and user_favorable_card.end_time <= datetime.now():
+        if not user_favorable_card:
             user_favorable_card = None
         else:
-            user_favorable_card = {
-                "id": user_favorable_card.id,
-                "pin": user_favorable_card.pin,
-                "config_id": user_favorable_card.config_id,
-                "service_id": user_favorable_card.service_id,
-                "begin_time": user_favorable_card.begin_time.strftime("%Y-%m-%d %H:%M:%S"),
-                "end_time": user_favorable_card.end_time.strftime("%Y-%m-%d %H:%M:%S"),
-                "content": json.loads(user_favorable_card.content) if user_favorable_card.content else {},
-            }
+            if user_favorable_card.end_time <= datetime.now():
+                user_favorable_card = None
+            else:
+                user_favorable_card = {
+                    "id": user_favorable_card.id,
+                    "pin": user_favorable_card.pin,
+                    "config_id": user_favorable_card.config_id,
+                    "service_id": user_favorable_card.service_id,
+                    "begin_time": user_favorable_card.begin_time.strftime("%Y-%m-%d %H:%M:%S"),
+                    "end_time": user_favorable_card.end_time.strftime("%Y-%m-%d %H:%M:%S"),
+                    "content": json.loads(user_favorable_card.content) if user_favorable_card.content else {},
+                }
         if user_free_order:
             user_free_order = {
                 "id": user_free_order.id,
