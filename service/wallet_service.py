@@ -152,7 +152,7 @@ class WalletService(MBService):
             wallet_dict = {
                 "tenant_id": commandContext.get('tenantId'),
                 "created_pin": commandContext.get("created_pin"),
-                "version": commandContext.get("version", ""),
+                "version": commandContext.get("version", 0),
                 "updated_pin": commandContext.get("pin"),
 
                 "pin_id": args.get("pin"),
@@ -226,7 +226,7 @@ class WalletService(MBService):
             wallet_dict = {
                 "tenant_id": commandContext.get('tenantId'),
                 "created_pin": commandContext.get("created_pin"),
-                "version": commandContext.get("version", ""),
+                "version": commandContext.get("version", 0),
                 "updated_pin": commandContext.get("pin"),
 
                 "pin_id": args.get("pin"),
@@ -306,7 +306,7 @@ class WalletService(MBService):
             wallet_dict = {
                 "tenant_id": commandContext.get('tenantId'),
                 "created_pin": commandContext.get("created_pin"),
-                "version": commandContext.get("version", ""),
+                "version": commandContext.get("version", 0),
                 "updated_pin": commandContext.get("pin"),
 
                 "pin_id": args.get("pin"),
