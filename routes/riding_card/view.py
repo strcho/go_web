@@ -104,7 +104,7 @@ class EditRidingCardHandle(MBHandler):
                         data:
                             type: boolean
         """
-        response = yield mb_async(RidingCardService().modify_time(args))
+        response = yield mb_async(RidingCardService().modify_time)(args)
 
         self.success(response)
 
@@ -368,7 +368,7 @@ class BusEditRidingCardHandle(MBHandler):
         """
 
         args['commandContext'] = self.get_context()
-        response = yield mb_async(RidingCardService().modify_time(args))
+        response = yield mb_async(RidingCardService().modify_time)(args)
 
         self.success(response)
 
