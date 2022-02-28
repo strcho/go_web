@@ -357,10 +357,13 @@ class RidingCardService(MBService):
             logger.info(f"riding_card_record send is {riding_card_dict}")
             KafkaClient().visual_send(riding_card_dict, PayKey.RIDING_CARD.value)
 
-            if args.get(type) == 1:  # 充值购买
-                MarketingApi.buy_riding_card_judgement(pin=args.get("pin"), service_id=service_id,
-                                                       buy_time=args.get("paid_at") or int(time.time()),
-                                                       command_context=commandContext)
+            try:
+                if args.get(type) == 1:  # 充值购买
+                    MarketingApi.buy_riding_card_judgement(pin=args.get("pin"), service_id=service_id,
+                                                           buy_time=args.get("paid_at") or int(time.time()),
+                                                           command_context=commandContext)
+            except Exception as e:
+                logger.error(f"营销活动回调失败 buy_riding_card_judgement： {e}")
 
         except Exception as ex:
             raise MbException("添加超级骑行卡失败")

@@ -156,10 +156,13 @@ class DepositCardService(MBService):
             logger.info(f"deposit_card_record send is {deposit_card_dict}")
             KafkaClient().visual_send(deposit_card_dict, PayKey.DEPOSIT_CARD.value)
 
-            if args.get(type) == 1:  # 充值购买
-                MarketingApi.buy_deposit_card_judgement(pin=args.get("pin"), service_id=card_service_id,
-                                                        buy_time=args.get("paid_at") or int(time.time()),
-                                                        command_context=commandContext)
+            try:
+                if args.get(type) == 1:  # 充值购买
+                    MarketingApi.buy_deposit_card_judgement(pin=args.get("pin"), service_id=card_service_id,
+                                                            buy_time=args.get("paid_at") or int(time.time()),
+                                                            command_context=commandContext)
+            except Exception as e:
+                logger.error(f"营销活动回调失败 buy_deposit_card_judgement： {e}")
 
         except Exception as ex:
             dao_session.session.tenant_db().rollback()

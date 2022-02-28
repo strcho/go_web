@@ -136,11 +136,13 @@ class UserDepositService(WalletService):
             logger.info(f"deposit_dict_record send is {deposit_dict}")
             KafkaClient().visual_send(deposit_dict, PayKey.DEPOSIT.value)
 
-        if args.get(type) == 1:  # 充值购买
-            MarketingApi.buy_deposit_judgement(pin=args.get("pin"), service_id=service_id,
-                                               buy_time=args.get("paid_at") or int(time.time()),
-                                               command_context=commandContext)
-
+        try:
+            if args.get(type) == 1:  # 充值购买
+                MarketingApi.buy_deposit_judgement(pin=args.get("pin"), service_id=service_id,
+                                                   buy_time=args.get("paid_at") or int(time.time()),
+                                                   command_context=commandContext)
+        except Exception as e:
+            logger.error(f"营销活动回调失败 buy_deposit_judgement： {e}")
         return {"suc": True, "data": "更新成功"}
 
     def bus_edit_user_deposited(self, args: dict):

@@ -173,10 +173,13 @@ class WalletService(MBService):
             logger.info(f"wallet_record send is {wallet_dict_msg}")
             KafkaClient().visual_send(wallet_dict_msg, PayKey.WALLET.value)
 
-            if args.get(type) == 1 and self.exists_param(args['change_recharge']):  # 充值购买
-                MarketingApi.buy_wallet_judgement(pin=args.get("pin"), service_id=service_id,
-                                                  buy_time=args.get("paid_at") or int(time.time()),
-                                                  command_context=commandContext)
+            try:
+                if args.get(type) == 1 and self.exists_param(args['change_recharge']):  # 充值购买
+                    MarketingApi.buy_wallet_judgement(pin=args.get("pin"), service_id=service_id,
+                                                      buy_time=args.get("paid_at") or int(time.time()),
+                                                      command_context=commandContext)
+            except Exception as e:
+                logger.error(f"营销活动回调失败 buy_wallet_judgement： {e}")
 
             return True
 
