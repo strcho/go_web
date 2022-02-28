@@ -3,6 +3,7 @@ import json
 import time
 
 from internal import user_apis
+from internal.marketing_api import MarketingApi
 from internal.user_apis import internal_deposited_state_change
 from mbshort.str_and_datetime import orm_to_dict
 from mbutils import (
@@ -134,6 +135,11 @@ class UserDepositService(WalletService):
             deposit_dict = self.remove_empty_param(deposit_dict)
             logger.info(f"deposit_dict_record send is {deposit_dict}")
             KafkaClient().visual_send(deposit_dict, PayKey.DEPOSIT.value)
+
+        if args.get(type) == 1:  # 充值购买
+            MarketingApi.buy_deposit_judgement(pin=args.get("pin"), service_id=service_id,
+                                               buy_time=args.get("paid_at") or int(time.time()),
+                                               command_context=commandContext)
 
         return {"suc": True, "data": "更新成功"}
 

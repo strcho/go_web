@@ -1,6 +1,7 @@
 import datetime
 import time
 
+from internal.marketing_api import MarketingApi
 from internal.user_apis import UserApi
 from mbshort.str_and_datetime import orm_to_dict
 from mbutils import (
@@ -171,6 +172,11 @@ class WalletService(MBService):
             wallet_dict_msg = self.remove_empty_param(wallet_dict)
             logger.info(f"wallet_record send is {wallet_dict_msg}")
             KafkaClient().visual_send(wallet_dict_msg, PayKey.WALLET.value)
+
+            if args.get(type) == 1 and self.exists_param(args['change_recharge']):  # 充值购买
+                MarketingApi.buy_wallet_judgement(pin=args.get("pin"), service_id=service_id,
+                                                  buy_time=args.get("paid_at") or int(time.time()),
+                                                  command_context=commandContext)
 
             return True
 
