@@ -41,10 +41,11 @@ class FavorableCardUserService(MBService):
         card_info = None
         try:
             card_info = dao_session.session.tenant_db().query(TFavorableCard). \
-                filter(TFavorableCard.pin == pin, TFavorableCard.service_id == args['service_id']).first()
+                filter(TFavorableCard.pin == pin, TFavorableCard.service_id == args['service_id'],
+                       TFavorableCard.tenant_id == args["commandContext"]["tenantId"]).first()
 
             if card_info:
-                card_info.content = json.loads(card_info.content) if card_info.content else {}
+                card_info.content = card_info.content if card_info.content else '{}'
         except Exception as e:
             dao_session.session.tenant_db().rollback()
             logger.error("show favorable card days is error: {}".format(e))
@@ -196,6 +197,7 @@ class FavorableCardUserService(MBService):
                     favorable_card.end_time = datetime.now()
                 else:
                     favorable_card.end_time = datetime.now() + timedelta(days=duration)
+                    favorable_card.content = favorable_card.content
             dao_session.session.tenant_db().commit()
 
         except Exception as ex:
