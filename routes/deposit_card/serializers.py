@@ -130,9 +130,9 @@ class UserDepositCardSerializer(BaseSchema):
     """
 
     id = fields.Integer(required=True, description="押金卡id")
-    pin = fields.String(required=False, load_default=ARG_DEFAULT, description="用户标识")
+    pin = fields.String(required=True, description="用户标识")
     expired_date = EDateTime(description="过期时间")
-    content = fields.Dict(required=False, load_default={}, description="卡详情")
+    content = fields.Dict(required=True, description="卡详情")
 
 
 class UserDepositCardDaysSerializer(BaseSchema):

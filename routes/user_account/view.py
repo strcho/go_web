@@ -69,6 +69,15 @@ class UserAccount(MBHandler):
             mb_async(UserDiscountService().query_one)(args)
         ]
 
+        user_wallet = {
+            "pin": user_wallet.pin,
+            "balance": user_wallet.balance,
+            "recharge": user_wallet.recharge,
+            "present": user_wallet.present,
+            "deposited_mount": user_wallet.deposited_mount,
+            "deposited_stats": user_wallet.deposited_stats,
+        }
+
         if user_riding_card:
             one = user_riding_card
             car_info = {"id": one.id}
@@ -83,7 +92,7 @@ class UserAccount(MBHandler):
                     "累计" if one.iz_total_times else "每日",
                     content["available_times"], int(float(content["free_time_second"]))).encode("utf-8")),
                 "utf-8")
-            car_info["card_expired_date"] = one.card_expired_date
+            car_info["card_expired_date"] = one.card_expired_date.strftime("%Y-%m-%d %H:%M:%S")
             car_info["remain_times"] = one.remain_times
             car_info["iz_total_times"] = one.iz_total_times
             car_info["rece_times"] = one.rece_times
@@ -97,17 +106,53 @@ class UserAccount(MBHandler):
         else:
             car_info = {}
 
+        if user_deposit_card:
+            user_deposit_card = {
+                "id": user_deposit_card.id,
+                "pin": user_deposit_card.pin,
+                "expired_date": user_deposit_card.expired_date.strftime("%Y-%m-%d %H:%M:%S"),
+                "content": json.loads(user_deposit_card.content) if user_deposit_card.content else {},
+            }
+
+        if user_favorable_card and user_favorable_card.end_time <= datetime.now():
+            user_favorable_card = None
+        else:
+            user_favorable_card = {
+                "id": user_favorable_card.id,
+                "pin": user_favorable_card.pin,
+                "config_id": user_favorable_card.config_id,
+                "service_id": user_favorable_card.service_id,
+                "begin_time": user_favorable_card.begin_time.strftime("%Y-%m-%d %H:%M:%S"),
+                "end_time": user_favorable_card.end_time.strftime("%Y-%m-%d %H:%M:%S"),
+                "content": json.loads(user_favorable_card.content) if user_favorable_card.content else {},
+            }
+        if user_free_order:
+            user_free_order = {
+                "id": user_free_order.id,
+                "pin": user_free_order.pin,
+                "free_second": user_free_order.free_second,
+                "free_num": user_free_order.free_num,
+            }
+
+        if user_discount:
+            user_discount = {
+                "id": user_discount.id,
+                "pin": user_discount.pin,
+                "discount_rate": user_discount.discount_rate,
+            }
+
         data = {
             "user_wallet": user_wallet,
             "user_riding_card": car_info,
             "user_deposit_card": user_deposit_card,
-            "user_favorable_card": None if user_favorable_card and user_favorable_card.end_time <= datetime.now() else user_favorable_card,
+            "user_favorable_card": user_favorable_card,
             "user_free_order": user_free_order,
             "user_discount": user_discount,
         }
-        response = UserAccountSerializer().dump(data)
 
-        self.success(response)
+        # response = UserAccountSerializer().dump(data)
+
+        self.success(data)
 
 
 class BusUserAccount(MBHandler):
@@ -157,6 +202,15 @@ class BusUserAccount(MBHandler):
         user_free_order = yield mb_async(UserFreeOrderService().query_one)(args)
         user_discount = yield mb_async(UserDiscountService().query_one)(args)
 
+        user_wallet = {
+            "pin": user_wallet.pin,
+            "balance": user_wallet.balance,
+            "recharge": user_wallet.recharge,
+            "present": user_wallet.present,
+            "deposited_mount": user_wallet.deposited_mount,
+            "deposited_stats": user_wallet.deposited_stats,
+        }
+
         if user_riding_card:
             one = user_riding_card
             car_info = {"id": one.id}
@@ -171,7 +225,7 @@ class BusUserAccount(MBHandler):
                     "累计" if one.iz_total_times else "每日",
                     content["available_times"], int(float(content["free_time_second"]))).encode("utf-8")),
                 "utf-8")
-            car_info["card_expired_date"] = one.card_expired_date
+            car_info["card_expired_date"] = one.card_expired_date.strftime("%Y-%m-%d %H:%M:%S")
             car_info["remain_times"] = one.remain_times
             car_info["iz_total_times"] = one.iz_total_times
             car_info["rece_times"] = one.rece_times
@@ -185,17 +239,53 @@ class BusUserAccount(MBHandler):
         else:
             car_info = {}
 
+        if user_deposit_card:
+            user_deposit_card = {
+                "id": user_deposit_card.id,
+                "pin": user_deposit_card.pin,
+                "expired_date": user_deposit_card.expired_date.strftime("%Y-%m-%d %H:%M:%S"),
+                "content": json.loads(user_deposit_card.content) if user_deposit_card.content else {},
+            }
+
+        if user_favorable_card and user_favorable_card.end_time <= datetime.now():
+            user_favorable_card = None
+        else:
+            user_favorable_card = {
+                "id": user_favorable_card.id,
+                "pin": user_favorable_card.pin,
+                "config_id": user_favorable_card.config_id,
+                "service_id": user_favorable_card.service_id,
+                "begin_time": user_favorable_card.begin_time.strftime("%Y-%m-%d %H:%M:%S"),
+                "end_time": user_favorable_card.end_time.strftime("%Y-%m-%d %H:%M:%S"),
+                "content": json.loads(user_favorable_card.content) if user_favorable_card.content else {},
+            }
+        if user_free_order:
+            user_free_order = {
+                "id": user_free_order.id,
+                "pin": user_free_order.pin,
+                "free_second": user_free_order.free_second,
+                "free_num": user_free_order.free_num,
+            }
+
+        if user_discount:
+            user_discount = {
+                "id": user_discount.id,
+                "pin": user_discount.pin,
+                "discount_rate": user_discount.discount_rate,
+            }
+
         data = {
             "user_wallet": user_wallet,
             "user_riding_card": car_info,
             "user_deposit_card": user_deposit_card,
-            "user_favorable_card": None if user_favorable_card and user_favorable_card.end_time <= datetime.now() else user_favorable_card,
+            "user_favorable_card": user_favorable_card,
             "user_free_order": user_free_order,
             "user_discount": user_discount,
         }
-        response = UserAccountSerializer().dump(data)
 
-        self.success(response)
+        # response = UserAccountSerializer().dump(data)
+
+        self.success(data)
 
 
 class ClientUserAccount(MBHandler):
@@ -245,6 +335,15 @@ class ClientUserAccount(MBHandler):
         user_free_order = yield mb_async(UserFreeOrderService().query_one)(args)
         user_discount = yield mb_async(UserDiscountService().query_one)(args)
 
+        user_wallet = {
+            "pin": user_wallet.pin,
+            "balance": user_wallet.balance,
+            "recharge": user_wallet.recharge,
+            "present": user_wallet.present,
+            "deposited_mount": user_wallet.deposited_mount,
+            "deposited_stats": user_wallet.deposited_stats,
+        }
+
         if user_riding_card:
             one = user_riding_card
             car_info = {"id": one.id}
@@ -259,7 +358,7 @@ class ClientUserAccount(MBHandler):
                     "累计" if one.iz_total_times else "每日",
                     content["available_times"], int(float(content["free_time_second"]))).encode("utf-8")),
                 "utf-8")
-            car_info["card_expired_date"] = one.card_expired_date
+            car_info["card_expired_date"] = one.card_expired_date.strftime("%Y-%m-%d %H:%M:%S")
             car_info["remain_times"] = one.remain_times
             car_info["iz_total_times"] = one.iz_total_times
             car_info["rece_times"] = one.rece_times
@@ -273,16 +372,50 @@ class ClientUserAccount(MBHandler):
         else:
             car_info = {}
 
+        if user_deposit_card:
+            user_deposit_card = {
+                "id": user_deposit_card.id,
+                "pin": user_deposit_card.pin,
+                "expired_date": user_deposit_card.expired_date.strftime("%Y-%m-%d %H:%M:%S"),
+                "content": json.loads(user_deposit_card.content) if user_deposit_card.content else {},
+            }
+
+        if user_favorable_card and user_favorable_card.end_time <= datetime.now():
+            user_favorable_card = None
+        else:
+            user_favorable_card = {
+                "id": user_favorable_card.id,
+                "pin": user_favorable_card.pin,
+                "config_id": user_favorable_card.config_id,
+                "service_id": user_favorable_card.service_id,
+                "begin_time": user_favorable_card.begin_time.strftime("%Y-%m-%d %H:%M:%S"),
+                "end_time": user_favorable_card.end_time.strftime("%Y-%m-%d %H:%M:%S"),
+                "content": json.loads(user_favorable_card.content) if user_favorable_card.content else {},
+            }
+        if user_free_order:
+            user_free_order = {
+                "id": user_free_order.id,
+                "pin": user_free_order.pin,
+                "free_second": user_free_order.free_second,
+                "free_num": user_free_order.free_num,
+            }
+
+        if user_discount:
+            user_discount = {
+                "id": user_discount.id,
+                "pin": user_discount.pin,
+                "discount_rate": user_discount.discount_rate,
+            }
 
         data = {
             "user_wallet": user_wallet,
             "user_riding_card": car_info,
             "user_deposit_card": user_deposit_card,
-            "user_favorable_card": None if user_favorable_card and user_favorable_card.end_time <= datetime.now() else user_favorable_card,
+            "user_favorable_card": user_favorable_card,
             "user_free_order": user_free_order,
             "user_discount": user_discount,
         }
 
-        response = UserAccountSerializer().dump(data)
+        # response = UserAccountSerializer().dump(data)
 
-        self.success(response)
+        self.success(data)

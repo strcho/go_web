@@ -47,7 +47,7 @@ class DepositCardService(MBService):
                 ).first()
             )
             if deposit_card:
-                deposit_card.content = json.loads(deposit_card.content) if deposit_card.content else {}
+                deposit_card.content = deposit_card.content if deposit_card.content else '{}'
         except Exception as ex:
             dao_session.session.tenant_db().rollback()
             logger.error("query user deposit card is error: {}".format(ex))

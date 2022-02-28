@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 
 from tornado.gen import coroutine
@@ -62,7 +63,11 @@ class GetUserFavorableCardHandle(MBHandler):
 
         data = yield mb_async(FavorableCardUserService().query_one)(args)
 
-        data = None if data and data.end_time <= datetime.now() else data
+        if data and data.end_time <= datetime.now():
+            data = None
+        else:
+            if data.content:
+                data.content = json.loads(data.content)
 
         response = UserFavorableCardSerializer().dump(data)
 
