@@ -113,7 +113,10 @@ class DepositCardService(MBService):
                 deposit_card = self.insert_one(args, deposit_card_info)
             else:
                 days = args['duration']
-                expired_date = datetime.now() + timedelta(days=days)
+                if deposit_card.expired_date < datetime.now():
+                    expired_date = datetime.now() + timedelta(days=days)
+                else:
+                    expired_date = deposit_card.expired_date + timedelta(days=days)
                 deposit_card.expired_date = expired_date
                 deposit_card.content = json.dumps(deposit_card_info),
                 dao_session.session.tenant_db().commit()

@@ -244,8 +244,8 @@ class DeductionBalanceHandle(MBHandler):
         """
 
         valid_data = args['pin'], args
-        response = yield mb_async(WalletService().deduction_balance)(*valid_data)
-        self.success(response)
+        response, info = yield mb_async(WalletService().deduction_balance)(*valid_data)
+        self.success(info)
 
 
 class BusSetWalletHandle(MBHandler):

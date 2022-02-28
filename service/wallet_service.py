@@ -326,7 +326,7 @@ class WalletService(MBService):
             logger.info(f"wallet_record send is {wallet_dict}")
             KafkaClient().visual_send(wallet_dict, PayKey.WALLET.value)
 
-            return True
+            return True, {"recharge_amount": recharge_amount, "present_amount": present_amount}
         except Exception as ex:
             dao_session.session.tenant_db().rollback()
             logger.error("update user wallet is error: {}".format(ex))
