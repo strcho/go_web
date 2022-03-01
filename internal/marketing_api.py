@@ -83,7 +83,7 @@ class MarketingApi:
 
     @staticmethod
     def buy_deposit_judgement(pin, service_id, buy_time: int, command_context: dict):
-        param = {"pin": pin, "service_id": service_id, "buy_time": buy_time, 'commandContext': command_context}
+        param = {"pin": pin, "service_id": str(service_id), "buy_time": buy_time, 'commandContext': command_context}
         card_res = deposit_judgement(param)
         card_res_data = json.loads(card_res)
         if not card_res_data.get("success"):
@@ -93,7 +93,7 @@ class MarketingApi:
 
     @staticmethod
     def buy_deposit_card_judgement(pin, service_id, buy_time: int, command_context: dict):
-        param = {"pin": pin, "service_id": service_id, "buy_time": buy_time, 'commandContext': command_context}
+        param = {"pin": pin, "service_id": str(service_id), "buy_time": buy_time, 'commandContext': command_context}
         card_res = deposit_card_judgement(param)
         card_res_data = json.loads(card_res)
         if not card_res_data.get("success"):
@@ -103,7 +103,7 @@ class MarketingApi:
 
     @staticmethod
     def buy_riding_card_judgement(pin, service_id, buy_time: int, command_context: dict):
-        param = {"pin": pin, "service_id": service_id, "buy_time": buy_time, 'commandContext': command_context}
+        param = {"pin": pin, "service_id": str(service_id), "buy_time": buy_time, 'commandContext': command_context}
         card_res = riding_card_judgement(param)
         card_res_data = json.loads(card_res)
         if not card_res_data.get("success"):
@@ -113,7 +113,7 @@ class MarketingApi:
 
     @staticmethod
     def buy_wallet_judgement(pin, service_id, buy_time: int, command_context: dict):
-        param = {"pin": pin, "service_id": service_id, "buy_time": buy_time, 'commandContext': command_context}
+        param = {"pin": pin, "service_id": str(service_id), "buy_time": buy_time, 'commandContext': command_context}
         card_res = wallet_judgement(param)
         card_res_data = json.loads(card_res)
         if not card_res_data.get("success"):
