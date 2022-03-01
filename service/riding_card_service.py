@@ -358,7 +358,7 @@ class RidingCardService(MBService):
             KafkaClient().visual_send(riding_card_dict, PayKey.RIDING_CARD.value)
 
             try:
-                if args.get(type) == 1:  # 充值购买
+                if args.get("type") == 1:  # 充值购买
                     MarketingApi.buy_riding_card_judgement(pin=args.get("pin"), service_id=service_id,
                                                            buy_time=args.get("paid_at") or int(time.time()),
                                                            command_context=commandContext)

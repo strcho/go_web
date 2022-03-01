@@ -174,7 +174,7 @@ class WalletService(MBService):
             KafkaClient().visual_send(wallet_dict_msg, PayKey.WALLET.value)
 
             try:
-                if args.get(type) == 1 and self.exists_param(args['change_recharge']):  # 充值购买
+                if args.get("type") == 1 and self.exists_param(args['change_recharge']):  # 充值购买
                     MarketingApi.buy_wallet_judgement(pin=args.get("pin"), service_id=service_id,
                                                       buy_time=args.get("paid_at") or int(time.time()),
                                                       command_context=commandContext)

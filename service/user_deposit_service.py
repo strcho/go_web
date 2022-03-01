@@ -137,7 +137,7 @@ class UserDepositService(WalletService):
             KafkaClient().visual_send(deposit_dict, PayKey.DEPOSIT.value)
 
         try:
-            if args.get(type) == 1:  # 充值购买
+            if args.get("type") == 1:  # 充值购买
                 MarketingApi.buy_deposit_judgement(pin=args.get("pin"), service_id=service_id,
                                                    buy_time=args.get("paid_at") or int(time.time()),
                                                    command_context=commandContext)

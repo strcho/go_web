@@ -160,7 +160,7 @@ class DepositCardService(MBService):
             KafkaClient().visual_send(deposit_card_dict, PayKey.DEPOSIT_CARD.value)
 
             try:
-                if args.get(type) == 1:  # 充值购买
+                if args.get("type") == 1:  # 充值购买
                     MarketingApi.buy_deposit_card_judgement(pin=args.get("pin"), service_id=card_service_id,
                                                             buy_time=args.get("paid_at") or int(time.time()),
                                                             command_context=commandContext)
