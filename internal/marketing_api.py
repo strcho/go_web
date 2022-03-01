@@ -26,22 +26,22 @@ def deposit_card_info(jsonData):
     pass
 
 
-@marketingNacosClient.customRequestClient(method="POST", url="ebike_marketing/activity/platform/user_buy_deposit_judgement", )
+@marketingNacosClient.customRequestClient(method="POST", url="/ebike_marketing/activity/platform/user_buy_deposit_judgement", )
 def deposit_judgement(jsonData):
     pass
 
 
-@marketingNacosClient.customRequestClient(method="POST", url="ebike_marketing/activity/platform/user_buy_deposit_card_judgement", )
+@marketingNacosClient.customRequestClient(method="POST", url="/ebike_marketing/activity/platform/user_buy_deposit_card_judgement", )
 def deposit_card_judgement(jsonData):
     pass
 
 
-@marketingNacosClient.customRequestClient(method="POST", url="ebike_marketing/activity/platform/user_buy_riding_card_judgement", )
+@marketingNacosClient.customRequestClient(method="POST", url="/ebike_marketing/activity/platform/user_buy_riding_card_judgement", )
 def riding_card_judgement(jsonData):
     pass
 
 
-@marketingNacosClient.customRequestClient(method="POST", url="ebike_marketing/activity/platform/user_buy_wallet_judgement", )
+@marketingNacosClient.customRequestClient(method="POST", url="/ebike_marketing/activity/platform/user_buy_wallet_judgement", )
 def wallet_judgement(jsonData):
     pass
 
