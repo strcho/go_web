@@ -123,7 +123,7 @@ class DepositCardService(MBService):
 
             # 向用户系统推送押金卡状态
             internal_deposited_card_state_change({
-                'pin': commandContext['pin'],
+                'pin': args['pin'],
                 'commandContext': commandContext,
                 'depositCardOperate': UserDepositCardOperate.Buy.value,
                 'depositCardExpire': datetime_filter(deposit_card.expired_date),
@@ -197,7 +197,7 @@ class DepositCardService(MBService):
 
             # 向用户系统推送押金卡状态
             internal_deposited_card_state_change({
-                'pin': args['commandContext']['pin'],
+                'pin': args['pin'],
                 'depositCardOperate': UserDepositCardOperate.ModifyTime.value,
                 'commandContext': args['commandContext'],
                 'depositCardExpire': datetime_filter(expired_date),
