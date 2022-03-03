@@ -22,7 +22,7 @@ class TUserWallet(CommonField):
         {'mysql_charset': 'utf8mb4'}
     )
 
-    pin = Column(String(64), nullable=False, comment="用户PIN")
+    pin = Column(String(64), nullable=False, unique=True, comment="用户PIN")
     balance = Column(INTEGER(11), server_default=text("'0'"), comment="总余额")
     recharge = Column(INTEGER(11), server_default=text("'0'"), comment='充值余额')
     present = Column(INTEGER(11), server_default=text("'0'"), comment='赠送余额')
@@ -38,7 +38,7 @@ class TRidingCard(CommonField):
         Index('idx_pin_state', 'pin', 'state'),
     )
 
-    pin = Column(String(64), nullable=False, comment="用户PIN")
+    pin = Column(String(64), nullable=False, index=True, comment="用户PIN")
     deduction_type = Column(INTEGER(11), server_default=text("'1'"), comment="抵扣类型, 1时长卡, 2里程卡, 3减免卡, 4次卡")
     config_id = Column(INTEGER(32), nullable=False, comment="骑行卡配置ID")
     free_time = Column(INTEGER(11), default=0, server_default=text("'0'"), comment="免时长, 单位秒")
