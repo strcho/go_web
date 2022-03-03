@@ -12,6 +12,7 @@ from routes.free_order.serializers import (
     BusUpdateUserFreeOrderDeserializer,
     ClientGetUserFreeOrderDeserializer,
     ClientUserFreeOrderSerializer,
+    ClientUserFreeOrderListSerializer,
 )
 from service.free_order_service import UserFreeOrderService
 
@@ -148,9 +149,9 @@ class ClientGetUserAllFreeOrderHandler(MBHandler):
         """
 
         args['commandContext'] = self.get_context()
-        data = yield mb_async(UserFreeOrderService().query_all)(args)
+        data = yield mb_async(UserFreeOrderService().client_query_all)(args)
 
-        response = ClientUserFreeOrderSerializer(many=True).dump(data)
+        response = ClientUserFreeOrderListSerializer().dump(data)
 
         self.success(response)
 

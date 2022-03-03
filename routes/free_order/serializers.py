@@ -50,6 +50,14 @@ class ClientUserFreeOrderSerializer(BaseSchema):
     free_num = fields.Integer(required=True, description='免单次数')
 
 
+class ClientUserFreeOrderListSerializer(BaseSchema):
+    """
+    用户免单信息列表序列化
+    """
+    used = fields.Nested(ClientUserFreeOrderSerializer, many=True)
+    expired = fields.Nested(ClientUserFreeOrderSerializer, many=True)
+
+
 class UpdateUserFreeOrderDeserializer(ReqBaseDeserializer):
     """
     更新用户免单优惠

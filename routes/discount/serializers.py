@@ -50,6 +50,15 @@ class ClientUserDiscountSerializer(BaseSchema):
     discount_rate = fields.Integer(required=True, description='折扣信息 10 表示 1折')
 
 
+class ClientUserDiscountListSerializer(BaseSchema):
+    """
+    用户折扣信息list序列化
+    """
+
+    used = fields.Nested(ClientUserDiscountSerializer, many=True)
+    expired = fields.Nested(ClientUserDiscountSerializer, many=True)
+
+
 class UpdateUserDiscountDeserializer(ReqBaseDeserializer):
     """
     更新用户折扣优惠

@@ -59,6 +59,33 @@ class UserDiscountService(MBService):
 
         return user_discount_list
 
+    def client_query_all(self, args: dict):
+        """
+        获取用户的全部可用折扣信息-c端
+        """
+
+        try:
+            tenant_id = args['commandContext']['tenantId']
+            user_discount_list = dao_session.session.tenant_db(
+            ).query(TDiscountsUser).filter(
+                TDiscountsUser.tenant_id == tenant_id,
+                TDiscountsUser.pin == args['pin'],
+            ).order_by(TDiscountsUser.id.asc()).all()
+
+            res_dict = {"used": [], "expired": []}
+            for i in user_discount_list:
+                if i.iz_del == 0:
+                    res_dict.get("used").append(i)
+                else:
+                    res_dict.get("expired").append(i)
+
+        except Exception as ex:
+            dao_session.session.tenant_db().rollback()
+            logger.error("query user all free order is error: {}".format(ex))
+            logger.exception(ex)
+
+        return res_dict
+
     def insert_one(self, args: dict):
         """
         插入一条用户折扣信息

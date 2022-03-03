@@ -58,6 +58,33 @@ class UserFreeOrderService(MBService):
 
         return user_free_order_list
 
+    def client_query_all(self, args: dict):
+        """
+        获取用户的全部免单信息-c端
+        """
+
+        try:
+            tenant_id = args['commandContext']['tenantId']
+            user_free_order_list = dao_session.session.tenant_db(
+            ).query(TFreeOrderUser).filter(
+                TFreeOrderUser.tenant_id == tenant_id,
+                TFreeOrderUser.pin == args['pin'],
+            ).order_by(TFreeOrderUser.id.asc()).all()
+
+            res_dict = {"used": [], "expired": []}
+            for i in user_free_order_list:
+                if i.free_num > 0:
+                    res_dict.get("used").append(i)
+                else:
+                    res_dict.get("expired").append(i)
+
+        except Exception as ex:
+            dao_session.session.tenant_db().rollback()
+            logger.error("query user all free order is error: {}".format(ex))
+            logger.exception(ex)
+
+        return res_dict
+
     def insert_one(self, args: dict):
         """
         插入一条用户免单信息
