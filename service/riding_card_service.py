@@ -192,7 +192,7 @@ class RidingCardService(MBService):
             car_info["free_distance_meter"] = one.free_distance
             car_info["free_money_cent"] = one.free_money
             car_info["promotion_tag"] = content.get("promotion_tag", "人气优选")
-            car_info["deductionType"] = one.deduction_type
+            car_info["deduction_type"] = one.deduction_type
             car_info["effective_service_ids"] = content.get("effective_service_ids")
             car_info["effective_service_names"] = content.get("effective_service_names")
             if one.state != UserRidingCardState.EXPIRED.value:
