@@ -126,8 +126,8 @@ class UserDepositService(WalletService):
                 "service_id": service_id,
                 "type": args.get("type"),
                 "channel": args.get("channel"),
-                "sys_trade_no": args.get("sys_trade_no"),
-                "merchant_trade_no": args.get("merchant_trade_no"),
+                "sys_trade_no": args.get("sys_trade_no") or "",
+                "merchant_trade_no": args.get("merchant_trade_no") or "",
 
                 "amount": deposited_amount,
                 "paid_at": args.get("paid_at") or int(time.time()),
@@ -206,8 +206,8 @@ class UserDepositService(WalletService):
                 "service_id": service_id,
                 "type": args.get("type"),
                 "channel": args.get("channel"),
-                "sys_trade_no": args.get("sys_trade_no"),
-                "merchant_trade_no": args.get("merchant_trade_no"),
+                "sys_trade_no": args.get("sys_trade_no") or "",
+                "merchant_trade_no": args.get("merchant_trade_no") or "",
 
                 "amount": deposited_amount,
                 "paid_at": args.get("paid_at") or int(time.time()),

@@ -146,8 +146,8 @@ class DepositCardService(MBService):
                 "service_id": card_service_id,
                 "type": args.get("type"),
                 "channel": args.get("channel"),
-                "sys_trade_no": args.get("sys_trade_no"),
-                "merchant_trade_no": args.get("merchant_trade_no"),
+                "sys_trade_no": args.get("sys_trade_no") or "",
+                "merchant_trade_no": args.get("merchant_trade_no") or "",
                 "amount": amount,
                 "paid_at": args.get("paid_at") or int(time.time()),
 
@@ -255,8 +255,8 @@ class DepositCardService(MBService):
             "service_id": card_service_id,
             "type": args.get("type"),
             "channel": args.get("channel"),
-            "sys_trade_no": args.get("sys_trade_no"),
-            "merchant_trade_no": args.get("merchant_trade_no"),
+            "sys_trade_no": args.get("sys_trade_no") or "",
+            "merchant_trade_no": args.get("merchant_trade_no") or "",
             "amount": args.get("amount") if args.get("amount") is not None else amount,
             "paid_at": args.get("paid_at") or int(time.time()),
 
