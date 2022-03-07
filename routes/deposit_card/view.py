@@ -1,3 +1,4 @@
+import datetime
 import json
 
 from tornado.gen import coroutine
@@ -331,13 +332,15 @@ class ClientGetUserDepositCardHandle(MBHandler):
         args['commandContext'] = self.get_context()
         data = yield mb_async(DepositCardService().query_one)(args)
 
-        if data:
+        if data and data.expired_date > datetime.datetime.now():
             data = {
                 "id": str(data.id),
                 "pin": data.pin,
                 "expired_date": data.expired_date.strftime("%Y-%m-%d %H:%M:%S"),
                 "content": json.loads(data.content) if data.content else {},
             }
+        else:
+            data = None
 
         # response = UserDepositCardSerializer().dump(data)
 
