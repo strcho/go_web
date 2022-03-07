@@ -116,9 +116,9 @@ class UserDepositService(WalletService):
             pin_name = user_info.get("authName")
             deposit_dict = {
                 "tenant_id": commandContext.get('tenantId'),
-                "created_pin": commandContext.get("pin"),
+                "created_pin": commandContext.get("pin") or "",
                 "version": commandContext.get("version", 0),
-                "updated_pin": commandContext.get('pin'),
+                "updated_pin": commandContext.get('pin') or "",
 
                 "pin_id": args.get("pin"),
                 "pin_phone": pin_phone,
@@ -196,9 +196,9 @@ class UserDepositService(WalletService):
             pin_name = user_info.get("authName")
             deposit_dict = {
                 "tenant_id": commandContext.get('tenantId'),
-                "created_pin": commandContext.get("pin"),
+                "created_pin": commandContext.get("pin") or "",
                 "version": commandContext.get("version", 0),
-                "updated_pin": commandContext.get('pin'),
+                "updated_pin": commandContext.get('pin') or "",
 
                 "pin_id": args.get("pin"),
                 "pin_phone": pin_phone,

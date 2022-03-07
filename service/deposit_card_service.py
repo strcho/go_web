@@ -136,9 +136,9 @@ class DepositCardService(MBService):
 
             deposit_card_dict = {
                 "tenant_id": commandContext.get('tenantId'),
-                "created_pin": commandContext.get("pin"),
+                "created_pin": commandContext.get("pin") or "",
                 "version": commandContext.get("version", 0),
-                "updated_pin": commandContext.get('pin'),
+                "updated_pin": commandContext.get('pin') or "",
 
                 "pin_id": args.get("pin"),
                 "pin_phone": pin_phone,
@@ -245,9 +245,9 @@ class DepositCardService(MBService):
 
         deposit_card_dict = {
             "tenant_id": commandContext.get('tenantId'),
-            "created_pin": commandContext.get("pin"),
+            "created_pin": commandContext.get("pin") or "",
             "version": commandContext.get("version", 0),
-            "updated_pin": commandContext.get('pin'),
+            "updated_pin": commandContext.get('pin') or "",
 
             "pin_id": args.get("pin"),
             "pin_phone": pin_phone,

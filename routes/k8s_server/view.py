@@ -7,7 +7,7 @@ from mbutils.mb_handler import MBHandler
 
 class K8sHandler(MBHandler):
     """
-    api:/account/heartbeat/k8s
+    api:/ebike_account/heartbeat/k8s
     k8s探测
     """
 
@@ -18,7 +18,7 @@ class K8sHandler(MBHandler):
 
 class helloHandler(MBHandler):
     """
-    api:/account/hello
+    api:/ebike_account/internal/hello
     """
 
     @coroutine
@@ -29,3 +29,17 @@ class helloHandler(MBHandler):
     def post(self, args):
 
         self.success(f"appName=ebike-account port=80 name={args.get('name')}")
+
+
+class DataBaseCheckHandler(MBHandler):
+    """
+    api:/ebike_account/database_check
+    """
+
+    @coroutine
+    @use_args_query({
+        "name": fields.String(),
+    })
+    def post(self, args):
+
+        self.success()
