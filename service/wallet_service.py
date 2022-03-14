@@ -43,6 +43,12 @@ class WalletService(MBService):
             dao_session.session.tenant_db().rollback()
             logger.error("query user wallet is error: {}".format(e), extra=args['commandContext'])
             logger.exception(e)
+
+        try:
+            a = 1/0
+        except Exception as e:
+            logger.error('测试error日志：', extra=args['commandContext'])
+
         return user_wallet
 
     def update_one(self, pin: str, tenant_id: str, params: dict, update_pin: str = None):
