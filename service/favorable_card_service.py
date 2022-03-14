@@ -48,7 +48,7 @@ class FavorableCardUserService(MBService):
                 card_info.content = card_info.content if card_info.content else '{}'
         except Exception as e:
             dao_session.session.tenant_db().rollback()
-            logger.error("show favorable card days is error: {}".format(e))
+            logger.error("show favorable card days is error: {}".format(e), extra=args['commandContext'])
             logger.exception(e)
         return card_info
 
@@ -96,7 +96,7 @@ class FavorableCardUserService(MBService):
             dao_session.session.tenant_db().commit()
         except Exception as e:
             dao_session.session.tenant_db().rollback()
-            logger.error("insert user favorable card is error: {}".format(e))
+            logger.error("insert user favorable card is error: {}".format(e), extra=args['commandContext'])
             logger.exception(e)
             return False
         return True
@@ -167,7 +167,7 @@ class FavorableCardUserService(MBService):
         except Exception as ex:
             print(ex)
             dao_session.session.tenant_db().rollback()
-            logger.error("send user favorable card is error: {}".format(ex))
+            logger.error("send user favorable card is error: {}".format(ex), extra=args['commandContext'])
             logger.exception(ex)
             res = False
 
@@ -202,7 +202,7 @@ class FavorableCardUserService(MBService):
 
         except Exception as ex:
             dao_session.session.tenant_db().rollback()
-            logger.error("modify user favorable card is error: {}".format(ex))
+            logger.error("modify user favorable card is error: {}".format(ex), extra=args['commandContext'])
             logger.exception(ex)
             return False
         finally:
@@ -269,7 +269,7 @@ class FavorableCardUserService(MBService):
 
         except Exception as e:
             dao_session.session.tenant_db().rollback()
-            logger.error("show favorable card days is error: {}".format(e))
+            logger.error("show favorable card days is error: {}".format(e), extra=args['commandContext'])
             logger.exception(e)
         return card_data
 
@@ -326,6 +326,6 @@ class FavorableCardUserService(MBService):
 
         except Exception as e:
             dao_session.session.tenant_db().rollback()
-            logger.error("show favorable card days is error: {}".format(e))
+            logger.error("show favorable card days is error: {}".format(e), extra=args['commandContext'])
             logger.exception(e)
         return True

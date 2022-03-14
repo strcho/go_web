@@ -142,7 +142,7 @@ class UserDepositService(WalletService):
                                                    buy_time=args.get("paid_at") or int(time.time()),
                                                    command_context=commandContext)
         except Exception as e:
-            logger.error(f"营销活动回调失败 buy_deposit_judgement： {e}")
+            logger.error(f"营销活动回调失败 buy_deposit_judgement： {e}", args['commandContext'])
         return {"suc": True, "data": "更新成功"}
 
     def bus_edit_user_deposited(self, args: dict):

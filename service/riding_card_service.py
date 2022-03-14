@@ -76,7 +76,7 @@ class RidingCardService(MBService):
 
         except Exception as e:
             dao_session.session.tenant_db().rollback()
-            logger.error("insert user riding card is error: {}".format(e))
+            logger.error("insert user riding card is error: {}".format(e), extra=args['commandContext'])
             logger.exception(e)
             return False
 
@@ -363,7 +363,7 @@ class RidingCardService(MBService):
                                                            buy_time=args.get("paid_at") or int(time.time()),
                                                            command_context=commandContext)
             except Exception as e:
-                logger.error(f"营销活动回调失败 buy_riding_card_judgement： {e}")
+                logger.error(f"营销活动回调失败 buy_riding_card_judgement： {e}", extra=args['commandContext'])
 
         except Exception as ex:
             raise MbException("添加超级骑行卡失败")
@@ -387,7 +387,7 @@ class RidingCardService(MBService):
             return ''
         except Exception:
             dao_session.session.tenant_db().rollback()
-            logger.error("骑行卡次数扣除失败,card_id:", card_id)
+            logger.error("骑行卡次数扣除失败,card_id:", card_id, extra=args['commandContext'])
             raise MbException("骑行卡次数扣除失败")
 
     def current_during_time(self, args: dict):
@@ -515,7 +515,7 @@ class RidingCardService(MBService):
             KafkaClient().visual_send(riding_card_dict, PayKey.RIDING_CARD.value)
         except Exception:
             dao_session.session.tenant_db().rollback()
-            logger.error("骑行卡退款失败")
+            logger.error("骑行卡退款失败", args=args['commandContext'])
             return False
 
         return True

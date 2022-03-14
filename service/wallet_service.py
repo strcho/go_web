@@ -1,5 +1,6 @@
 import datetime
 import time
+import traceback
 
 from internal.marketing_api import MarketingApi
 from internal.user_apis import UserApi
@@ -40,7 +41,7 @@ class WalletService(MBService):
                                 TUserWallet.tenant_id == tenant_id).first()
         except Exception as e:
             dao_session.session.tenant_db().rollback()
-            logger.error("query user wallet is error: {}".format(e))
+            logger.error("query user wallet is error: {}".format(e), extra=args['commandContext'])
             logger.exception(e)
         return user_wallet
 
@@ -75,7 +76,7 @@ class WalletService(MBService):
             return True
         except Exception as e:
             dao_session.session.tenant_db().rollback()
-            logger.error("insert user wallet is error: {}".format(e))
+            logger.error("insert user wallet is error: {}".format(e), extra=args['commandContext'])
             logger.exception(e)
             return False
 
@@ -179,13 +180,13 @@ class WalletService(MBService):
                                                       buy_time=args.get("paid_at") or int(time.time()),
                                                       command_context=commandContext)
             except Exception as e:
-                logger.error(f"营销活动回调失败 buy_wallet_judgement： {e}")
+                logger.error(f"营销活动回调失败 buy_wallet_judgement： {e}", extra=args['commandContext'])
 
             return True
 
         except Exception as e:
             dao_session.session.tenant_db().rollback()
-            logger.error("update user wallet is error: {}".format(e))
+            logger.error("update user wallet is error: {}".format(e), extra=args['commandContext'])
             logger.exception(e)
             raise MbException("更新用户钱包失败")
 
@@ -255,7 +256,7 @@ class WalletService(MBService):
 
         except Exception as e:
             dao_session.session.tenant_db().rollback()
-            logger.error("update user wallet is error: {}".format(e))
+            logger.error("update user wallet is error: {}".format(e), extra=args['commandContext'])
             logger.exception(e)
             raise MbException("更新用户钱包失败")
 
@@ -329,6 +330,6 @@ class WalletService(MBService):
             return True, {"recharge_amount": recharge_amount, "present_amount": present_amount}
         except Exception as ex:
             dao_session.session.tenant_db().rollback()
-            logger.error("update user wallet is error: {}".format(ex))
+            logger.error("update user wallet is error: {}".format(ex), extra=args['commandContext'])
             logger.exception(ex)
             raise MbException("更新余额失败")

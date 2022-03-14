@@ -33,7 +33,7 @@ class UserDiscountService(MBService):
             ).order_by(TDiscountsUser.id.asc()).first()
         except Exception as ex:
             dao_session.session.tenant_db().rollback()
-            logger.error("query user discount is error: {}".format(ex))
+            logger.error("query user discount is error: {}".format(ex), extra=args['commandContext'])
             logger.exception(ex)
 
         return user_discount
@@ -54,7 +54,7 @@ class UserDiscountService(MBService):
             ).order_by(TDiscountsUser.id.asc()).all()
         except Exception as ex:
             dao_session.session.tenant_db().rollback()
-            logger.error("query user all free order is error: {}".format(ex))
+            logger.error("query user all free order is error: {}".format(ex), extra=args['commandContext'])
             logger.exception(ex)
 
         return user_discount_list
@@ -81,7 +81,7 @@ class UserDiscountService(MBService):
 
         except Exception as ex:
             dao_session.session.tenant_db().rollback()
-            logger.error("query user all free order is error: {}".format(ex))
+            logger.error("query user all free order is error: {}".format(ex), extra=args['commandContext'])
             logger.exception(ex)
 
         return res_dict
@@ -101,7 +101,7 @@ class UserDiscountService(MBService):
             dao_session.session.tenant_db().commit()
         except Exception as ex:
             dao_session.session.tenant_db().rollback()
-            logger.error("insert user free order is error: {}".format(ex))
+            logger.error("insert user free order is error: {}".format(ex), extra=args['commandContext'])
             logger.exception(ex)
             raise MbException("添加用户折扣失败")
 
@@ -125,7 +125,7 @@ class UserDiscountService(MBService):
                 dao_session.session.tenant_db().commit()
             except Exception as ex:
                 dao_session.session.tenant_db().rollback()
-                logger.error("update user discount is error: {}".format(ex))
+                logger.error("update user discount is error: {}".format(ex), extra=args['commandContext'])
                 logger.exception(ex)
                 raise MbException("删除用户折扣失败")
 

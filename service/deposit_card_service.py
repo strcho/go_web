@@ -50,7 +50,7 @@ class DepositCardService(MBService):
                 deposit_card.content = deposit_card.content if deposit_card.content else '{}'
         except Exception as ex:
             dao_session.session.tenant_db().rollback()
-            logger.error("query user deposit card is error: {}".format(ex))
+            logger.error("query user deposit card is error: {}".format(ex), extra=args['commandContext'])
             logger.exception(ex)
             raise MbException('查询用户押金卡失败')
 
@@ -79,7 +79,7 @@ class DepositCardService(MBService):
             dao_session.session.tenant_db().commit()
         except Exception as ex:
             dao_session.session.tenant_db().rollback()
-            logger.error("insert user deposit card is error: {}".format(ex))
+            logger.error("insert user deposit card is error: {}".format(ex), extra=args['commandContext'])
             logger.exception(ex)
             raise MbException('用户获取押金卡失败')
 
@@ -165,11 +165,11 @@ class DepositCardService(MBService):
                                                             buy_time=args.get("paid_at") or int(time.time()),
                                                             command_context=commandContext)
             except Exception as e:
-                logger.error(f"营销活动回调失败 buy_deposit_card_judgement： {e}")
+                logger.error(f"营销活动回调失败 buy_deposit_card_judgement： {e}", extra=args['commandContext'])
 
         except Exception as ex:
             dao_session.session.tenant_db().rollback()
-            logger.error("insert user deposit card is error: {}".format(ex))
+            logger.error("insert user deposit card is error: {}".format(ex), extra=args['commandContext'])
             logger.exception(ex)
             raise MbException('用户获取押金卡失败')
 
@@ -205,7 +205,7 @@ class DepositCardService(MBService):
 
         except Exception as ex:
             dao_session.session.tenant_db().rollback()
-            logger.error("update user deposit card is error: {}".format(ex))
+            logger.error("update user deposit card is error: {}".format(ex), extra=args['commandContext'])
             logger.exception(ex)
             raise MbException('更新用户押金卡时长失败')
         return deposit_card

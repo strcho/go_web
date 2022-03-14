@@ -40,52 +40,24 @@ if __name__ == "__main__":
     application = tornado.httpserver.HTTPServer(app, xheaders=True)
 
     from model.all_model import *
-
-    YearType = []
-    MonthType = []
-    TenantType = []
-
     split_info = {
         "tenant_models": [TRidingCard, TDepositCard, TFavorableCard, TDiscountsUser, TFreeOrderUser, TUserWallet],
         "year_models": [],
         "month_models": [],
         "unsplit_models": [],
-        "month_type": MonthType,
-        "year_type": YearType,
-        "tenant_type": TenantType
+        "month_type": cfg.get("MonthType", []),
+        "year_type": cfg.get("YearType", []),
+        "tenant_type": cfg.get("TenantType", [])
     }
     dao_session.initialize(app, split_info)
 
     def check_segmentation_type(app, split_info):
-
         while True:
             try:
-                is_changed = False
-                new_year_type = cfg.get("YearType", [])
-                new_month_type = cfg.get("MonthType", [])
-                new_tenant_type = cfg.get("TenantType", [])
-
-                year_add = set(new_year_type) - set(split_info.get("year_type"))
-                if year_add:
-                    is_changed = True
-                    split_info.get("year_type").extend(year_add)
-
-                month_add = set(new_month_type) - set(split_info.get("month_type"))
-                if month_add:
-                    is_changed = True
-                    split_info.get("month_type").extend(month_add)
-
-                tenant_add = set(new_tenant_type) - set(split_info.get("tenant_type"))
-                if tenant_add:
-                    is_changed = True
-                    split_info.get("tenant_type").extend(tenant_add)
-
-                if is_changed:
+                if cfg.get('mb_update', False):
                     dao_session.initialize(app, split_info)
             except Exception as e:
                 pass
-            finally:
-                is_changed = False
             time.sleep(5)
 
     t_check_segmentation = threading.Thread(target=check_segmentation_type, args=(app, split_info))
