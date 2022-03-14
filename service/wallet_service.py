@@ -44,14 +44,9 @@ class WalletService(MBService):
             logger.error("query user wallet is error: {}".format(e), extra=args['commandContext'])
             logger.exception(e)
 
-        try:
-            a = 1/0
-        except Exception as e:
-            logger.error('测试error日志：', extra=args['commandContext'])
-
         return user_wallet
 
-    def update_one(self, pin: str, tenant_id: str, params: dict, update_pin: str = None):
+    def update_one(self, pin: str, tenant_id: str, params: dict, update_pin: str = None, commandContext = None):
 
         try:
 
@@ -65,7 +60,7 @@ class WalletService(MBService):
 
         except Exception as e:
             dao_session.session.tenant_db().rollback()
-            logger.error("update user wallet is error: {}".format(e))
+            logger.error("update user wallet is error: {}".format(e), extra=commandContext)
             logger.exception(e)
             raise MbException("更新用户钱包失败")
 
@@ -149,7 +144,7 @@ class WalletService(MBService):
                 user_wallet_dict['balance'] += args['change_present']
 
             commandContext = args.get("commandContext")
-            self.update_one(pin=pin, tenant_id=commandContext["tenantId"], params=user_wallet_dict)
+            self.update_one(pin=pin, tenant_id=commandContext["tenantId"], params=user_wallet_dict, commandContext=commandContext)
 
             user_info = UserApi.get_user_info(pin=pin, command_context=commandContext)
             service_id = user_info.get('serviceId')
@@ -223,7 +218,7 @@ class WalletService(MBService):
                 raise MbException("参数错误")
 
             commandContext = args.get("commandContext")
-            self.update_one(pin=pin, tenant_id=commandContext["tenantId"], params=user_wallet_dict)
+            self.update_one(pin=pin, tenant_id=commandContext["tenantId"], params=user_wallet_dict, commandContext=commandContext)
 
             user_info = UserApi.get_user_info(pin=pin, command_context=commandContext)
             service_id = user_info.get('serviceId')
@@ -297,13 +292,11 @@ class WalletService(MBService):
                 recharge=recharge,
                 present=present,
             )
-
-            self.update_one(pin=pin, tenant_id=tenant_id, params=params)
+            commandContext = args.get("commandContext")
+            self.update_one(pin=pin, tenant_id=tenant_id, params=params, commandContext=commandContext)
 
             recharge_amount = old_recharge_amount - recharge
             present_amount = old_present_amount - present
-
-            commandContext = args.get("commandContext")
 
             user_info = UserApi.get_user_info(pin=pin, command_context=commandContext)
             service_id = user_info.get('serviceId')
