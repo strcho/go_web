@@ -135,16 +135,22 @@ class WalletService(MBService):
         try:
             user_wallet_dict = self.get_user_wallet(pin=pin, args=args)
 
-            if self.exists_param(args['change_recharge']):
-                user_wallet_dict['balance'] += args['change_recharge']
-                user_wallet_dict['recharge'] += args['change_recharge']
+            # if self.exists_param(args['change_recharge']):
+            #     user_wallet_dict['balance'] += args['change_recharge']
+            #     user_wallet_dict['recharge'] += args['change_recharge']
+            #
+            # if self.exists_param(args['change_present']):
+            #     user_wallet_dict['present'] += args['change_present']
+            #     user_wallet_dict['balance'] += args['change_present']
 
-            if self.exists_param(args['change_present']):
-                user_wallet_dict['present'] += args['change_present']
-                user_wallet_dict['balance'] += args['change_present']
+            user_wallet_param = {
+                "recharge": TUserWallet.recharge + args.get("change_recharge", 0),
+                "present": TUserWallet.present + args.get("change_present", 0),
+                "balance": TUserWallet.balance + args.get("change_recharge", 0) + args.get("change_present", 0),
+            }
 
             commandContext = args.get("commandContext")
-            self.update_one(pin=pin, tenant_id=commandContext["tenantId"], params=user_wallet_dict, commandContext=commandContext)
+            self.update_one(pin=pin, tenant_id=commandContext["tenantId"], params=user_wallet_param, commandContext=commandContext)
 
             user_info = UserApi.get_user_info(pin=pin, command_context=commandContext)
             service_id = user_info.get('serviceId')
