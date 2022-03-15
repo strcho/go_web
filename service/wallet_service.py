@@ -46,6 +46,27 @@ class WalletService(MBService):
 
         return user_wallet
 
+    def query_one_with_row_lock(self, args: dict):
+        user_wallet = {}
+        try:
+            pin = args['pin']
+            tenant_id = str(args['commandContext']['tenantId'])
+            user_wallet = dao_session.session.tenant_db().query(TUserWallet) \
+                .filter(TUserWallet.pin == pin,
+                        TUserWallet.tenant_id == tenant_id).with_for_update().first()
+            if not user_wallet:
+                is_suc = self.insert_one(pin, args)
+                if is_suc:
+                    user_wallet = dao_session.session.tenant_db().query(TUserWallet) \
+                        .filter(TUserWallet.pin == pin,
+                                TUserWallet.tenant_id == tenant_id).with_for_update().first()
+        except Exception as e:
+            dao_session.session.tenant_db().rollback()
+            logger.error("query user wallet is error: {}".format(e), extra=args['commandContext'])
+            logger.exception(e)
+
+        return user_wallet
+
     def update_one(self, pin: str, tenant_id: str, params: dict, update_pin: str = None, commandContext = None):
 
         try:
@@ -121,11 +142,14 @@ class WalletService(MBService):
 
         return data_list
 
-    def get_user_wallet(self, pin: str, args: dict):
+    def get_user_wallet(self, pin: str, args: dict, with_row_lock=False):
         """
         从redis或mysql获取用户钱包信息
         """
-        user_wallet: TUserWallet = self.query_one(args=args)
+        if with_row_lock:
+            user_wallet: TUserWallet = self.query_one_with_row_lock(args=args)
+        else:
+            user_wallet: TUserWallet = self.query_one(args=args)
         user_wallet_dict = orm_to_dict(user_wallet, TUserWallet)
 
         return user_wallet_dict
@@ -269,7 +293,7 @@ class WalletService(MBService):
         tenant_id = args['commandContext']['tenantId']
 
         try:
-            user_wallet = self.get_user_wallet(pin, args)
+            user_wallet = self.get_user_wallet(pin, args, with_row_lock=True)
 
             old_recharge_amount = user_wallet["recharge"]
             old_present_amount = user_wallet["present"]
@@ -287,18 +311,16 @@ class WalletService(MBService):
                 recharge = user_wallet['recharge'] - deduction_amount
                 present = user_wallet['present']
 
-            params = dict(
-                pin=pin,
-                tenant_id=tenant_id,
-                balance=balance,
-                recharge=recharge,
-                present=present,
-            )
-            commandContext = args.get("commandContext")
-            self.update_one(pin=pin, tenant_id=tenant_id, params=params, commandContext=commandContext)
-
             recharge_amount = old_recharge_amount - recharge
             present_amount = old_present_amount - present
+
+            user_wallet_param = dict(
+                balance=TUserWallet.balance - deduction_amount,
+                recharge=TUserWallet.recharge + recharge_amount,
+                present=TUserWallet.present + present_amount,
+            )
+            commandContext = args.get("commandContext")
+            self.update_one(pin=pin, tenant_id=tenant_id, params=user_wallet_param, commandContext=commandContext)
 
             user_info = UserApi.get_user_info(pin=pin, command_context=commandContext)
             service_id = user_info.get('serviceId')
