@@ -135,14 +135,6 @@ class WalletService(MBService):
         try:
             user_wallet_dict = self.get_user_wallet(pin=pin, args=args)
 
-            # if self.exists_param(args['change_recharge']):
-            #     user_wallet_dict['balance'] += args['change_recharge']
-            #     user_wallet_dict['recharge'] += args['change_recharge']
-            #
-            # if self.exists_param(args['change_present']):
-            #     user_wallet_dict['present'] += args['change_present']
-            #     user_wallet_dict['balance'] += args['change_present']
-
             user_wallet_param = {
                 "recharge": TUserWallet.recharge + args.get("change_recharge", 0),
                 "present": TUserWallet.present + args.get("change_present", 0),
@@ -215,16 +207,20 @@ class WalletService(MBService):
 
             elif args['change_present']:
                 if -10000000 < args['change_present'] < 10000000:
-                    user_wallet_dict['present'] += args['change_present']
-                    user_wallet_dict['balance'] += args['change_present']
                     args["type"] = TransactionType.PLATFORM_BOUGHT.value if args['change_present'] > 0 else TransactionType.PLATFORM_REFUND.value
                 else:
                     raise MbException("参数越界")
             else:
                 raise MbException("参数错误")
 
+            user_wallet_param = {
+                "recharge": TUserWallet.recharge + args.get("change_recharge", 0),
+                "present": TUserWallet.present + args.get("change_present", 0),
+                "balance": TUserWallet.balance + args.get("change_recharge", 0) + args.get("change_present", 0),
+            }
+
             commandContext = args.get("commandContext")
-            self.update_one(pin=pin, tenant_id=commandContext["tenantId"], params=user_wallet_dict, commandContext=commandContext)
+            self.update_one(pin=pin, tenant_id=commandContext["tenantId"], params=user_wallet_param, commandContext=commandContext)
 
             user_info = UserApi.get_user_info(pin=pin, command_context=commandContext)
             service_id = user_info.get('serviceId')

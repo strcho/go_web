@@ -9,7 +9,6 @@ from mbutils.autodoc import use_args_query
 from mbutils.mb_handler import MBHandler
 from routes.user_account.serializers import (
     UserAccountDeserializer,
-    UserAccountSerializer,
     BusUserAccountDeserializer,
     CliUserAccountDeserializer,
 )
@@ -60,14 +59,12 @@ class UserAccount(MBHandler):
                               UserAccountSerializer
           """
 
-        user_wallet, user_riding_card, user_deposit_card, user_favorable_card, user_free_order, user_discount = yield [
-            mb_async(WalletService().query_one)(args),
-            mb_async(RidingCardService().current_duriong_card)(args),
-            mb_async(DepositCardService().query_one)(args),
-            mb_async(FavorableCardUserService().query_one)(args),
-            mb_async(UserFreeOrderService().query_one)(args),
-            mb_async(UserDiscountService().query_one)(args)
-        ]
+        user_wallet = yield mb_async(WalletService().query_one)(args)
+        user_riding_card = yield mb_async(RidingCardService().current_duriong_card)(args)
+        user_deposit_card = yield mb_async(DepositCardService().query_one)(args)
+        user_favorable_card = yield mb_async(FavorableCardUserService().query_one)(args)
+        user_free_order = yield mb_async(UserFreeOrderService().query_one)(args),
+        user_discount = yield mb_async(UserDiscountService().query_one)(args)
 
         user_wallet = {
             "pin": user_wallet.pin,
@@ -153,8 +150,6 @@ class UserAccount(MBHandler):
             "user_free_order": user_free_order,
             "user_discount": user_discount,
         }
-
-        # response = UserAccountSerializer().dump(data)
 
         self.success(data)
 
