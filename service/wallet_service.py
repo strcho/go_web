@@ -316,8 +316,8 @@ class WalletService(MBService):
 
             user_wallet_param = dict(
                 balance=TUserWallet.balance - deduction_amount,
-                recharge=TUserWallet.recharge + recharge_amount,
-                present=TUserWallet.present + present_amount,
+                recharge=TUserWallet.recharge - recharge_amount,
+                present=TUserWallet.present - present_amount,
             )
             commandContext = args.get("commandContext")
             self.update_one(pin=pin, tenant_id=tenant_id, params=user_wallet_param, commandContext=commandContext)
