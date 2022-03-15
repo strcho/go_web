@@ -63,7 +63,7 @@ class UserAccount(MBHandler):
         user_riding_card = yield mb_async(RidingCardService().current_duriong_card)(args)
         user_deposit_card = yield mb_async(DepositCardService().query_one)(args)
         user_favorable_card = yield mb_async(FavorableCardUserService().query_one)(args)
-        user_free_order = yield mb_async(UserFreeOrderService().query_one)(args),
+        user_free_order = yield mb_async(UserFreeOrderService().query_one)(args)
         user_discount = yield mb_async(UserDiscountService().query_one)(args)
 
         user_wallet = {
