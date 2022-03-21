@@ -95,9 +95,9 @@ class RidingCardService(MBService):
             raise MbException("无效的骑行卡")
 
         try:
-            if self.exists_param(duration):
+            if duration is not None:
                 riding_card.card_expired_date = datetime.now() + timedelta(days=duration)
-            if self.exists_param(remain_times):
+            if remain_times is not None:
                 riding_card.remain_times = remain_times
             riding_card.updated_at = datetime.now()
             dao_session.session.tenant_db().commit()
