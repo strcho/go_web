@@ -348,6 +348,7 @@ class RidingCardService(MBService):
                 "merchant_trade_no": args.get("merchant_trade_no") or "",
                 "amount": current_cost,
                 "paid_at": args.get("paid_at") or int(time.time()),
+                "iz_refund": args.get("iz_refund", 0),
 
                 "config_id": config_id,
                 "name": name,
@@ -505,6 +506,7 @@ class RidingCardService(MBService):
                 "merchant_trade_no": args.get("merchant_trade_no") or "",
                 "amount": args.get("amount") if args.get("amount") is not None else current_cost,
                 "paid_at": args.get("paid_at") or int(time.time()),
+                "iz_refund": args.get("iz_refund", 0),
 
                 "config_id": config_id,
                 "name": name,

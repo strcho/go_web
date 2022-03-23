@@ -189,6 +189,7 @@ class WalletService(MBService):
                 "merchant_trade_no": args.get("merchant_trade_no") or "",
                 "amount": abs(args.get("change_recharge", 0) + args.get("change_present", 0)),
                 "paid_at": args.get("paid_at") or int(time.time()),
+                "iz_refund": args.get("iz_refund", 0),
                 "recharge_amount": abs(args.get("change_recharge", 0)),
                 "present_amount": abs(args.get("change_present", 0)),
             }
@@ -268,6 +269,7 @@ class WalletService(MBService):
                 # "amount": abs(args.get("change_recharge", 0) + args.get("change_present", 0)),
                 "amount": abs(args.get("change_present", 0)),
                 "paid_at": args.get("paid_at") or int(time.time()),
+                "iz_refund": args.get("iz_refund", 0),
                 # "recharge_amount": abs(args.get("change_recharge", 0)),
                 "recharge_amount": 0,
                 "present_amount": abs(args.get("change_present", 0)),
@@ -343,6 +345,7 @@ class WalletService(MBService):
                 "merchant_trade_no": args.get("merchant_trade_no") or "",
                 "amount": deduction_amount,
                 "paid_at": args.get("paid_at") or int(time.time()),
+                "iz_refund": args.get("iz_refund", 0),
                 "recharge_amount": recharge_amount,
                 "present_amount": present_amount,
             }

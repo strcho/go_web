@@ -131,6 +131,7 @@ class UserDepositService(WalletService):
 
                 "amount": deposited_amount,
                 "paid_at": args.get("paid_at") or int(time.time()),
+                "iz_refund": args.get("iz_refund", 0),
             }
             deposit_dict = self.remove_empty_param(deposit_dict)
             logger.info(f"deposit_dict_record send is {deposit_dict}")
@@ -211,6 +212,7 @@ class UserDepositService(WalletService):
 
                 "amount": deposited_amount,
                 "paid_at": args.get("paid_at") or int(time.time()),
+                "iz_refund": args.get("iz_refund", 0),
             }
             deposit_dict = self.remove_empty_param(deposit_dict)
             logger.info(f"deposit_dict_record send is {deposit_dict}")
