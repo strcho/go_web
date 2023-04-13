@@ -27,3 +27,11 @@ func (s *GreeterService) SayHello(ctx context.Context, in *v1.HelloRequest) (*v1
 	}
 	return &v1.HelloReply{Message: "Hello " + g.Hello}, nil
 }
+
+func (s *GreeterService) SayOk(ctx context.Context, in *v1.OkRequest) (*v1.OkReply, error) {
+	g, err := s.uc.CreateGreeter(ctx, &biz.Greeter{Hello: in.V})
+	if err != nil {
+		return nil, err
+	}
+	return &v1.OkReply{Message: "Hello " + g.Hello}, nil
+}

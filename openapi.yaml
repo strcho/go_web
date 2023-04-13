@@ -7,6 +7,24 @@ info:
     description: The greeting service definition.
     version: 0.0.1
 paths:
+    /Ok/{v}:
+        get:
+            tags:
+                - Greeter
+            operationId: Greeter_SayOk
+            parameters:
+                - name: v
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/helloworld.v1.OkReply'
     /helloworld/{name}:
         get:
             tags:
@@ -34,5 +52,10 @@ components:
                 message:
                     type: string
             description: The response message containing the greetings
+        helloworld.v1.OkReply:
+            type: object
+            properties:
+                message:
+                    type: string
 tags:
     - name: Greeter
